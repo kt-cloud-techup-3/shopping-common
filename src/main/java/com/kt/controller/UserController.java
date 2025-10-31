@@ -9,6 +9,8 @@ import org.springframework.web.bind.annotation.RestController;
 import com.kt.dto.UserCreateRequest;
 import com.kt.service.UserService;
 
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
@@ -22,6 +24,14 @@ public class UserController {
 
 	@PostMapping("/users")
 	@ResponseStatus(HttpStatus.CREATED)
+	@ApiResponses(value = {
+		// 성공
+		@ApiResponse(responseCode = "201", description = "Created"),
+		// 클라이언트 오류
+		@ApiResponse(responseCode = "400", description = "Bad Request"),
+		// 서버 오류
+		@ApiResponse(responseCode = "500", description = "Internal Server Error")
+	})
 	// loginId, password, name, birthday
 	// json형태의 body에 담겨서 post요청으로 /users로 들어오면
 	// @RequestBody를보고 jacksonObjectMapper가 동작해서 json을 읽어서 dto로 변환
