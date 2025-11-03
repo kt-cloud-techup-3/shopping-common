@@ -3,13 +3,17 @@ package com.kt.controller;
 import com.kt.domain.User;
 import com.kt.dto.CustomPage;
 
+import com.kt.dto.UserUpdateRequest;
 import com.kt.service.UserService;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -39,6 +43,15 @@ public class AdminUserController {
 	public User detail(@PathVariable Long id) {
 		return userService.detail(id);
 	}
-	
+
+	@PutMapping("/{id}")
+	@ResponseStatus(HttpStatus.OK)
+	public void update(
+		@PathVariable Long id,
+		@RequestBody @Valid UserUpdateRequest request) {
+		userService.update(id, request.name(), request.email(), request.mobile());
+	}
+
+
 
 }
