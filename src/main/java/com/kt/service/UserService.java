@@ -31,8 +31,12 @@ public class UserService {
 		);
 
 		userRepository.save(newUser);
-		//repository로 넘길거임
 	}
+
+	public boolean isDuplicateLoginId(String loginId) {
+		return userRepository.existsByLoginId(loginId);
+	}
+
 
 
 

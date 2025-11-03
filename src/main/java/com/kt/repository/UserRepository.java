@@ -55,4 +55,13 @@ public class UserRepository {
 		return maxId == null ? 0L : maxId;
 	}
 
+	// count 하는것은 데이터를 모두 훑어야 하기에(full-scan) 비추
+	// exists로 존재 여부 체크 -> boolean으로 값 존재 여부를 바로 알 수 있음
+	public boolean existsByLoginId(String loginId) {
+		var sql = "SELECT EXISTS (SELECT id FROM MEMBER WHERE loginId = ?)";
+
+		return Boolean.TRUE.equals(jdbcTemplate.queryForObject(sql, Boolean.class));
+	}
+
+
 }
