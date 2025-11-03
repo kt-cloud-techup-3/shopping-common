@@ -2,6 +2,7 @@ package com.kt.repository;
 
 import com.kt.domain.Gender;
 
+import org.springframework.data.util.Pair;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
@@ -14,6 +15,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -92,6 +94,23 @@ public class UserRepository {
 		var list = jdbcTemplate.query(sql, rowMapper(), id);
 
 		return list.stream().findFirst();
+	}
+
+	public Pair<List<User>, Long> selectAll(int page, int size, String keyword) {
+		// paging의 구조
+		// 백엔드 입장에서 필요한 것
+		// 한화면에 몇개 보여줄것인가? => limit
+		// 내가 몇번째 페이지를 보고있나? => offset (몇개를 건너뛸것인가?)
+		// 보고있는 페이지 - 1 * limit
+		// 키워드 검색 = LIKE %keyword% (포함) , %keyword(시작하는), keyword%(끝나는)
+		var sql = "SELECT * FROM MEMBER WHERE name LIKE CONCAT('%', ? ,'%') LIMIT ? OFFSET ?";
+
+		var users = jdbcTemplate.query(sql, rowMapper(), keyword, size, page);
+
+		var countSql = "SELECT COUNT(*) FROM MEMBER WHERE name LIKE CONCAT('%', ? ,'%')";
+		var totalElements = jdbcTemplate.queryForObject(countSql, Long.class, keyword);
+
+		return Pair.of(users, totalElements);
 	}
 
 	private RowMapper<User> rowMapper() {
