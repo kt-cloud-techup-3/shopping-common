@@ -8,6 +8,8 @@ import com.kt.repository.UserRepository;
 
 import lombok.RequiredArgsConstructor;
 
+import java.time.LocalDateTime;
+
 @Service
 @RequiredArgsConstructor
 public class UserService {
@@ -16,13 +18,22 @@ public class UserService {
 	public void create(UserCreateRequest request) {
 		System.out.println(request.toString());
 		var newUser = new User(
+			userRepository.selectMaxId() + 1,
 			request.loginId(),
 			request.password(),
 			request.name(),
-			request.birthday()
+			request.email(),
+			request.mobile(),
+			request.gender(),
+			request.birthday(),
+			LocalDateTime.now(),
+			LocalDateTime.now()
 		);
 
 		userRepository.save(newUser);
 		//repository로 넘길거임
 	}
+
+
+
 }
