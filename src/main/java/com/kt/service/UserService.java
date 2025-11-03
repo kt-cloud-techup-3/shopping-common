@@ -37,6 +37,21 @@ public class UserService {
 		return userRepository.existsByLoginId(loginId);
 	}
 
+	public void changePassword(int id, String oldPassword, String password) {
+
+		var user = userRepository.selectById(id)
+			.orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다."));
+
+		if(!user.getPassword().equals(oldPassword)) {
+			throw new IllegalArgumentException("기존 비밀번호가 일치하지 않습니다.");
+		}
+
+		userRepository.updatePassword(id, password);
+	}
+
+
+
+
 
 
 
