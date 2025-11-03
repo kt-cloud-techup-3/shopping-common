@@ -60,7 +60,7 @@ public class UserRepository {
 	public boolean existsByLoginId(String loginId) {
 		var sql = "SELECT EXISTS (SELECT id FROM MEMBER WHERE loginId = ?)";
 
-		return Boolean.TRUE.equals(jdbcTemplate.queryForObject(sql, Boolean.class));
+		return Boolean.TRUE.equals(jdbcTemplate.queryForObject(sql, Boolean.class, loginId));
 	}
 
 
