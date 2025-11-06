@@ -1,0 +1,32 @@
+package com.kt.domain.orderproduct;
+
+import com.kt.common.BaseEntity;
+
+import com.kt.domain.order.Order;
+
+import com.kt.domain.product.Product;
+
+import jakarta.persistence.Entity;
+import jakarta.persistence.OneToOne;
+import lombok.Getter;
+
+@Entity
+@Getter
+public class OrderProduct extends BaseEntity {
+
+
+	private Long quantity;
+
+	@OneToOne
+	private Order order;
+
+	@OneToOne
+	private Product product;
+
+	//
+
+	/* todo..
+	* 주문 생성 시 OrderProduct 같이 생성
+	* */
+
+}
