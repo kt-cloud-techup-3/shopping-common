@@ -7,6 +7,8 @@ import com.kt.domain.order.Order;
 import com.kt.domain.product.Product;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToOne;
 import lombok.Getter;
 
@@ -17,10 +19,12 @@ public class OrderProduct extends BaseEntity {
 
 	private Long quantity;
 
-	@OneToOne
+	@ManyToOne
+	@JoinColumn(name = "order_id")
 	private Order order;
 
-	@OneToOne
+	@ManyToOne
+	@JoinColumn(name = "product_id")
 	private Product product;
 
 	//
