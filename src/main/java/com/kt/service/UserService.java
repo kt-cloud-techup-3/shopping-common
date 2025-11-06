@@ -1,26 +1,29 @@
 package com.kt.service;
 
-import com.kt.dto.CustomPage;
+import com.kt.repository.UserRepository;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.kt.domain.User;
 import com.kt.dto.UserCreateRequest;
-import com.kt.repository.UserRepository;
 
 import lombok.RequiredArgsConstructor;
+
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 
 @Service
 @RequiredArgsConstructor
 public class UserService {
+
 	private final UserRepository userRepository;
 
+	@Transactional
 	public void create(UserCreateRequest request) {
-		System.out.println(request.toString());
-		var newUser = new User(
-			userRepository.selectMaxId() + 1,
+		User user = new User(
 			request.loginId(),
 			request.password(),
 			request.name(),
@@ -31,49 +34,43 @@ public class UserService {
 			LocalDateTime.now(),
 			LocalDateTime.now()
 		);
-
-		userRepository.save(newUser);
+		userRepository.save(user);
 	}
 
 	public boolean isDuplicateLoginId(String loginId) {
 		return userRepository.existsByLoginId(loginId);
 	}
 
-	public void changePassword(int id, String oldPassword, String password) {
-
-		var user = userRepository.selectById(id)
-			.orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다."));
+	@Transactional
+	public void changePassword(Long id, String oldPassword, String newPassword) {
+		User user = userRepository.findById(id).orElseThrow(
+			() -> new IllegalArgumentException("존재하지 않는 회원입니다.")
+		);
 
 		if(!user.getPassword().equals(oldPassword)) {
 			throw new IllegalArgumentException("기존 비밀번호가 일치하지 않습니다.");
 		}
-
-		userRepository.updatePassword(id, password);
+		user.updatePassword(newPassword);
 	}
 
-	public CustomPage search(int page, int size, String keyword) {
-		var pair = userRepository.selectAll(page - 1, size, keyword);
-		var pages = (int) Math.ceil((double) pair.getSecond() / size);
-
-		return new CustomPage(
-			pair.getFirst(),
-			size,
-			page,
-			pages,
-			pair.getSecond()
-		);
+	public Page<User> search(Pageable pageable, String keyword) {
+		Page<User> users = userRepository.findAllByNameContaining(keyword, pageable);
+		return users;
 	}
 
 	public User detail(Long id) {
-		return userRepository.selectById(id)
-			.orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다."));
+		return userRepository.findById(id).orElseThrow(
+			() -> new IllegalArgumentException("존재하지 않는 회원입니다.")
+		);
 	}
 
+	@Transactional
 	public void update(Long id, String name, String email, String mobile) {
-		userRepository.selectById(id)
-			.orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다."));
+		User user = userRepository.findById(id).orElseThrow(
+			() -> new IllegalArgumentException("존재하지 않는 회원입니다.")
+		);
 
-		userRepository.updateById(id, name, email, mobile);
+		user.update(name, email, mobile);
 	}
 
 }
