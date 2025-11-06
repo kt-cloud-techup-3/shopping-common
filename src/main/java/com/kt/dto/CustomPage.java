@@ -1,6 +1,6 @@
 package com.kt.dto;
 
-import com.kt.domain.User;
+import com.kt.domain.user.User;
 
 import java.util.List;
 

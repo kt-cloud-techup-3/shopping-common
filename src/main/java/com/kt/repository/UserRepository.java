@@ -1,6 +1,6 @@
 package com.kt.repository;
 
-import com.kt.domain.User;
+import com.kt.domain.user.User;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

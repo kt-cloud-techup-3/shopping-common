@@ -1,14 +1,18 @@
-package com.kt.domain;
+package com.kt.domain.user;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+
+import com.kt.common.BaseEntity;
+
+import com.kt.domain.order.Order;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -17,11 +21,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-public class User {
-
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long id;
+public class User extends BaseEntity {
 	
 	private String loginId;
 	private String password;
@@ -32,8 +32,9 @@ public class User {
 	@Enumerated(EnumType.STRING)
 	private Gender gender;
 	private LocalDate birthday;
-	private LocalDateTime createdAt;
-	private LocalDateTime updatedAt;
+
+	@OneToMany(mappedBy = "user")
+	private List<Order> orders = new ArrayList<>();
 
 	public User(String loginId,
 							String password,

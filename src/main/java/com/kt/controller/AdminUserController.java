@@ -1,7 +1,6 @@
 package com.kt.controller;
 
-import com.kt.domain.User;
-import com.kt.dto.CustomPage;
+import com.kt.domain.user.User;
 
 import com.kt.dto.UserUpdateRequest;
 import com.kt.service.UserService;
@@ -9,7 +8,6 @@ import com.kt.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
-import org.springframework.data.domain.AbstractPageRequest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;

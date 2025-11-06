@@ -6,7 +6,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import com.kt.domain.User;
+import com.kt.domain.user.User;
 import com.kt.dto.UserCreateRequest;
 
 import lombok.RequiredArgsConstructor;
