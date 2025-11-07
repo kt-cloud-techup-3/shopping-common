@@ -1,6 +1,7 @@
 package com.kt.controller;
 
 import com.kt.common.ApiResult;
+import com.kt.common.SwaggerAssistance;
 import com.kt.dto.user.UserRequest;
 import com.kt.dto.user.UserUpdatePasswordRequest;
 
@@ -26,14 +27,10 @@ import com.kt.service.UserService;
 import lombok.RequiredArgsConstructor;
 
 @Tag(name = "유저", description = "유저 관련 API")
-@ApiResponses(value = {
-	@ApiResponse(responseCode = "400", description = "유효성 검사 실패"),
-	@ApiResponse(responseCode = "500", description = "서버 에러 - 백엔드에 바로 문의 바랍니다.")
-})
 @RequestMapping("/users")
 @RequiredArgsConstructor
 @RestController
-public class UserController {
+public class UserController extends SwaggerAssistance {
 
 	private final UserService userService;
 

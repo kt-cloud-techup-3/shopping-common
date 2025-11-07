@@ -3,6 +3,7 @@ package com.kt.controller;
 import com.kt.common.ApiResult;
 
 import com.kt.common.Paging;
+import com.kt.common.SwaggerAssistance;
 import com.kt.dto.user.UserResponse;
 import com.kt.dto.user.UserUpdateRequest;
 import com.kt.service.UserService;
@@ -27,14 +28,10 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 @Tag(name = "유저 관리", description = "유저 관리 API")
-@ApiResponses(value = {
-	@ApiResponse(responseCode = "400", description = "유효성 검사 실패"),
-	@ApiResponse(responseCode = "500", description = "서버 에러 - 백엔드에 바로 문의 바랍니다.")
-})
 @RequiredArgsConstructor
 @RequestMapping("/admin/users")
 @RestController
-public class AdminUserController{
+public class AdminUserController extends SwaggerAssistance {
 	private final UserService userService;
 
 	@Operation(
