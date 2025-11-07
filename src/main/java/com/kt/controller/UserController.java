@@ -1,6 +1,7 @@
 package com.kt.controller;
 
 import com.kt.common.ApiResult;
+import com.kt.dto.user.UserRequest;
 import com.kt.dto.user.UserUpdatePasswordRequest;
 
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -9,7 +10,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -20,7 +20,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.kt.dto.user.UserCreateRequest;
 import com.kt.service.UserService;
 
 import lombok.RequiredArgsConstructor;
@@ -39,7 +38,7 @@ public class UserController {
 
 	@PostMapping
 	@ResponseStatus(HttpStatus.CREATED)
-	public ApiResult<Void> create(@Valid @RequestBody UserCreateRequest request) {
+	public ApiResult<Void> create(@Valid @RequestBody UserRequest.Create request) {
 		userService.create(request);
 		return ApiResult.ok();
 	}
