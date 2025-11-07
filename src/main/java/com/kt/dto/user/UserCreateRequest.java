@@ -1,4 +1,4 @@
-package com.kt.dto;
+package com.kt.dto.user;
 
 import com.kt.domain.user.Gender;
 
