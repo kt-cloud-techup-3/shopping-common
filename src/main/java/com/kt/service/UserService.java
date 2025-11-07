@@ -67,4 +67,8 @@ public class UserService {
 		user.update(name, email, mobile);
 	}
 
+	public void delete(Long id) {
+		userRepository.deleteById(id);
+	}
+
 }
