@@ -1,12 +1,10 @@
-package com.kt.controller;
+package com.kt.controller.user;
 
 import com.kt.common.ApiResult;
 import com.kt.common.SwaggerAssistance;
 import com.kt.dto.user.UserRequest;
 import com.kt.dto.user.UserUpdatePasswordRequest;
 
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 
