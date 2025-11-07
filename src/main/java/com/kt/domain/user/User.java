@@ -56,7 +56,7 @@ public class User extends BaseEntity {
 		this.updatedAt = updatedAt;
 	}
 
-	public void updatePassword(String newPassword) {
+	public void changePassword(String newPassword) {
 		this.password = newPassword;
 	}
 
