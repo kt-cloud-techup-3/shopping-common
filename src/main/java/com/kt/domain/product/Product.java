@@ -61,4 +61,12 @@ public class Product extends BaseEntity {
 	public void increaseStock(Long quantity) {
 		this.stock += quantity;
 	}
+
+	public boolean canProvide(Long quantity) {
+		return this.stock >= quantity;
+	}
+
+	public void mapToOrderProduct(OrderProduct orderProduct) {
+
+	}
 }
