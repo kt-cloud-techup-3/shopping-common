@@ -27,10 +27,7 @@ import java.util.List;
 public class Order extends BaseEntity {
 
 	@Embedded
-	private String receiverName;
-
-	private String receiverAddress;
-	private String receiverMobile;
+	private Receiver receiver;
 
 	@Enumerated(EnumType.STRING)
 	private OrderStatus status;
@@ -45,18 +42,17 @@ public class Order extends BaseEntity {
 	private List<OrderProduct> orderProducts = new ArrayList<>();
 
 	public Order(Receiver receiver, User user) {
-		this.receiverName = receiver.getName();
-		this.receiverAddress = receiver.getAddress();
-		this.receiverMobile = receiver.getMobile();
+		this.receiver = receiver;
 		this.user = user;
 		this.deliveredAt = LocalDateTime.now().plusDays(3);
 
 	}
 
-	public static Order create(Receiver receiver,
-														 User user) {
+	public static Order create(
+		Receiver receiver,
+		User user
+	) {
 		return new Order(receiver, user);
-
 	}
 
 	public void mapToOrderProduct(OrderProduct orderProduct) {

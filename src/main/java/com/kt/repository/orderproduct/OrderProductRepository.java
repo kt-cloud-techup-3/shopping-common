@@ -1,4 +1,4 @@
-package com.kt.repository;
+package com.kt.repository.orderproduct;
 
 import com.kt.domain.orderproduct.OrderProduct;
 
