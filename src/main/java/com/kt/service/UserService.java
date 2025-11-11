@@ -3,7 +3,7 @@ package com.kt.service;
 import com.kt.common.ErrorCode;
 import com.kt.common.Preconditions;
 import com.kt.dto.user.UserRequest;
-import com.kt.repository.UserRepository;
+import com.kt.repository.user.UserRepository;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

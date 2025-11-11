@@ -1,4 +1,4 @@
-package com.kt.repository;
+package com.kt.repository.user;
 
 import com.kt.common.CustomException;
 import com.kt.common.ErrorCode;

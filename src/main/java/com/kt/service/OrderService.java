@@ -5,16 +5,13 @@ import com.kt.common.Preconditions;
 import com.kt.domain.order.Order;
 import com.kt.domain.order.Receiver;
 import com.kt.domain.orderproduct.OrderProduct;
-import com.kt.domain.product.Product;
-import com.kt.domain.user.User;
-import com.kt.repository.OrderProductRepository;
-import com.kt.repository.OrderRepository;
-import com.kt.repository.ProductRepository;
-import com.kt.repository.UserRepository;
+import com.kt.repository.orderproduct.OrderProductRepository;
+import com.kt.repository.order.OrderRepository;
+import com.kt.repository.product.ProductRepository;
+import com.kt.repository.user.UserRepository;
 
 import lombok.RequiredArgsConstructor;
 
-import org.aspectj.weaver.ast.Or;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,7 +24,6 @@ public class OrderService {
 	private final OrderRepository orderRepository;
 	private final OrderProductRepository orderProductRepository;
 
-	//주문생성
 	public void create(
 		Long userId,
 		Long productId,

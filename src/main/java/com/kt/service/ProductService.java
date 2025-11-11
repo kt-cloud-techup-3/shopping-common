@@ -1,7 +1,7 @@
 package com.kt.service;
 
 import com.kt.domain.product.Product;
-import com.kt.repository.ProductRepository;
+import com.kt.repository.product.ProductRepository;
 
 import lombok.RequiredArgsConstructor;
 
