@@ -6,6 +6,7 @@ import com.kt.domain.orderproduct.OrderProduct;
 import com.kt.domain.product.Product;
 import com.kt.domain.user.User;
 
+import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -25,7 +26,9 @@ import java.util.List;
 @Getter
 public class Order extends BaseEntity {
 
+	@Embedded
 	private String receiverName;
+
 	private String receiverAddress;
 	private String receiverMobile;
 
@@ -40,6 +43,25 @@ public class Order extends BaseEntity {
 
 	@OneToMany(mappedBy = "order")
 	private List<OrderProduct> orderProducts = new ArrayList<>();
+
+	public Order(Receiver receiver, User user) {
+		this.receiverName = receiver.getName();
+		this.receiverAddress = receiver.getAddress();
+		this.receiverMobile = receiver.getMobile();
+		this.user = user;
+		this.deliveredAt = LocalDateTime.now().plusDays(3);
+
+	}
+
+	public static Order create(Receiver receiver,
+														 User user) {
+		return new Order(receiver, user);
+
+	}
+
+	public void mapToOrderProduct(OrderProduct orderProduct) {
+		this.orderProducts.add(orderProduct);
+	}
 
 	/*
 	* todo..
