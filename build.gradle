@@ -6,7 +6,7 @@ plugins {
 
 group = 'com.kt'
 version = '0.0.1-SNAPSHOT'
-description = 'Demo project for Spring Boot'
+description = 'KT-TECHUP Shopping Project'
 
 java {
 	toolchain {
@@ -25,13 +25,12 @@ repositories {
 }
 
 dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter-web'
 	implementation 'org.springframework.boot:spring-boot-starter-data-jdbc'
-	implementation 'org.springframework.boot:spring-boot-starter-web'
 
 	compileOnly 'org.projectlombok:lombok'
 
-	runtimeOnly 'com.mysql:mysql-connector-j'
-	runtimeOnly 'com.h2database:h2'
+    runtimeOnly 'com.mysql:mysql-connector-j'
 
 	annotationProcessor 'org.projectlombok:lombok'
 
