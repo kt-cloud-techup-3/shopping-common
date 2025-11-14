@@ -1,5 +1,5 @@
 ---
-name: feature - template
+name: bug | etc- template
 about: Describe this issue template's purpose here.
 title: "[BUG | etc] 000 기능 개선"
 labels: ''
