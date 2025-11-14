@@ -1,7 +1,7 @@
 ---
-name: feature-template
+name: feature - template
 about: Describe this issue template's purpose here.
-title: "[FEAT | etc] 000 기능 개발"
+title: "[FEAT] 000 기능 개발"
 labels: ''
 assignees: ''
 
@@ -17,3 +17,6 @@ assignees: ''
 - [ ] TODO
 
 ## 참고할만한 자료(선택)
+
+<!-- 추가하려는 기능에 대해 간결하게 설명해주세요 -->
+<!-- 작성 후 Assignees, Labels 등록 -->
