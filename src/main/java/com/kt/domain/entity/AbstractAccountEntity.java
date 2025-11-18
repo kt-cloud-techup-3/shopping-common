@@ -2,6 +2,7 @@ package com.kt.domain.entity;
 
 import com.kt.domain.constant.Gender;
 import com.kt.domain.constant.UserRole;
+import com.kt.domain.constant.UserStatus;
 import com.kt.domain.entity.common.BaseEntity;
 
 import jakarta.persistence.Column;
@@ -40,5 +41,8 @@ public abstract class AbstractAccountEntity extends BaseEntity {
 	@Enumerated(EnumType.STRING)
 	protected Gender gender;
 
+	@Column(nullable = false)
+	@Enumerated(EnumType.STRING)
+	protected UserStatus status;
 
 }

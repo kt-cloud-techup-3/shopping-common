@@ -6,6 +6,8 @@ import com.kt.domain.constant.Gender;
 
 import com.kt.domain.constant.UserRole;
 
+import com.kt.domain.constant.UserStatus;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
@@ -37,6 +39,7 @@ public class CourierEntity extends AbstractAccountEntity {
 		this.password = password;
 		this.gender = gender;
 		this.role = UserRole.COURIER;
+		this.status = UserStatus.ENABLED;
 		this.workStatus = CourierWorkStatus.RESTING;
 	}
 
