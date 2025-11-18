@@ -28,10 +28,6 @@ public class UserEntity extends AbstractAccountEntity {
 	@Column(nullable = false)
 	private String mobile;
 
-	@Column(nullable = false)
-	@Enumerated(EnumType.STRING)
-	private UserStatus status;
-
 	protected UserEntity(
 		String name,
 		String email,
