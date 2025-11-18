@@ -27,8 +27,8 @@ public class OrderEntity extends BaseEntity {
 	private UserEntity orderBy;
 
 	protected OrderEntity(
-		final ReceiverVO receiverVO,
-		final UserEntity orderBy
+		ReceiverVO receiverVO,
+		UserEntity orderBy
 	) {
 		this.receiverVO = receiverVO;
 		this.orderBy = orderBy;

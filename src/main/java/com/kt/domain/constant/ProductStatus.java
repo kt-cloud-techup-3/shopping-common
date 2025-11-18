@@ -4,9 +4,10 @@ import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 public enum ProductStatus {
-	// 상품 상태 뭐뭐 있나요..
-	AVAILABLE("Available"),
-	DELETED("Deleted")
-	;
+	ACTIVATED("판매중"),
+	SOLD_OUT("품절"),
+	IN_ACTIVATED("판매중지"),
+	DELETED("삭제");
+
 	private final String description;
 }

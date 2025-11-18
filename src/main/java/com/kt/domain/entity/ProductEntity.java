@@ -7,6 +7,8 @@ import com.kt.domain.entity.common.BaseEntity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -25,13 +27,14 @@ public class ProductEntity extends BaseEntity {
 	private Long stock;
 
 	@Column(nullable = false)
+	@Enumerated(EnumType.STRING)
 	private ProductStatus status;
 
 	protected ProductEntity(
-		final String name,
-		final Long price,
-		final Long stock,
-		final ProductStatus status
+		String name,
+		Long price,
+		Long stock,
+		ProductStatus status
 	) {
 		this.name = name;
 		this.price = price;
