@@ -1,8 +1,13 @@
 package com.kt.domain.constant;
 
+import lombok.RequiredArgsConstructor;
+
+@RequiredArgsConstructor
 public enum UserStatus {
-	ENABLED,
-	DISABLED,
-	RETIRED,
-	DELETED
+	ENABLED("활성"),
+	DISABLED("비활성"),
+	RETIRED("탈퇴"),
+	DELETED("삭제");
+
+	private final String description;
 }

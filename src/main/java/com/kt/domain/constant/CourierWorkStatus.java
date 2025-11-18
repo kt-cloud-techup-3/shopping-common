@@ -1,6 +1,11 @@
 package com.kt.domain.constant;
 
+import lombok.RequiredArgsConstructor;
+
+@RequiredArgsConstructor
 public enum CourierWorkStatus {
-	WORKING,
-	RESTING
+	WORKING("근무중"),
+	RESTING("근무종료");
+
+	private final String description;
 }
