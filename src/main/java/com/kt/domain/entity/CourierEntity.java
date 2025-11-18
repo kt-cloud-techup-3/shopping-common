@@ -17,7 +17,7 @@ import lombok.NoArgsConstructor;
 import static lombok.AccessLevel.*;
 
 @Getter
-@Entity(name = "\"user\"")
+@Entity(name = "courier")
 @NoArgsConstructor(access = PROTECTED)
 @DiscriminatorValue("COURIER")
 public class CourierEntity extends AbstractAccountEntity {
