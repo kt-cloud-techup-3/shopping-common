@@ -4,15 +4,18 @@ import com.kt.domain.constant.Gender;
 import com.kt.domain.constant.UserRole;
 import com.kt.domain.constant.UserStatus;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.OneToMany;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+import java.util.List;
 
 import static lombok.AccessLevel.*;
 
@@ -27,6 +30,14 @@ public class UserEntity extends AbstractAccountEntity {
 
 	@Column(nullable = false)
 	private String mobile;
+
+	@OneToMany(
+		mappedBy = "createdBy",
+		cascade = CascadeType.REMOVE,
+		orphanRemoval = true
+	)
+	List<AddressEntity> addresses;
+
 
 	protected UserEntity(
 		String name,
