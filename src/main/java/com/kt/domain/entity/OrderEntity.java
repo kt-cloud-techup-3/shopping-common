@@ -2,7 +2,10 @@ package com.kt.domain.entity;
 
 import static lombok.AccessLevel.*;
 
+import com.kt.domain.constant.message.ErrorCode;
 import com.kt.domain.entity.common.BaseEntity;
+import com.kt.exception.FieldValidationException;
+import com.kt.util.ValidationUtil;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;
@@ -38,6 +41,13 @@ public class OrderEntity extends BaseEntity {
 		final ReceiverVO receiverVO,
 		final UserEntity orderBy
 	) {
+		ValidationUtil.validateNotBlank(receiverVO.getName(), "receiver.name");
+		ValidationUtil.validateNotBlank(receiverVO.getMobile(), "receiver.mobile");
+		ValidationUtil.validateNotBlank(receiverVO.getCity(), "receiver.city");
+		ValidationUtil.validateNotBlank(receiverVO.getDistrict(), "receiver.district");
+		ValidationUtil.validateNotBlank(receiverVO.getRoad_address(), "receiver.road_address");
+		ValidationUtil.validateNotBlank(receiverVO.getDetail(), "receiver.detail");
+		if ( orderBy == null ) throw new FieldValidationException(ErrorCode.ORDER_NOT_FOUND);
 		return new OrderEntity(
 			receiverVO,
 			orderBy

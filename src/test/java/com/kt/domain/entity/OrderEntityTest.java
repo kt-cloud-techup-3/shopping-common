@@ -8,10 +8,14 @@ import java.time.LocalDate;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.NullAndEmptySource;
+import org.junit.jupiter.params.provider.NullSource;
 import org.springframework.test.context.ActiveProfiles;
 
 import com.kt.domain.constant.Gender;
 import com.kt.domain.constant.UserRole;
+import com.kt.exception.FieldValidationException;
 
 @ActiveProfiles("test")
 class OrderEntityTest {
@@ -47,5 +51,159 @@ class OrderEntityTest {
 		);
 		assertThat(order.getReceiverVO()).isEqualTo(receiver);
 		assertThat(order.getOrderBy()).isEqualTo(testUser);
+	}
+
+	@ParameterizedTest
+	@NullAndEmptySource
+	void 객체생성_실패__Receiver_name_null_또는_공백(String name){
+			assertThrowsExactly(
+				FieldValidationException.class,
+				() -> {
+					ReceiverVO receiver = new ReceiverVO(
+						name,
+						"010-1234-5678",
+						"강원도",
+						"원주시",
+						"행구로",
+						"주소설명"
+					);
+					OrderEntity order = OrderEntity.create(
+						receiver,
+						testUser
+					);
+				}
+			);
+	}
+
+	@ParameterizedTest
+	@NullAndEmptySource
+	void 객체생성_실패__Receiver_mobile_null_또는_공백(String mobile){
+		assertThrowsExactly(
+			FieldValidationException.class,
+			() -> {
+				ReceiverVO receiver = new ReceiverVO(
+					"수신자테스터",
+					mobile,
+					"강원도",
+					"원주시",
+					"행구로",
+					"주소설명"
+				);
+				OrderEntity order = OrderEntity.create(
+					receiver,
+					testUser
+				);
+			}
+		);
+	}
+
+	@ParameterizedTest
+	@NullAndEmptySource
+	void 객체생성_실패__Receiver_city_null_또는_공백(String city){
+		assertThrowsExactly(
+			FieldValidationException.class,
+			() -> {
+				ReceiverVO receiver = new ReceiverVO(
+					"수신자테스터",
+					"010-1234-5678",
+					city,
+					"원주시",
+					"행구로",
+					"주소설명"
+				);
+				OrderEntity order = OrderEntity.create(
+					receiver,
+					testUser
+				);
+			}
+		);
+	}
+
+	@ParameterizedTest
+	@NullAndEmptySource
+	void 객체생성_실패__Receiver_district_null_또는_공백(String district){
+		assertThrowsExactly(
+			FieldValidationException.class,
+			() -> {
+				ReceiverVO receiver = new ReceiverVO(
+					"수신자테스터",
+					"010-1234-5678",
+					"강원도",
+					district,
+					"행구로",
+					"주소설명"
+				);
+				OrderEntity order = OrderEntity.create(
+					receiver,
+					testUser
+				);
+			}
+		);
+	}
+
+	@ParameterizedTest
+	@NullAndEmptySource
+	void 객체생성_실패__Receiver_roadAddress_null_또는_공백(String road_address){
+		assertThrowsExactly(
+			FieldValidationException.class,
+			() -> {
+				ReceiverVO receiver = new ReceiverVO(
+					"수신자테스터",
+					"010-1234-5678",
+					"강원도",
+					"원주시",
+					road_address,
+					"주소설명"
+				);
+				OrderEntity order = OrderEntity.create(
+					receiver,
+					testUser
+				);
+			}
+		);
+	}
+
+	@ParameterizedTest
+	@NullAndEmptySource
+	void 객체생성_실패__Receiver_detail_null_또는_공백(String detail){
+		assertThrowsExactly(
+			FieldValidationException.class,
+			() -> {
+				ReceiverVO receiver = new ReceiverVO(
+					"수신자테스터",
+					"010-1234-5678",
+					"강원도",
+					"원주시",
+					"행구로",
+					detail
+				);
+				OrderEntity order = OrderEntity.create(
+					receiver,
+					testUser
+				);
+			}
+		);
+	}
+
+	@ParameterizedTest
+	@NullSource
+	void 객체생성_실패__UserEntity_null(UserEntity user){
+		assertThrowsExactly(
+			FieldValidationException.class,
+			() -> {
+				ReceiverVO receiver = new ReceiverVO(
+					"수신자테스터",
+					"010-1234-5678",
+					"강원도",
+					"원주시",
+					"행구로",
+					"주소설명"
+				);
+				OrderEntity order = OrderEntity.create(
+					receiver,
+					user
+				);
+			}
+		);
 	}
 }
