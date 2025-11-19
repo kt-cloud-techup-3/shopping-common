@@ -1,6 +1,6 @@
 package com.kt.config;
 
-import org.springframework.boot.context.properties.EnableConfigurationProperties; // JwtProperties 등록을 위해 필요합니다.
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
