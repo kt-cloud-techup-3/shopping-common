@@ -33,26 +33,24 @@ public class ShippingDetailEntity extends BaseEntity {
 
 	@ManyToOne
 	@JoinColumn(name = "order_product_id", nullable = false)
-	private OrderProductEntity orderProductEntity;
+	private OrderProductEntity orderProduct;
 
 	protected ShippingDetailEntity(
-		ShippingStatus shippingStatus,
 		Instant arrivedAt,
 		CourierEntity courier,
 		OrderProductEntity orderProduct
 	) {
-		this.shippingStatus = shippingStatus;
+		this.shippingStatus = ShippingStatus.PENDING_SHIPMENT;
 		this.arrivedAt = arrivedAt;
 		this.courierEntity = courier;
-		this.orderProductEntity = orderProduct;
+		this.orderProduct = orderProduct;
 	}
 
 	public static ShippingDetailEntity create(
-		final ShippingStatus status,
 		final Instant arrivedAt,
 		final CourierEntity courier,
 		final OrderProductEntity orderProduct
 	) {
-		return new ShippingDetailEntity(status, arrivedAt, courier, orderProduct);
+		return new ShippingDetailEntity(arrivedAt, courier, orderProduct);
 	}
 }
