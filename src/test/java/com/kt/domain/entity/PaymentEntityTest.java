@@ -62,17 +62,23 @@ class PaymentEntityTest {
 
 	@Test
 	void 객체생성_성공(){
-		PaymentEntity paymentEntity = PaymentEntity.create(
+		PaymentEntity comparisonProduct = PaymentEntity.create(
 			50000L,
 			3000L,
 			orderProductEntity
 		);
 
-		assertThat(paymentEntity).isNotNull();
+		PaymentEntity subjectProduct = PaymentEntity.create(
+			50000L,
+			3000L,
+			orderProductEntity
+		);
 
-		assertThat(paymentEntity)
+		assertThat(subjectProduct).isNotNull();
+
+		assertThat(subjectProduct)
 			.usingRecursiveComparison()
 			.ignoringFields()
-			.isEqualTo(paymentEntity);
+			.isEqualTo(comparisonProduct);
 	}
 }
