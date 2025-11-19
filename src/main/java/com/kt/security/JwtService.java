@@ -49,12 +49,8 @@ public class JwtService {
 			return true;
 		} catch (ExpiredJwtException e) {
 			log.warn("JWT 토큰 만료: {}", e.getMessage());
-		} catch (UnsupportedJwtException e) {
-			log.error("지원되지 않는 JWT 토큰: {}", e.getMessage());
-		} catch (MalformedJwtException e) {
-			log.error("잘못된 형식의 JWT 토큰: {}", e.getMessage());
 		} catch (IllegalArgumentException e) {
-			log.error("JWT 클레임 문자열이 비어있습니다: {}", e.getMessage());
+			log.error("유효하지 않은 JWT 토큰: {}", e.getMessage());
 		}
 		return false;
 	}
