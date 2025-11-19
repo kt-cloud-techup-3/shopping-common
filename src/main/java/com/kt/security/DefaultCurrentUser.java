@@ -8,7 +8,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import com.kt.domain.constant.UserRole;
+import com.kt.constant.UserRole;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
