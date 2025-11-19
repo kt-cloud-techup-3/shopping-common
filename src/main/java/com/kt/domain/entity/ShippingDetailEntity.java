@@ -29,7 +29,7 @@ public class ShippingDetailEntity extends BaseEntity {
 
 	@ManyToOne
 	@JoinColumn(name = "courier_id", nullable = false)
-	private CourierEntity courierEntity;
+	private CourierEntity courier;
 
 	@ManyToOne
 	@JoinColumn(name = "order_product_id", nullable = false)
@@ -42,7 +42,7 @@ public class ShippingDetailEntity extends BaseEntity {
 	) {
 		this.shippingStatus = ShippingStatus.PENDING_SHIPMENT;
 		this.arrivedAt = arrivedAt;
-		this.courierEntity = courier;
+		this.courier = courier;
 		this.orderProduct = orderProduct;
 	}
 

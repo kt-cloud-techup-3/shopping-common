@@ -19,27 +19,27 @@ public class CartEntity extends BaseEntity {
 
 	@ManyToOne
 	@JoinColumn(name = "user_id", nullable = false)
-	private UserEntity userId;
+	private UserEntity user;
 
 	@ManyToOne
 	@JoinColumn(name = "product_id", nullable = false)
-	private ProductEntity productId;
+	private ProductEntity product;
 
 	protected CartEntity(
 		Long quantity,
-		UserEntity userId,
-		ProductEntity productId
+		UserEntity user,
+		ProductEntity product
 	) {
 		this.quantity = quantity;
-		this.userId = userId;
-		this.productId = productId;
+		this.user = user;
+		this.product = product;
 	}
 
 	public static CartEntity create(
 		final Long quantity,
-		final UserEntity userId,
-		final ProductEntity productId
+		final UserEntity user,
+		final ProductEntity product
 	) {
-		return new CartEntity(quantity, userId, productId);
+		return new CartEntity(quantity, user, product);
 	}
 }
