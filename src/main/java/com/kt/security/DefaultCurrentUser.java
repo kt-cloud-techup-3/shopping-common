@@ -2,6 +2,7 @@ package com.kt.security;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.UUID;
 
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -18,12 +19,12 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class DefaultCurrentUser implements UserDetails, CurrentUser {
 
-	private Long id;
+	private UUID id;
 	private String loginId;
 	private UserRole role;
 
 	@Override
-	public Long getId() {
+	public UUID getId() {
 		return id;
 	}
 

@@ -1,6 +1,7 @@
 package com.kt.security;
 
 import java.util.Date;
+import java.util.UUID;
 
 import org.springframework.stereotype.Component;
 
@@ -69,7 +70,7 @@ public class JwtService {
 	public DefaultCurrentUser parseClaimsToCurrentUser(String token) {
 		Claims claims = parseClaims(token);
 
-		Long id = Long.valueOf(claims.getId());
+		UUID id = UUID.fromString(claims.getId());
 		String loginId = claims.get(LOGIN_ID_CLAIM_KEY, String.class);
 		UserRole role = UserRole.valueOf(claims.get(ROLE_CLAIM_KEY, String.class));
 

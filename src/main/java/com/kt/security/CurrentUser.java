@@ -1,7 +1,9 @@
 package com.kt.security;
 
+import java.util.UUID;
+
 public interface CurrentUser {
-	Long getId();
+	UUID getId();
 
 	String getLoginId();
 }
