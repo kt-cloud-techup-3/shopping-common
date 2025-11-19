@@ -1,12 +1,11 @@
-package com.kt.domain.constant;
+package com.kt.constant;
 
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
-public enum Gender {
-
-	MALE("남자"),
-	FEMALE("여자");
+public enum ShippingType {
+	DELIVERING("배송"),
+	RETURNING("반품");
 
 	private final String description;
 }

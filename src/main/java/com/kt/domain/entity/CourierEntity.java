@@ -1,12 +1,11 @@
 package com.kt.domain.entity;
 
-import com.kt.domain.constant.CourierWorkStatus;
+import static lombok.AccessLevel.*;
 
-import com.kt.domain.constant.Gender;
-
-import com.kt.domain.constant.UserRole;
-
-import com.kt.domain.constant.UserStatus;
+import com.kt.constant.CourierWorkStatus;
+import com.kt.constant.Gender;
+import com.kt.constant.UserRole;
+import com.kt.constant.UserStatus;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.DiscriminatorValue;
@@ -15,8 +14,6 @@ import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
-import static lombok.AccessLevel.*;
 
 @Getter
 @Entity(name = "courier")

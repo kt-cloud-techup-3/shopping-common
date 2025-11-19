@@ -1,8 +1,10 @@
 package com.kt.domain.entity;
 
-import com.kt.domain.constant.Gender;
-import com.kt.domain.constant.UserRole;
-import com.kt.domain.constant.UserStatus;
+import static lombok.AccessLevel.*;
+
+import com.kt.constant.Gender;
+import com.kt.constant.UserRole;
+import com.kt.constant.UserStatus;
 import com.kt.domain.entity.common.BaseEntity;
 
 import jakarta.persistence.Column;
@@ -14,8 +16,6 @@ import jakarta.persistence.Inheritance;
 import jakarta.persistence.InheritanceType;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
-import static lombok.AccessLevel.*;
 
 @Getter
 @Entity(name = "account")

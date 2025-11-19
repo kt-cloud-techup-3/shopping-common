@@ -1,8 +1,13 @@
 package com.kt.domain.entity;
 
-import com.kt.domain.constant.Gender;
-import com.kt.domain.constant.UserRole;
-import com.kt.domain.constant.UserStatus;
+import static lombok.AccessLevel.*;
+
+import java.time.LocalDate;
+import java.util.List;
+
+import com.kt.constant.Gender;
+import com.kt.constant.UserRole;
+import com.kt.constant.UserStatus;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -12,22 +17,11 @@ import jakarta.persistence.OneToMany;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDate;
-import java.util.List;
-
-import static lombok.AccessLevel.*;
-
 @Getter
 @Entity(name = "\"user\"")
 @NoArgsConstructor(access = PROTECTED)
 @DiscriminatorValue("USER")
 public class UserEntity extends AbstractAccountEntity {
-
-	@Column(nullable = false)
-	private LocalDate birth;
-
-	@Column(nullable = false)
-	private String mobile;
 
 	@OneToMany(
 		mappedBy = "createdBy",
@@ -35,7 +29,10 @@ public class UserEntity extends AbstractAccountEntity {
 		orphanRemoval = true
 	)
 	List<AddressEntity> addresses;
-
+	@Column(nullable = false)
+	private LocalDate birth;
+	@Column(nullable = false)
+	private String mobile;
 
 	protected UserEntity(
 		String name,
