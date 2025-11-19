@@ -20,7 +20,7 @@ public class JwtService {
 	private final JwtProperties jwtProperties;
 	private static final String ROLE_CLAIM_KEY = "role";
 	private static final String EMAIL_CLAIM_KEY = "email";
-
+	// 수정 2
 	public String issue(UUID id, String email, UserRole role, Date expiration) {
 		return Jwts.builder()
 			.subject(id.toString())
