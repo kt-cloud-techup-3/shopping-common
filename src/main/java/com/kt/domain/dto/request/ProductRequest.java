@@ -7,4 +7,11 @@ public class ProductRequest {
 		Long stock
 	) {
 	}
+
+	public record Update(
+		String name,
+		Long price,
+		Long stock
+	) {
+	}
 }

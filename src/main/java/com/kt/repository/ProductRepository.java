@@ -1,5 +1,8 @@
 package com.kt.repository;
 
+import java.util.Optional;
+import java.util.UUID;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -10,7 +13,9 @@ import com.kt.exception.BaseException;
 @Repository
 public interface ProductRepository extends JpaRepository<ProductEntity, Long> {
 
-	default ProductEntity findByIdOrThrow(Long productId) {
+	default ProductEntity findByIdOrThrow(UUID productId) {
 		return findById(productId).orElseThrow(() -> new BaseException(ErrorCode.PRODUCT_NOT_FOUND));
 	}
+
+	Optional<ProductEntity> findById(UUID productId);
 }
