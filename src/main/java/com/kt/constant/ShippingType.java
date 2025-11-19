@@ -4,8 +4,8 @@ import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 public enum ShippingType {
-	DELIVERING("상품배송"),
-	RETURNING("반품배송");
+	DELIVERING("배송"),
+	RETURNING("반품");
 
 	private final String description;
 }
