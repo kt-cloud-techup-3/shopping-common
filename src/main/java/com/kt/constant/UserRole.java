@@ -1,4 +1,4 @@
-package com.kt.domain.constant;
+package com.kt.constant;
 
 import lombok.RequiredArgsConstructor;
 
@@ -9,6 +9,6 @@ public enum UserRole {
 	MEMBER("회원"),
 	COURIER("기사");
 
-  private final String description;
+	private final String description;
 
 }

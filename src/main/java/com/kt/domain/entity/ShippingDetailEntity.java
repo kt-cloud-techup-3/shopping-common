@@ -2,7 +2,7 @@ package com.kt.domain.entity;
 
 import java.time.Instant;
 
-import com.kt.domain.constant.ShippingStatus;
+import com.kt.constant.ShippingStatus;
 import com.kt.domain.entity.common.BaseEntity;
 
 import jakarta.persistence.Column;

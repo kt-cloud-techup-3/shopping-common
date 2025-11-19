@@ -1,4 +1,4 @@
-package com.kt.domain.constant;
+package com.kt.constant;
 
 import lombok.RequiredArgsConstructor;
 

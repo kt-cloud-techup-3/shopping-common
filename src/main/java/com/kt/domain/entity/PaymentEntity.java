@@ -1,6 +1,6 @@
 package com.kt.domain.entity;
 
-import com.kt.domain.constant.PaymentStatus;
+import com.kt.constant.PaymentStatus;
 import com.kt.domain.entity.common.BaseEntity;
 
 import jakarta.persistence.Column;
