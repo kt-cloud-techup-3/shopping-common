@@ -13,8 +13,8 @@ import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.junit.jupiter.params.provider.NullSource;
 import org.springframework.test.context.ActiveProfiles;
 
-import com.kt.domain.constant.Gender;
-import com.kt.domain.constant.UserRole;
+import com.kt.constant.Gender;
+import com.kt.constant.UserRole;
 import com.kt.exception.FieldValidationException;
 
 @ActiveProfiles("test")

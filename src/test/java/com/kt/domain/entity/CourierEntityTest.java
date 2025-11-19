@@ -6,7 +6,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
 import org.springframework.test.context.ActiveProfiles;
 
-import com.kt.domain.constant.Gender;
+import com.kt.constant.Gender;
 
 @ActiveProfiles("test")
 class CourierEntityTest {

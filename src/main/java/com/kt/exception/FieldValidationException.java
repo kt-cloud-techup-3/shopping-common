@@ -1,6 +1,6 @@
 package com.kt.exception;
 
-import com.kt.domain.constant.message.ErrorCode;
+import com.kt.constant.message.ErrorCode;
 
 import lombok.Getter;
 

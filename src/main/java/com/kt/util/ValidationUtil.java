@@ -2,7 +2,7 @@ package com.kt.util;
 
 import java.text.MessageFormat;
 
-import com.kt.domain.constant.message.ErrorCode;
+import com.kt.constant.message.ErrorCode;
 import com.kt.exception.FieldValidationException;
 
 import org.springframework.util.StringUtils;

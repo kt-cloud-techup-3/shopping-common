@@ -6,7 +6,7 @@ import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.test.context.ActiveProfiles;
 
-import com.kt.domain.constant.ProductStatus;
+import com.kt.constant.ProductStatus;
 
 @ActiveProfiles("test")
 class ProductEntityTest {

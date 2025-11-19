@@ -10,8 +10,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.test.context.ActiveProfiles;
 
-import com.kt.domain.constant.Gender;
-import com.kt.domain.constant.UserRole;
+import com.kt.constant.Gender;
+import com.kt.constant.UserRole;
 
 @ActiveProfiles("test")
 class AddressEntityTest {

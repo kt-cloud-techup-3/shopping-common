@@ -1,4 +1,4 @@
-package com.kt.domain.constant.message;
+package com.kt.constant.message;
 
 import java.text.MessageFormat;
 
