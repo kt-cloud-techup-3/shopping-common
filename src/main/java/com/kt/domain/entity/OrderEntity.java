@@ -3,6 +3,7 @@ package com.kt.domain.entity;
 import static lombok.AccessLevel.*;
 
 import com.kt.domain.entity.common.BaseEntity;
+import com.kt.util.ValidationUtil;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;

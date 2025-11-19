@@ -2,11 +2,22 @@ server:
   port: 8080
 
 spring:
+  application:
+    name: shopping
   datasource:
     url: ${SPRING_DATASOURCE_URL}
     driver-class-name: com.mysql.cj.jdbc.Driver
     username: root
     password: ${SPRING_DATASOURCE_PASSWORD}
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        format_sql: org.hibernate.dialect.MySQLDialect
+        jdbc:
+          time_zone: Asia/Seoul
+    show_sql: true
 
 jwt:
   secret: ${kt.jwt.secret:kt-cloud-tech-up-shopping-202511171107}

@@ -6,9 +6,13 @@ import com.kt.domain.entity.common.BaseEntity;
 import jakarta.persistence.Entity;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Getter
+@NoArgsConstructor
+@AllArgsConstructor
 @Entity(name = "order_product")
 public class OrderProductEntity extends BaseEntity {
 	private Long quantity;
