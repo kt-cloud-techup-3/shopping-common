@@ -30,6 +30,13 @@ public class OrderEntity extends BaseEntity {
 		ReceiverVO receiverVO,
 		UserEntity orderBy
 	) {
+		ValidationUtil.validateNotBlank(receiverVO.getName(), "ReceiverVO.name");
+		ValidationUtil.validateNotBlank(receiverVO.getMobile(), "ReceiverVO.mobile");
+		ValidationUtil.validateNotBlank(receiverVO.getCity(), "ReceiverVO.city");
+		ValidationUtil.validateNotBlank(receiverVO.getDistrict(), "ReceiverVO.district");
+		ValidationUtil.validateNotBlank(receiverVO.getRoad_address(), "ReceiverVO.road_address");
+		ValidationUtil.validateNotBlank(receiverVO.getDetail(), "ReceiverVO.detail");
+		ValidationUtil.validateNotNullInstance(orderBy, "OrderEntity");
 		this.receiverVO = receiverVO;
 		this.orderBy = orderBy;
 	}
@@ -38,13 +45,6 @@ public class OrderEntity extends BaseEntity {
 		final ReceiverVO receiverVO,
 		final UserEntity orderBy
 	) {
-		ValidationUtil.validateNotBlank(receiverVO.getName(), "ReceiverVO.name");
-		ValidationUtil.validateNotBlank(receiverVO.getMobile(), "ReceiverVO.mobile");
-		ValidationUtil.validateNotBlank(receiverVO.getCity(), "ReceiverVO.city");
-		ValidationUtil.validateNotBlank(receiverVO.getDistrict(), "ReceiverVO.district");
-		ValidationUtil.validateNotBlank(receiverVO.getRoad_address(), "ReceiverVO.road_address");
-		ValidationUtil.validateNotBlank(receiverVO.getDetail(), "ReceiverVO.detail");
-		ValidationUtil.validateNotNullInstance(orderBy, "OrderEntity");
 		return new OrderEntity(
 			receiverVO,
 			orderBy
