@@ -48,14 +48,15 @@ public class SecurityConfig {
 
 			// TODO: 인증 실패시 커스텀 예외 처리 핸들러 등록
 
-			.authorizeHttpRequests(auth -> auth
-				.requestMatchers(SecurityPath.PUBLIC).permitAll()
-				.requestMatchers(SecurityPath.AUTHENTICATED).authenticated()
-				.requestMatchers(SecurityPath.MEMBER).hasRole("MEMBER")
-				.requestMatchers(SecurityPath.ADMIN).hasRole("ADMIN")
-				.requestMatchers(SecurityPath.COURIER).hasRole("COURIER")
-				.anyRequest().authenticated()
-			)
+			.authorizeHttpRequests(auth -> {
+				auth.requestMatchers(SecurityPath.PUBLIC).permitAll();
+				auth.requestMatchers(SecurityPath.AUTHENTICATED).authenticated();
+
+				SecurityPath.ROLE_PATHS.forEach((role, paths) ->
+					auth.requestMatchers(paths).hasAnyAuthority(role)
+				);
+				auth.anyRequest().authenticated();
+			})
 			.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 
 		return http.build();
