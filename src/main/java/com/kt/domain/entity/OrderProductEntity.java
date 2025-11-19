@@ -1,6 +1,6 @@
 package com.kt.domain.entity;
 
-import com.kt.domain.constant.OrderProductStatus;
+import com.kt.constant.OrderProductStatus;
 import com.kt.domain.entity.common.BaseEntity;
 
 import jakarta.persistence.Entity;

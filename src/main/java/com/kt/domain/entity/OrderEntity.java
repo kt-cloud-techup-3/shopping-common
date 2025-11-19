@@ -23,7 +23,6 @@ public class OrderEntity extends BaseEntity {
 
 	@ManyToOne
 	@JoinColumn(name = "order_by", nullable = false)
-	@Column(nullable = false)
 	private UserEntity orderBy;
 
 	protected OrderEntity(

@@ -2,7 +2,7 @@ package com.kt.domain.entity;
 
 import static lombok.AccessLevel.*;
 
-import com.kt.domain.constant.ProductStatus;
+import com.kt.constant.ProductStatus;
 import com.kt.domain.entity.common.BaseEntity;
 
 import jakarta.persistence.Column;
