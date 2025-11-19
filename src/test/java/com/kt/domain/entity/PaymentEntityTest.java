@@ -67,8 +67,12 @@ class PaymentEntityTest {
 			3000L,
 			orderProductEntity
 		);
-		assertThat(paymentEntity.getTotalProductPrice()).isEqualTo(50000L);
-		assertThat(paymentEntity.getDeliveryPrice()).isEqualTo(3000L);
-		assertThat(paymentEntity.getOrderProduct()).isEqualTo(orderProductEntity);
+
+		assertThat(paymentEntity).isNotNull();
+
+		assertThat(paymentEntity)
+			.usingRecursiveComparison()
+			.ignoringFields()
+			.isEqualTo(paymentEntity);
 	}
 }

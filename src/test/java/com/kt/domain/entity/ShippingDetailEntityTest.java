@@ -1,9 +1,9 @@
 package com.kt.domain.entity;
 
-import static org.assertj.core.api.Assertions.*;
 
 import java.time.LocalDate;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.test.context.ActiveProfiles;
@@ -29,7 +29,7 @@ class ShippingDetailEntityTest {
 			Gender.MALE,
 			LocalDate.now(),
 			"010-1234-5678"
-		)	;
+		);
 
 		ReceiverVO receiver = new ReceiverVO(
 			"수신자테스터1",
@@ -74,7 +74,10 @@ class ShippingDetailEntityTest {
 			testCourier,
 			testOrderProduct
 		);
-		assertThat(shippingDetailEntity.getCourier()).isEqualTo(testCourier);
-		assertThat(shippingDetailEntity.getOrderProduct()).isEqualTo(testOrderProduct);
+
+		Assertions.assertNotNull(shippingDetailEntity);
+
+		Assertions.assertEquals(testCourier, shippingDetailEntity.getCourier());
+		Assertions.assertEquals(testOrderProduct, shippingDetailEntity.getOrderProduct());
 	}
 }

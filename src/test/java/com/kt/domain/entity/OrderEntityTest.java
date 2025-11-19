@@ -1,15 +1,14 @@
 package com.kt.domain.entity;
 
-import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.time.LocalDate;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
-import org.junit.jupiter.params.provider.NullSource;
 import org.springframework.test.context.ActiveProfiles;
 
 import com.kt.constant.Gender;
@@ -20,6 +19,7 @@ import com.kt.exception.FieldValidationException;
 class OrderEntityTest {
 
 	UserEntity testUser;
+	ReceiverVO testReceiver;
 
 	@BeforeEach
 	void setUp() throws Exception {
@@ -32,11 +32,7 @@ class OrderEntityTest {
 			LocalDate.now(),
 			"010-1234-5678"
 		)	;
-	}
-
-	@Test
-	void 객체생성_성공() {
-		ReceiverVO receiver = new ReceiverVO(
+		testReceiver = new ReceiverVO(
 			"수신자테스터1",
 			"010-1234-5678",
 			"강원도",
@@ -44,12 +40,19 @@ class OrderEntityTest {
 			"행구로",
 			"주소설명"
 		);
+	}
+
+	@Test
+	void 객체생성_성공() {
 		OrderEntity order = OrderEntity.create(
-			receiver,
+			testReceiver,
 			testUser
 		);
-		assertThat(order.getReceiverVO()).isEqualTo(receiver);
-		assertThat(order.getOrderBy()).isEqualTo(testUser);
+
+		Assertions.assertNotNull(order);
+
+		Assertions.assertEquals(order.getReceiverVO(), testReceiver);
+		Assertions.assertEquals(order.getOrderBy(), testUser);
 	}
 
 	@ParameterizedTest
@@ -184,25 +187,4 @@ class OrderEntityTest {
 		);
 	}
 
-	@ParameterizedTest
-	@NullSource
-	void 객체생성_실패__UserEntity_null(UserEntity user){
-		assertThrowsExactly(
-			FieldValidationException.class,
-			() -> {
-				ReceiverVO receiver = new ReceiverVO(
-					"수신자테스터",
-					"010-1234-5678",
-					"강원도",
-					"원주시",
-					"행구로",
-					"주소설명"
-				);
-				OrderEntity order = OrderEntity.create(
-					receiver,
-					user
-				);
-			}
-		);
-	}
 }

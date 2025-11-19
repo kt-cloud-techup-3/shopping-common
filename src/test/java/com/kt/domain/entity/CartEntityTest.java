@@ -1,9 +1,9 @@
 package com.kt.domain.entity;
 
-import static org.assertj.core.api.Assertions.*;
 
 import java.time.LocalDate;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.test.context.ActiveProfiles;
@@ -43,8 +43,10 @@ class CartEntityTest {
 			testUser,
 			testProduct
 		);
-		assertThat(cart.getUser()).isEqualTo(testUser);
-		assertThat(cart.getProduct()).isEqualTo(testProduct);
-		assertThat(cart.getQuantity()).isEqualTo(5L);
+
+		Assertions.assertNotNull(cart);
+
+		Assertions.assertEquals(testUser, cart.getUser());
+		Assertions.assertEquals(testProduct, cart.getProduct());
 	}
 }

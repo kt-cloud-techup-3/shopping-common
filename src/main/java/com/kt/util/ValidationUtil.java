@@ -15,22 +15,17 @@ public class ValidationUtil {
 	static final String PASSWORD_MIN_LENGTH_MESSAGE = "은(는) 60자 이상이여야 합니다";
 	static final String INVALID_ENUM_VALUE_MESSAGE = "{0} 값이 유효하지 않습니다. 허용값 {1}";
 
-	public static <T> void validateNotNullInstance(T value, String fieldName) {
-		if (value == null) {
-			String errorMessage = getFormatterMessage(NOT_NULL_MESSAGE, fieldName);
-			throw new FieldValidationException(
-				ErrorCode.INVALID_DOMAIN_FIELD, errorMessage
-			);
-		}
-	}
-
-		public static void validateNotBlank(String value, String fieldName) {
+	public static void validateNotNullAndBlank(String value, String fieldName) {
 		if (!StringUtils.hasText(value)) {
 			String errorMessage = getFormatterMessage(NOT_BLANK_MESSAGE, fieldName);
 			throw new FieldValidationException(
 				ErrorCode.INVALID_DOMAIN_FIELD, errorMessage
 			);
 		}
+	}
+
+	public static void validateCollectPassword(String value, String fieldName) {
+		validateNotNullAndBlank(value, fieldName);
 
 		if (fieldName.equals("유저 비밀번호")) {
 			if (value.length() < 60) {

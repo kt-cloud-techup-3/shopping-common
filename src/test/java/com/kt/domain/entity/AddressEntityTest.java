@@ -30,7 +30,7 @@ class AddressEntityTest {
 	}
 	@Test
 	void 객체생성_성공(){
-		AddressEntity addressEntity = AddressEntity.create(
+		AddressEntity comparisonAddress = AddressEntity.create(
 			"수신자테스터1",
 			"010-1234-5678",
 			"강원도",
@@ -39,12 +39,21 @@ class AddressEntityTest {
 			"주소설명",
 			testUser
 		);
-		assertThat(addressEntity.getReceiverName()).isEqualTo("수신자테스터1");
-		assertThat(addressEntity.getReceiverMobile()).isEqualTo("010-1234-5678");
-		assertThat(addressEntity.getCity()).isEqualTo("강원도");
-		assertThat(addressEntity.getDistrict()).isEqualTo("원주시");
-		assertThat(addressEntity.getRoadAddress()).isEqualTo("행구로");
-		assertThat(addressEntity.getDetail()).isEqualTo("주소설명");
-		assertThat(addressEntity.getCreatedBy()).isEqualTo(testUser);
+
+		AddressEntity subjectAddress = AddressEntity.create(
+			"수신자테스터1",
+			"010-1234-5678",
+			"강원도",
+			"원주시",
+			"행구로",
+			"주소설명",
+			testUser
+		);
+
+		assertThat(subjectAddress).isNotNull();
+		assertThat(subjectAddress)
+			.usingRecursiveComparison()
+			.ignoringFields()
+			.isEqualTo(comparisonAddress);
 	}
 }

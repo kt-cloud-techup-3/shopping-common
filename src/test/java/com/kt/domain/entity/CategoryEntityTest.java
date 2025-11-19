@@ -1,7 +1,7 @@
 package com.kt.domain.entity;
 
-import static org.assertj.core.api.Assertions.*;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.test.context.ActiveProfiles;
 
@@ -18,7 +18,10 @@ class CategoryEntityTest {
 				"자식카데고리명",
 				parentCategory
 		);
-		assertThat(childCategory.getParent()).isEqualTo(parentCategory);
-		assertThat(childCategory.getName()).isEqualTo("자식카데고리명");
+
+		Assertions.assertNotNull(childCategory);
+
+		Assertions.assertEquals(parentCategory, childCategory.getParent());
+		Assertions.assertEquals("자식카데고리명", childCategory.getName());
 	}
 }

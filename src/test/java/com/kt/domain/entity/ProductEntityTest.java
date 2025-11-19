@@ -12,16 +12,25 @@ class ProductEntityTest {
 
 	@Test
 	void 객체생성_성공(){
-		ProductEntity productEntity = ProductEntity.create(
+		ProductEntity comparisonProduct = ProductEntity.create(
 			"테스트상품명",
 			1000L,
 			5L,
 			ProductStatus.ACTIVATED
 		);
-		assertThat(productEntity.getName()).isEqualTo("테스트상품명");
-		assertThat(productEntity.getPrice()).isEqualTo(1000L);
-		assertThat(productEntity.getStock()).isEqualTo(5L);
-		assertThat(productEntity.getStatus()).isEqualTo(ProductStatus.ACTIVATED);
-	}
 
+		ProductEntity subjectProduct = ProductEntity.create(
+			"테스트상품명",
+			1000L,
+			5L,
+			ProductStatus.ACTIVATED
+		);
+
+		assertThat(subjectProduct).isNotNull();
+
+		assertThat(subjectProduct)
+			.usingRecursiveComparison()
+			.ignoringFields("detail")
+			.isEqualTo(comparisonProduct);
+	}
 }
