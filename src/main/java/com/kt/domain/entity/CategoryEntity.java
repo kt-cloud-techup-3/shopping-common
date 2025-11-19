@@ -36,18 +36,16 @@ public class CategoryEntity extends BaseEntity {
 	) {
 		this.name = name;
 		this.parent = parent;
+
+		if (parent != null) {
+			parent.children.add(this);
+		}
 	}
 
 	public static CategoryEntity create(
 		final String name,
 		final CategoryEntity parent
 	) {
-		CategoryEntity category = new CategoryEntity(name, parent);
-
-		if (parent != null) {
-			parent.children.add(category);
-		}
-
-		return category;
+		return new CategoryEntity(name, parent);
 	}
 }
