@@ -1,0 +1,53 @@
+package com.kt.domain.entity;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import com.kt.domain.entity.common.BaseEntity;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Entity(name = "category")
+@Getter
+public class CategoryEntity extends BaseEntity {
+
+	@Column(nullable = false)
+	private String name;
+
+	@ManyToOne
+
+	@JoinColumn(name = "parent_id")
+	private CategoryEntity parent;
+
+	@OneToMany(mappedBy = "parent")
+	private List<CategoryEntity> children = new ArrayList<>();
+
+	protected CategoryEntity(
+		String name,
+		CategoryEntity parent
+	) {
+		this.name = name;
+		this.parent = parent;
+	}
+
+	public static CategoryEntity create(
+		final String name,
+		final CategoryEntity parent
+	) {
+		CategoryEntity category = new CategoryEntity(name, parent);
+
+		if (parent != null) {
+			parent.children.add(category);
+		}
+
+		return category;
+	}
+}
