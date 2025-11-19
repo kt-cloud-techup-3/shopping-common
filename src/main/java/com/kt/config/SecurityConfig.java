@@ -27,6 +27,27 @@ public class SecurityConfig {
 
 	private final JwtFilter jwtFilter;
 
+	private static final String[] PERMIT_ALL = {
+		"/api/auth/login",
+		"/api/auth/signup/**"
+	};
+
+	private static final String[] MEMBER_URIS = {
+		"/api/orders",
+		"/api/returns/request",
+		"/api/auth/password/reset",
+		"/api/email/**",
+		"/api/carts/**"
+	};
+
+	private static final String[] ADMIN_URIS = {
+		"/api/categories/**"
+	};
+
+	private static final String[] COURIER_URIS = {
+		"/api/shipping/**"
+	};
+
 	@Bean
 	public PasswordEncoder passwordEncoder() {
 		return new BCryptPasswordEncoder();
@@ -48,24 +69,10 @@ public class SecurityConfig {
 			// TODO: 인증 실패시 커스텀 예외 처리 핸들러 등록
 
 			.authorizeHttpRequests(auth -> auth
-				.requestMatchers("/api/auth/login",
-					"/api/auth/signup/**"
-				).permitAll()
-
-				.requestMatchers("/api/orders",
-					"/api/returns/request",
-					"/api/auth/password/reset",
-				  "/api/email/**",
-					"/api/carts/**"
-				).hasRole("MEMBER")
-
-				.requestMatchers(
-					"/api/categories/**"
-				).hasRole("ADMIN")
-
-				.requestMatchers( ""
-				).hasRole("SHIPPER")
-
+				.requestMatchers(PERMIT_ALL).permitAll()
+				.requestMatchers(MEMBER_URIS).hasRole("MEMBER")
+				.requestMatchers(ADMIN_URIS).hasRole("ADMIN")
+				.requestMatchers(COURIER_URIS).hasRole("COURIER")
 				.anyRequest().authenticated()
 			)
 			.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
