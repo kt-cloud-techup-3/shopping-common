@@ -24,7 +24,7 @@ public class ShippingDetailEntity extends BaseEntity {
 	@Enumerated(EnumType.STRING)
 	private ShippingStatus shippingStatus;
 
-	@Column(nullable = false)
+	@Column(nullable = true)
 	private Instant arrivedAt;
 
 	@ManyToOne
@@ -36,21 +36,18 @@ public class ShippingDetailEntity extends BaseEntity {
 	private OrderProductEntity orderProduct;
 
 	protected ShippingDetailEntity(
-		Instant arrivedAt,
 		CourierEntity courier,
 		OrderProductEntity orderProduct
 	) {
 		this.shippingStatus = ShippingStatus.PENDING_SHIPMENT;
-		this.arrivedAt = arrivedAt;
 		this.courier = courier;
 		this.orderProduct = orderProduct;
 	}
 
 	public static ShippingDetailEntity create(
-		final Instant arrivedAt,
 		final CourierEntity courier,
 		final OrderProductEntity orderProduct
 	) {
-		return new ShippingDetailEntity(arrivedAt, courier, orderProduct);
+		return new ShippingDetailEntity(courier, orderProduct);
 	}
 }
