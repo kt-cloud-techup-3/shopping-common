@@ -10,8 +10,6 @@ import com.kt.domain.constant.UserRole;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.MalformedJwtException;
-import io.jsonwebtoken.UnsupportedJwtException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -23,12 +21,11 @@ public class JwtService {
 	private static final String ROLE_CLAIM_KEY = "role";
 	private static final String LOGIN_ID_CLAIM_KEY = "loginId";
 
-	public String issue(Long id, String loginId, UserRole role, Date expiration) {
+	public String issue(UUID id, String loginId, UserRole role, Date expiration) {
 		return Jwts.builder()
-			.subject("kt-cloud-shopping")
+			.subject(id.toString())
 			.issuer("GoFive")
 			.issuedAt(new Date())
-			.id(id.toString())
 			.claim(ROLE_CLAIM_KEY, role.name())
 			.claim(LOGIN_ID_CLAIM_KEY, loginId)
 			.expiration(expiration)
@@ -66,7 +63,7 @@ public class JwtService {
 	public DefaultCurrentUser parseClaimsToCurrentUser(String token) {
 		Claims claims = parseClaims(token);
 
-		UUID id = UUID.fromString(claims.getId());
+		UUID id = UUID.fromString(claims.getSubject());
 		String loginId = claims.get(LOGIN_ID_CLAIM_KEY, String.class);
 		UserRole role = UserRole.valueOf(claims.get(ROLE_CLAIM_KEY, String.class));
 
