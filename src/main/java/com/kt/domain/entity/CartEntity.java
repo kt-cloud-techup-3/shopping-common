@@ -18,13 +18,11 @@ public class CartEntity extends BaseEntity {
 	private Long quantity;
 
 	@ManyToOne
-	@JoinColumn(name = "user_id")
-	@Column(nullable = false)
+	@JoinColumn(name = "user_id", nullable = false)
 	private UserEntity userId;
 
 	@ManyToOne
-	@JoinColumn(name = "product_id")
-	@Column(nullable = false)
+	@JoinColumn(name = "product_id", nullable = false)
 	private ProductEntity productId;
 
 	protected CartEntity(
