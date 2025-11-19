@@ -19,15 +19,15 @@ import lombok.extern.slf4j.Slf4j;
 public class JwtService {
 	private final JwtProperties jwtProperties;
 	private static final String ROLE_CLAIM_KEY = "role";
-	private static final String LOGIN_ID_CLAIM_KEY = "loginId";
+	private static final String EMAIL_CLAIM_KEY = "email";
 
-	public String issue(UUID id, String loginId, UserRole role, Date expiration) {
+	public String issue(UUID id, String email, UserRole role, Date expiration) {
 		return Jwts.builder()
 			.subject(id.toString())
 			.issuer("GoFive")
 			.issuedAt(new Date())
 			.claim(ROLE_CLAIM_KEY, role.name())
-			.claim(LOGIN_ID_CLAIM_KEY, loginId)
+			.claim(EMAIL_CLAIM_KEY, email)
 			.expiration(expiration)
 			.signWith(jwtProperties.getSecret())
 			.compact();
@@ -64,10 +64,10 @@ public class JwtService {
 		Claims claims = parseClaims(token);
 
 		UUID id = UUID.fromString(claims.getSubject());
-		String loginId = claims.get(LOGIN_ID_CLAIM_KEY, String.class);
+		String email = claims.get(EMAIL_CLAIM_KEY, String.class);
 		UserRole role = UserRole.valueOf(claims.get(ROLE_CLAIM_KEY, String.class));
 
-		return new DefaultCurrentUser(id, loginId, role);
+		return new DefaultCurrentUser(id, email, role);
 	}
 
 }

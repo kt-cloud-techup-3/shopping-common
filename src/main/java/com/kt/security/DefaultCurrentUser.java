@@ -20,7 +20,7 @@ import lombok.NoArgsConstructor;
 public class DefaultCurrentUser implements UserDetails, CurrentUser {
 
 	private UUID id;
-	private String loginId;
+	private String email;
 	private UserRole role;
 
 	@Override
@@ -29,8 +29,8 @@ public class DefaultCurrentUser implements UserDetails, CurrentUser {
 	}
 
 	@Override
-	public String getLoginId() {
-		return loginId;
+	public UserRole getRole() {
+		return role;
 	}
 
 	@Override
@@ -45,7 +45,7 @@ public class DefaultCurrentUser implements UserDetails, CurrentUser {
 
 	@Override
 	public String getUsername() {
-		return loginId;
+		return email;
 	}
 
 }
