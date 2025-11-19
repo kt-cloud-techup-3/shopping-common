@@ -111,7 +111,6 @@ class ReviewServiceImplTest {
 			.findFirst()
 			.orElseThrow(() -> new BaseException(ErrorCode.REVIEW_NOT_FOUND));
 
-		Assertions.assertNotNull(foundedReviewEntity);
 		Assertions.assertEquals(testOrderProduct.getId(),foundedReviewEntity.getOrderProduct().getId());
 	}
 

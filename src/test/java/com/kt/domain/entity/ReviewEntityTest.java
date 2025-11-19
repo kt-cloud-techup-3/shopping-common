@@ -12,7 +12,7 @@ import org.springframework.test.context.ActiveProfiles;
 import com.kt.constant.ReviewStatus;
 import com.kt.exception.FieldValidationException;
 
-@ActiveProfiles
+@ActiveProfiles("test")
 class ReviewEntityTest {
 
 	@Test
