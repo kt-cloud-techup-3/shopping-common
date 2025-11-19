@@ -32,6 +32,9 @@ public class ReviewEntity extends BaseEntity {
 	@JoinColumn(name = "order_product_id", nullable = false)
 	private OrderProductEntity orderProduct;
 
+	public void update(String content){ this.content = content; }
+
+	public void delete(){ this.status = ReviewStatus.REMOVED; }
 
 	protected ReviewEntity(String content, ReviewStatus status) {
 		ValidationUtil.validateNotNullAndBlank(content,"내용");
@@ -41,5 +44,9 @@ public class ReviewEntity extends BaseEntity {
 
 	public static ReviewEntity create(final String content){
 		return new ReviewEntity(content, ReviewStatus.ENABLED);
+	}
+
+	public void mapToOrderProduct(OrderProductEntity orderProduct){
+		this.orderProduct = orderProduct;
 	}
 }
