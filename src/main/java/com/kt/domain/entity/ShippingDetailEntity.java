@@ -2,7 +2,6 @@ package com.kt.domain.entity;
 
 import java.time.Instant;
 
-import com.kt.constant.ShippingStatus;
 import com.kt.constant.ShippingType;
 import com.kt.domain.entity.common.BaseEntity;
 
@@ -23,10 +22,6 @@ public class ShippingDetailEntity extends BaseEntity {
 
 	@Column(nullable = false)
 	@Enumerated(EnumType.STRING)
-	private ShippingStatus shippingStatus;
-
-	@Column(nullable = false)
-	@Enumerated(EnumType.STRING)
 	private ShippingType shippingType;
 
 	@Column(nullable = true)
@@ -44,7 +39,6 @@ public class ShippingDetailEntity extends BaseEntity {
 		CourierEntity courier,
 		OrderProductEntity orderProduct
 	) {
-		this.shippingStatus = ShippingStatus.PENDING_SHIPMENT;
 		this.shippingType = ShippingType.DELIVERING;
 		this.courier = courier;
 		this.orderProduct = orderProduct;
