@@ -8,11 +8,13 @@ import java.time.LocalDate;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.test.context.ActiveProfiles;
 
 import com.kt.constant.Gender;
 import com.kt.constant.ProductStatus;
 import com.kt.constant.UserRole;
 
+@ActiveProfiles("test")
 class CartEntityTest {
 
 	UserEntity testUser;
