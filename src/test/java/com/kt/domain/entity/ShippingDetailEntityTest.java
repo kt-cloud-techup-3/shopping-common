@@ -6,12 +6,14 @@ import java.time.LocalDate;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.test.context.ActiveProfiles;
 
 import com.kt.constant.Gender;
 import com.kt.constant.OrderProductStatus;
 import com.kt.constant.ProductStatus;
 import com.kt.constant.UserRole;
 
+@ActiveProfiles("test")
 class ShippingDetailEntityTest {
 
 	OrderProductEntity testOrderProduct;
