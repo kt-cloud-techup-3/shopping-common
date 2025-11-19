@@ -18,7 +18,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Getter
-@Entity(name = "Review")
+@Entity(name = "review")
 @NoArgsConstructor(access = PROTECTED)
 public class ReviewEntity extends BaseEntity {
 	@Column(nullable = false)
