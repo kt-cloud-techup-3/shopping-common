@@ -4,9 +4,9 @@ import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 public enum ShippingStatus {
-	PENDING_SHIPMENT("배송 대기 중"),
+	PENDING_SHIPMENT("배송대기중"),
 	SHIPPING("배송중"),
-	DELIVERED("배송 완료");
+	DELIVERED("배송완료");
 
 	private final String description;
 }
