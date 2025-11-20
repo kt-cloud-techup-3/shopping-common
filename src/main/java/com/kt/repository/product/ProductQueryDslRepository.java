@@ -1,6 +1,4 @@
-package com.kt.service;
-
-import java.util.UUID;
+package com.kt.repository.product;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -8,15 +6,6 @@ import org.springframework.data.domain.Pageable;
 import com.kt.constant.searchtype.ProductSearchType;
 import com.kt.domain.dto.response.ProductResponse;
 
-public interface ProductService {
-
-	void create(String name, Long price, Long stock);
-
-	void update(UUID productId, String name, Long price, Long stock);
-
-	void delete(UUID productId);
-
+public interface ProductQueryDslRepository {
 	Page<ProductResponse.Search> search(Pageable pageable, String keyword, ProductSearchType type);
-
-	ProductResponse.Detail detail(UUID productId);
 }
