@@ -8,6 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.kt.constant.OrderProductStatus;
 import com.kt.constant.message.ErrorCode;
+import com.kt.domain.dto.response.OrderResponse;
 import com.kt.domain.dto.request.OrderRequest;
 import com.kt.domain.entity.ProductEntity;
 import com.kt.domain.entity.UserEntity;
@@ -31,6 +32,15 @@ public class OrderServiceImpl implements OrderService {
 	private final ProductRepository productRepository;
 	private final OrderRepository orderRepository;
 	private final OrderProductRepository orderProductRepository;
+
+	@Override
+	public OrderResponse.OrderProducts getOrderProducts(UUID orderId) {
+		List<OrderProductEntity> orderProducts = orderProductRepository.findAllByOrder_Id(orderId).orElseThrow(() ->
+			new BaseException(ErrorCode.ORDER_NOT_FOUND)
+		);
+
+		return OrderResponse.OrderProducts.of(orderId, orderProducts);
+	}
 
 	@Override
 	public void createOrder(String email, List<OrderRequest.Item> items) {
