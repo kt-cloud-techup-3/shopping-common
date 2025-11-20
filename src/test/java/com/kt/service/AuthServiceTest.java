@@ -1,13 +1,12 @@
-package com.kt.domain.service;
+package com.kt.service;
 
-import com.kt.ShoppingApplication;
 import com.kt.constant.Gender;
 import com.kt.domain.dto.request.MemberRequest;
 import com.kt.domain.entity.UserEntity;
 import com.kt.repository.UserRepository;
 
-import com.kt.service.AuthServiceImpl;
-
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -18,13 +17,17 @@ import java.time.LocalDate;
 import static org.junit.jupiter.api.Assertions.*;
 
 @ActiveProfiles("test")
-@SpringBootTest(classes = ShoppingApplication.class)
+@SpringBootTest
 public class AuthServiceTest {
 
 	@Autowired AuthServiceImpl authService;
 
 	@Autowired UserRepository userRepository;
 
+	@BeforeEach
+	void setUp() {
+		userRepository.deleteAll();
+	}
 
 	@Test
 	void 맴버_회원가입_성공_테스트() {
