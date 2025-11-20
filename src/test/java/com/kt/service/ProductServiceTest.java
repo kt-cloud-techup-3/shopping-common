@@ -88,8 +88,8 @@ class ProductServiceTest {
 		);
 
 		// then
-		ProductEntity foundProduct = productRepository.findByIdOrThrow(product.getId());
-		assertThat(foundProduct.getName()).isEqualTo(request.name());
+		ProductEntity savedProduct = productRepository.findByIdOrThrow(product.getId());
+		assertThat(savedProduct.getName()).isEqualTo(request.name());
 	}
 
 	@Test
@@ -106,8 +106,8 @@ class ProductServiceTest {
 		productService.delete(product.getId());
 
 		// then
-		ProductEntity foundProduct = productRepository.findByIdOrThrow(product.getId());
-		assertThat(foundProduct.getStatus()).isEqualTo(ProductStatus.DELETED);
+		ProductEntity savedProduct = productRepository.findByIdOrThrow(product.getId());
+		assertThat(savedProduct.getStatus()).isEqualTo(ProductStatus.DELETED);
 	}
 
 	@Test
@@ -145,9 +145,9 @@ class ProductServiceTest {
 		productRepository.save(product);
 
 		// when
-		ProductEntity foundProduct = productService.detail(product.getId());
+		ProductEntity savedProduct = productService.detail(product.getId());
 
 		// then
-		assertThat(foundProduct.getName()).isEqualTo(product.getName());
+		assertThat(savedProduct.getName()).isEqualTo(product.getName());
 	}
 }
