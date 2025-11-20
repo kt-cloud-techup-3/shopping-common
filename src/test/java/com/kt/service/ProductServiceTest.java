@@ -6,10 +6,13 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.test.context.ActiveProfiles;
 
 import com.kt.constant.ProductStatus;
 import com.kt.domain.dto.request.ProductRequest;
+import com.kt.domain.dto.response.ProductResponse;
 import com.kt.domain.entity.ProductEntity;
 import com.kt.repository.ProductRepository;
 
@@ -104,4 +107,42 @@ class ProductServiceTest {
 		assertThat(foundProduct.getStatus()).isEqualTo(ProductStatus.DELETED);
 	}
 
+	@Test
+	void 상품_조회() {
+		// given
+		for (int i = 0; i < 20; i++) {
+			ProductEntity product = ProductEntity.create(
+				"상품" + i,
+				1000L,
+				10L
+			);
+			productRepository.save(product);
+		}
+
+		// when
+		PageRequest pageRequest = PageRequest.of(1, 10);
+		Page<ProductResponse.Search> search = productService.search(pageRequest, null, null);
+
+		// then
+		assertThat(search.getTotalElements()).isEqualTo(20);
+		assertThat(search.getTotalPages()).isEqualTo(2);
+		assertThat(search.getContent().size()).isEqualTo(10);
+	}
+
+	@Test
+	void 상품_상세_조회() {
+		// given
+		ProductEntity product = ProductEntity.create(
+			"상품1",
+			1000L,
+			10L
+		);
+		productRepository.save(product);
+
+		// when
+		ProductEntity foundProduct = productService.detail(product.getId());
+
+		// then
+		assertThat(foundProduct.getName()).isEqualTo(product.getName());
+	}
 }

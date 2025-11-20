@@ -2,9 +2,13 @@ package com.kt.service;
 
 import java.util.UUID;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.kt.constant.searchtype.ProductSearchType;
+import com.kt.domain.dto.response.ProductResponse;
 import com.kt.domain.entity.ProductEntity;
 import com.kt.repository.ProductRepository;
 
@@ -43,4 +47,16 @@ public class ProductServiceImpl implements ProductService {
 		ProductEntity product = productRepository.findByIdOrThrow(productId);
 		product.delete();
 	}
+
+	@Override
+	public Page<ProductResponse.Search> search(Pageable pageable, String keyword, ProductSearchType type) {
+		return productRepository.search(pageable, keyword, type);
+	}
+
+	@Override
+	public ProductEntity detail(UUID productId) {
+		ProductEntity product = productRepository.findByIdOrThrow(productId);
+		return product;
+	}
+
 }

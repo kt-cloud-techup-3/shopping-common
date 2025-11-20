@@ -8,9 +8,10 @@ import org.springframework.stereotype.Repository;
 import com.kt.constant.message.ErrorCode;
 import com.kt.domain.entity.ProductEntity;
 import com.kt.exception.BaseException;
+import com.kt.repository.product.ProductQueryDslRepository;
 
 @Repository
-public interface ProductRepository extends JpaRepository<ProductEntity, UUID> {
+public interface ProductRepository extends JpaRepository<ProductEntity, UUID>, ProductQueryDslRepository {
 
 	default ProductEntity findByIdOrThrow(UUID productId) {
 		return findById(productId).orElseThrow(() -> new BaseException(ErrorCode.PRODUCT_NOT_FOUND));
