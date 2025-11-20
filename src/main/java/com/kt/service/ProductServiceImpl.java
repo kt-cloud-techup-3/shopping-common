@@ -54,9 +54,9 @@ public class ProductServiceImpl implements ProductService {
 	}
 
 	@Override
-	public ProductEntity detail(UUID productId) {
+	public ProductResponse.Detail detail(UUID productId) {
 		ProductEntity product = productRepository.findByIdOrThrow(productId);
-		return product;
+		return ProductResponse.Detail.from(product);
 	}
 
 }

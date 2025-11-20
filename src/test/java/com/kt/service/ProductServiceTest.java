@@ -145,9 +145,9 @@ class ProductServiceTest {
 		productRepository.save(product);
 
 		// when
-		ProductEntity savedProduct = productService.detail(product.getId());
+		ProductResponse.Detail productDetail = productService.detail(product.getId());
 
 		// then
-		assertThat(savedProduct.getName()).isEqualTo(product.getName());
+		assertThat(productDetail.name()).isEqualTo(product.getName());
 	}
 }

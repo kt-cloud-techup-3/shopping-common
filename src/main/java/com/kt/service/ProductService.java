@@ -7,7 +7,6 @@ import org.springframework.data.domain.Pageable;
 
 import com.kt.constant.searchtype.ProductSearchType;
 import com.kt.domain.dto.response.ProductResponse;
-import com.kt.domain.entity.ProductEntity;
 
 public interface ProductService {
 
@@ -19,5 +18,5 @@ public interface ProductService {
 
 	Page<ProductResponse.Search> search(Pageable pageable, String keyword, ProductSearchType type);
 
-	ProductEntity detail(UUID productId);
+	ProductResponse.Detail detail(UUID productId);
 }
