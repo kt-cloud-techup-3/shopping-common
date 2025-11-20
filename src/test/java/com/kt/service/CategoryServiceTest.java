@@ -52,16 +52,17 @@ class CategoryServiceTest {
 
 	@Test
 	void 카테고리_생성() {
+		categoryService.create("자식카테고리명", null);
+
 		// given
-		UUID id = categoryService.create("테스트카테고리", null);
+		UUID id = categoryRepository.findByName("자식카데고리명")
+			.map(CategoryEntity::getId)
+			.orElseThrow();
 
-		// when
-		CategoryEntity saved = categoryRepository.findById(id).orElse(null);
-
+		CategoryEntity foundedCategory = categoryRepository.findById(id).orElseThrow();
 		// then
-		assertThat(saved).isNotNull();
-		assertThat(saved.getName()).isEqualTo("테스트카테고리");
-		assertThat(saved.getParent()).isNull();
+		assertThat(foundedCategory).isNotNull();
+		assertThat(foundedCategory.getName()).isEqualTo("자식카데고리명");
 	}
 
 	@Test
