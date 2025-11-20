@@ -22,6 +22,7 @@ public class CategoryServiceImpl implements CategoryService {
 	@Transactional
 	@Override
 	public void create(String name, UUID parentId) {
+		isDuplicatedCategory(name);
 		CategoryEntity parentCategory = (parentId != null) ?
 			categoryRepository.findById(parentId).orElseThrow(() -> new BaseException(
 				ErrorCode.CATEGORY_NOT_FOUND)) : null;
@@ -34,6 +35,7 @@ public class CategoryServiceImpl implements CategoryService {
 	@Transactional
 	@Override
 	public void update(UUID id, String name) {
+		isDuplicatedCategory(name);
 		CategoryEntity category = categoryRepository.findById(id).orElseThrow(() -> new BaseException(
 			ErrorCode.CATEGORY_NOT_FOUND
 		));
@@ -64,6 +66,12 @@ public class CategoryServiceImpl implements CategoryService {
 			throw new BaseException(ErrorCode.CHILD_CATEGORY_EXISTS);
 
 		categoryRepository.delete(category);
+	}
+
+	private void isDuplicatedCategory(String name) {
+		if (categoryRepository.findByName(name).isPresent()) {
+			throw new IllegalArgumentException("중복된 카테고리명입니다.");
+		}
 	}
 
 }
