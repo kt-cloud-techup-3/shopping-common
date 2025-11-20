@@ -1,9 +1,10 @@
 package com.kt.service;
 
-import com.kt.domain.dto.request.MemberSignupRequest;
+import com.kt.domain.dto.request.MemberRequest;
+
 
 public interface AuthService {
 
-	void memberSignup(MemberSignupRequest request);
+	void memberSignup(MemberRequest.SignupMember request);
 
 }

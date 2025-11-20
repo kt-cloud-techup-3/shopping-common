@@ -1,7 +1,7 @@
 package com.kt.service;
 
 import com.kt.constant.UserRole;
-import com.kt.domain.dto.request.MemberSignupRequest;
+import com.kt.domain.dto.request.MemberRequest;
 
 import com.kt.domain.entity.UserEntity;
 
@@ -23,7 +23,7 @@ public class AuthServiceImpl implements AuthService {
 
 	@Override
 	@Transactional
-	public void memberSignup(MemberSignupRequest request) {
+	public void memberSignup(MemberRequest.SignupMember request) {
 		isDuplicatedEmail(request.email());
 		UserEntity member = UserEntity.create(
 			request.name(),

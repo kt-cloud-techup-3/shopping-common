@@ -2,7 +2,7 @@ package com.kt.domain.service;
 
 import com.kt.ShoppingApplication;
 import com.kt.constant.Gender;
-import com.kt.domain.dto.request.MemberSignupRequest;
+import com.kt.domain.dto.request.MemberRequest;
 import com.kt.domain.entity.UserEntity;
 import com.kt.repository.UserRepository;
 
@@ -28,7 +28,7 @@ public class AuthServiceTest {
 
 	@Test
 	void 맴버_회원가입_성공_테스트() {
-		MemberSignupRequest signup = new MemberSignupRequest(
+		MemberRequest.SignupMember signup = new MemberRequest.SignupMember(
 			"황테스터",
 			"test@email.com",
 			"1231231!",
@@ -45,7 +45,7 @@ public class AuthServiceTest {
 
 	@Test
 	void 맴버_회원가입_실패_email_중복() {
-		MemberSignupRequest firstSignup = new MemberSignupRequest(
+		MemberRequest.SignupMember firstSignup = new MemberRequest.SignupMember(
 			"황테스터1",
 			"test@email.com",
 			"1231231!",
@@ -54,7 +54,7 @@ public class AuthServiceTest {
 			"010-1234-0001"
 		);
 
-		MemberSignupRequest secondSignup = new MemberSignupRequest(
+		MemberRequest.SignupMember secondSignup = new MemberRequest.SignupMember(
 			"황테스터2",
 			"test@email.com",
 			"1231231!",
