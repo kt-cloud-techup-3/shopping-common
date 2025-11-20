@@ -1,5 +1,7 @@
 package com.kt.repository;
 
+import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -13,6 +15,7 @@ import com.kt.exception.BaseException;
 public interface OrderProductRepository
 	extends JpaRepository<OrderProductEntity, UUID> , OrderProductRepositoryCustom {
 
+	Optional<List<OrderProductEntity>> findAllByOrder_Id(UUID orderId);
 	default OrderProductEntity findByIdOrThrow(UUID orderProductId) {
 		return findById(orderProductId).orElseThrow(() -> new BaseException(ErrorCode.ORDER_PRODUCT_NOT_FOUND));
 	}
