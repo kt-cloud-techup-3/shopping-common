@@ -23,6 +23,7 @@ import com.kt.domain.entity.ProductEntity;
 import com.kt.domain.entity.ReceiverVO;
 import com.kt.domain.entity.ReviewEntity;
 import com.kt.domain.entity.UserEntity;
+import com.kt.dto.response.ReviewResponse;
 import com.kt.exception.BaseException;
 import com.kt.repository.OrderProductRepository;
 import com.kt.repository.OrderRepository;
@@ -135,5 +136,16 @@ class ReviewServiceTest {
 		reviewRepository.save(review);
 		reviewService.delete(review.getId());
 		Assertions.assertEquals(ReviewStatus.REMOVED, review.getStatus());
+	}
+
+	@Test
+	void 리뷰조회_성공(){
+		ReviewEntity review = ReviewEntity.create("테스트리뷰내용");
+		review.mapToOrderProduct(testOrderProduct);
+		reviewRepository.save(review);
+
+		ReviewResponse.Search foundedReviewDto = reviewService.getReview(testOrderProduct.getId());
+
+		Assertions.assertEquals(review.getId(),foundedReviewDto.reviewId());
 	}
 }
