@@ -16,10 +16,10 @@ public class UserResponse {
 		UUID userId,
 		List<OrderItem> orders
 	) {
-		public static Orders of(UUID userId, List<OrderEntity> orderEntity) {
+		public static Orders of(UUID userId, List<OrderEntity> orderEntities) {
 			return new Orders(
 				userId,
-				orderEntity.stream()
+				orderEntities.stream()
 					.map(OrderItem::of)
 					.toList()
 			);
