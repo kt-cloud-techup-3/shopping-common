@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 public enum OrderProductStatus {
 	CREATED("주문생성"),
 	WAITING_PAYMENT("결제대기"),
+	PURCHASE_CONFIRMED("구매확정"),
 	CANCELED("주문취소"),
 	SHIPPING_READY("배송대기"),
 	SHIPPING("배송중"),
