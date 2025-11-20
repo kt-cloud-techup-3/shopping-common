@@ -101,32 +101,32 @@ class ReviewServiceTest {
 	void 리뷰생성_성공(){
 		reviewService.create(testOrderProduct.getId(),"테스트리뷰내용");
 
-		ReviewEntity foundedReviewEntity = reviewRepository
+		ReviewEntity foundedReview= reviewRepository
 			.findAll()
 			.stream()
 			.findFirst()
 			.orElseThrow(() -> new BaseException(ErrorCode.REVIEW_NOT_FOUND));
 
-		Assertions.assertEquals(testOrderProduct.getId(),foundedReviewEntity.getOrderProduct().getId());
+		Assertions.assertEquals(testOrderProduct.getId(),foundedReview.getOrderProduct().getId());
 	}
 
 	@Test
 	void 리뷰변경_성공(){
-		ReviewEntity reviewEntity = ReviewEntity.create("테스트리뷰내용");
-		reviewEntity.mapToOrderProduct(testOrderProduct);
-		reviewRepository.save(reviewEntity);
+		ReviewEntity review = ReviewEntity.create("테스트리뷰내용");
+		review.mapToOrderProduct(testOrderProduct);
+		reviewRepository.save(review);
 
-		reviewService.update(reviewEntity.getId(),"변경된테스트리뷰내용");
+		reviewService.update(review.getId(),"변경된테스트리뷰내용");
 
-		Assertions.assertEquals("변경된테스트리뷰내용", reviewEntity.getContent());
+		Assertions.assertEquals("변경된테스트리뷰내용", review.getContent());
 	}
 
 	@Test
 	void 리뷰삭제_성공(){
-		ReviewEntity reviewEntity = ReviewEntity.create("테스트리뷰내용");
-		reviewEntity.mapToOrderProduct(testOrderProduct);
-		reviewRepository.save(reviewEntity);
-		reviewService.delete(reviewEntity.getId());
-		Assertions.assertEquals(ReviewStatus.REMOVED, reviewEntity.getStatus());
+		ReviewEntity review = ReviewEntity.create("테스트리뷰내용");
+		review.mapToOrderProduct(testOrderProduct);
+		reviewRepository.save(review);
+		reviewService.delete(review.getId());
+		Assertions.assertEquals(ReviewStatus.REMOVED, review.getStatus());
 	}
 }

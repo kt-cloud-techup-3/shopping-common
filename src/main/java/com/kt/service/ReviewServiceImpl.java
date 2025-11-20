@@ -22,21 +22,21 @@ public class ReviewServiceImpl implements ReviewService {
 
 	@Override
 	public void create(UUID orderProductId, String content){
-		ReviewEntity reviewEntity = ReviewEntity.create(content);
-		OrderProductEntity orderProductEntity = orderProductRepository.findByIdOrThrow(orderProductId);
-		reviewEntity.mapToOrderProduct(orderProductEntity);
-		reviewRepository.save(reviewEntity);
+		ReviewEntity review = ReviewEntity.create(content);
+		OrderProductEntity orderProduct = orderProductRepository.findByIdOrThrow(orderProductId);
+		review.mapToOrderProduct(orderProduct);
+		reviewRepository.save(review);
 	}
 
 	@Override
 	public void update(UUID reviewId, String content){
-		ReviewEntity foundedReview = reviewRepository.findByIdOrThrow(reviewId);
-		foundedReview.update(content);
+		ReviewEntity review = reviewRepository.findByIdOrThrow(reviewId);
+		review.update(content);
 	}
 
 	@Override
 	public void delete(UUID reviewId){
-		ReviewEntity foundedReview = reviewRepository.findByIdOrThrow(reviewId);
-		foundedReview.delete();
+		ReviewEntity review = reviewRepository.findByIdOrThrow(reviewId);
+		review.delete();
 	}
 }

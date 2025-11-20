@@ -37,12 +37,12 @@ public class ReviewEntity extends BaseEntity {
 	public void delete(){ this.status = ReviewStatus.REMOVED; }
 
 	protected ReviewEntity(String content, ReviewStatus status) {
-		ValidationUtil.validateNotNullAndBlank(content,"내용");
 		this.status = status;
 		this.content = content;
 	}
 
 	public static ReviewEntity create(final String content){
+		ValidationUtil.validateNotNullAndBlank(content,"내용");
 		return new ReviewEntity(content, ReviewStatus.ENABLED);
 	}
 
