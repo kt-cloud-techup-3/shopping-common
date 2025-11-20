@@ -22,24 +22,24 @@ public class CategoryServiceImpl implements CategoryService {
 	@Transactional
 	@Override
 	public UUID create(String name, UUID parentId) {
-		CategoryEntity parentCategoryEntity = (parentId != null) ?
+		CategoryEntity parentCategory = (parentId != null) ?
 			categoryRepository.findById(parentId).orElseThrow(() -> new BaseException(
 				ErrorCode.CATEGORY_NOT_FOUND)) : null;
 
-		CategoryEntity categoryEntity = CategoryEntity.create(name, parentCategoryEntity);
-		categoryRepository.save(categoryEntity);
+		CategoryEntity category = CategoryEntity.create(name, parentCategory);
+		categoryRepository.save(category);
 
-		return categoryEntity.getId();
+		return category.getId();
 	}
 
 	@Transactional
 	@Override
 	public void update(UUID id, String name) {
-		CategoryEntity categoryEntity = categoryRepository.findById(id).orElseThrow(() -> new BaseException(
+		CategoryEntity category = categoryRepository.findById(id).orElseThrow(() -> new BaseException(
 			ErrorCode.CATEGORY_NOT_FOUND
 		));
 
-		categoryEntity.updateName(name);
+		category.updateName(name);
 	}
 
 	@Transactional
