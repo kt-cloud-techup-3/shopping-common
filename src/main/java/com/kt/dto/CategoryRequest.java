@@ -11,7 +11,6 @@ public class CategoryRequest {
 	public record Create(
 		@NotBlank
 		String title,
-		@NotBlank
 		UUID parentId
 	) {
 
@@ -20,7 +19,6 @@ public class CategoryRequest {
 	public record Update(
 		@NotBlank
 		String title,
-		@NotBlank
 		UUID parentId
 	) {
 
