@@ -7,6 +7,8 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+
+// TODO: 기능 명시 논의 후 request 및 기능 변경 필요
 public class CategoryRequest {
 	public record Create(
 		@NotBlank
