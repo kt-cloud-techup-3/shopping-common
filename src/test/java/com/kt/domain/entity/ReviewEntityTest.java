@@ -12,29 +12,16 @@ import org.springframework.test.context.ActiveProfiles;
 import com.kt.constant.ReviewStatus;
 import com.kt.exception.FieldValidationException;
 
-@ActiveProfiles
+@ActiveProfiles("test")
 class ReviewEntityTest {
 
 	@Test
 	void 객체생성_성공(){
 		ReviewEntity review = ReviewEntity.create(
-			ReviewStatus.ENABLED,
 			"테스트내용"
 		);
 		Assertions.assertNotNull(review);
 		Assertions.assertEquals("테스트내용", review.getContent());
-	}
-
-	@ParameterizedTest
-	@NullSource
-	void 객체생성_실패__status_null(ReviewStatus status){
-		assertThrowsExactly(
-			FieldValidationException.class,
-			()-> ReviewEntity.create(
-				status,
-				"테스트내용"
-			)
-		);
 	}
 
 	@ParameterizedTest
@@ -43,7 +30,6 @@ class ReviewEntityTest {
 		assertThrowsExactly(
 			FieldValidationException.class,
 			()-> ReviewEntity.create(
-				ReviewStatus.ENABLED,
 				content
 			)
 		);

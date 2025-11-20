@@ -32,23 +32,21 @@ public class ReviewEntity extends BaseEntity {
 	@JoinColumn(name = "order_product_id", nullable = false)
 	private OrderProductEntity orderProduct;
 
-	protected ReviewEntity(
-		ReviewStatus status,
-		String content
-	) {
-		ValidationUtil.validationNotNullEnum(status,"리뷰상태");
-		ValidationUtil.validateNotNullAndBlank(content,"내용");
+	public void update(String content){ this.content = content; }
+
+	public void delete(){ this.status = ReviewStatus.REMOVED; }
+
+	protected ReviewEntity(String content, ReviewStatus status) {
 		this.status = status;
 		this.content = content;
 	}
 
-	public static ReviewEntity create(
-		final ReviewStatus status,
-		final String content
-	){
-		return new ReviewEntity(
-			status,
-			content
-		);
+	public static ReviewEntity create(final String content){
+		ValidationUtil.validateNotNullAndBlank(content,"내용");
+		return new ReviewEntity(content, ReviewStatus.ENABLED);
+	}
+
+	public void mapToOrderProduct(OrderProductEntity orderProduct){
+		this.orderProduct = orderProduct;
 	}
 }
