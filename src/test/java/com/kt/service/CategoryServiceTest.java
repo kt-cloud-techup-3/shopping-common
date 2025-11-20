@@ -15,7 +15,7 @@ import com.kt.dto.CategoryResponse;
 import com.kt.repository.CategoryRepository;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-class CategoryServiceImplTest {
+class CategoryServiceTest {
 
 	@Autowired
 	private CategoryService categoryService;
