@@ -48,4 +48,9 @@ public class CategoryEntity extends BaseEntity {
 	) {
 		return new CategoryEntity(name, parent);
 	}
+
+	public void updateName(String name) {
+		this.name = name;
+	}
+	
 }
