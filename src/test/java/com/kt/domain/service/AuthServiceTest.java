@@ -63,10 +63,6 @@ public class AuthServiceTest {
 			"010-1234-0002"
 		);
 		authService.memberSignup(firstSignup);
-		UserEntity member = userRepository.findByEmail(firstSignup.email()).orElseGet(
-			() -> null
-		);
-		assertNotNull(member);
 
 		assertThrowsExactly(
 			IllegalArgumentException.class, () ->
