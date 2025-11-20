@@ -61,7 +61,7 @@ public class CategoryServiceImpl implements CategoryService {
 		CategoryEntity category = categoryRepository.findById(id)
 			.orElseThrow(() -> new BaseException(ErrorCode.CATEGORY_NOT_FOUND));
 
-		if (category.getChildren().isEmpty())
+		if (!category.getChildren().isEmpty())
 			throw new BaseException(ErrorCode.CHILD_CATEGORY_EXISTS);
 
 		categoryRepository.delete(category);

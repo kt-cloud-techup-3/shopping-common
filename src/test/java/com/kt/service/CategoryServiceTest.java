@@ -12,6 +12,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 import com.kt.domain.entity.CategoryEntity;
 import com.kt.dto.CategoryResponse;
+import com.kt.exception.BaseException;
 import com.kt.repository.CategoryRepository;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -29,12 +30,12 @@ class CategoryServiceTest {
 
 		CategoryEntity parentCategory = categoryRepository.save(
 			CategoryEntity.create(
-				"부모카테고리명",
+				"자식있는부모",
 				null
 			));
 		CategoryEntity parentCategory2 = categoryRepository.save(
 			CategoryEntity.create(
-				"부모카테고리명2",
+				"자식없는부모",
 				null
 			));
 		CategoryEntity childCategory = categoryRepository.save(
@@ -44,7 +45,7 @@ class CategoryServiceTest {
 			));
 		CategoryEntity childCategory2 = categoryRepository.save(
 			CategoryEntity.create(
-				"자식카데고리명2",
+				"자식카테고리명2",
 				parentCategory
 			));
 	}
@@ -90,12 +91,33 @@ class CategoryServiceTest {
 
 		CategoryResponse.CategoryTreeItem parent = result
 			.stream()
-			.filter(res -> res.name().equals("부모카테고리명"))
+			.filter(res -> res.name().equals("자식있는부모"))
 			.findFirst()
 			.orElseThrow();
 
 		assertThat(parent).isNotNull();
 		assertThat(parent.children()).hasSize(2);
+	}
+
+	@Test
+	void 카테고리_삭제_자식_없음() {
+		// given
+		CategoryEntity category = categoryRepository.findByName("자식카테고리명2").orElse(null);
+
+		// when
+		categoryService.delete(category.getId());
+
+		// then
+		assertThat(categoryRepository.findByName("자식카테고리명2")).isEmpty();
+	}
+
+	@Test
+	void 카테고리_삭제_실패__자식_있음() {
+		// given
+		CategoryEntity category = categoryRepository.findByName("자식있는부모").orElse(null);
+
+		assertThatThrownBy(() -> categoryService.delete(category.getId()))
+			.isInstanceOf(BaseException.class);
 	}
 
 }
