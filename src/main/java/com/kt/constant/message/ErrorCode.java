@@ -2,6 +2,7 @@ package com.kt.constant.message;
 
 import java.text.MessageFormat;
 
+import org.springframework.boot.autoconfigure.graphql.GraphQlProperties;
 import org.springframework.http.HttpStatus;
 
 import lombok.Getter;
@@ -14,6 +15,7 @@ public enum ErrorCode {
 	BODY_FIELD_ERROR(HttpStatus.BAD_REQUEST, "바디 필드 오류 : {0}"),
 	USER_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 유저입니다."),
 	ORDER_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 주문은 존재하지 않습니다."),
+	REVIEW_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 리뷰입니다.");
 	PARENT_CATEGORY_NOT_FOUND(HttpStatus.NOT_FOUND, "부모 카테고리가 존재하지 않습니다."),
 	CATEGORY_NOT_FOUND(HttpStatus.NOT_FOUND, "카테고리가 존재하지 않습니다."),
 	CHILD_CATEGORY_EXISTS(HttpStatus.BAD_REQUEST, "자식 카테고리가 존재합니다.");
