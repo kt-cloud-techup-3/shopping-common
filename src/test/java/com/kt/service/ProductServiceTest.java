@@ -2,6 +2,9 @@ package com.kt.service;
 
 import static org.assertj.core.api.Assertions.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -110,14 +113,16 @@ class ProductServiceTest {
 	@Test
 	void 상품_조회() {
 		// given
+		List<ProductEntity> products = new ArrayList<>();
 		for (int i = 0; i < 20; i++) {
 			ProductEntity product = ProductEntity.create(
 				"상품" + i,
 				1000L,
 				10L
 			);
-			productRepository.save(product);
+			products.add(product);
 		}
+		productRepository.saveAll(products);
 
 		// when
 		PageRequest pageRequest = PageRequest.of(1, 10);
