@@ -3,9 +3,9 @@ package com.kt.service;
 import com.kt.constant.Gender;
 import com.kt.domain.dto.request.MemberRequest;
 import com.kt.domain.entity.UserEntity;
+import com.kt.exception.DuplicatedException;
 import com.kt.repository.UserRepository;
 
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -68,7 +68,7 @@ public class AuthServiceTest {
 		authService.memberSignup(firstSignup);
 
 		assertThrowsExactly(
-			IllegalArgumentException.class, () ->
+			DuplicatedException.class, () ->
 				authService.memberSignup(secondSignup)
 		);
 

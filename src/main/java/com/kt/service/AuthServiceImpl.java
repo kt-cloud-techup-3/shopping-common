@@ -10,6 +10,7 @@ import com.kt.domain.entity.CourierEntity;
 import com.kt.domain.entity.UserEntity;
 
 import com.kt.exception.AuthException;
+import com.kt.exception.DuplicatedException;
 import com.kt.exception.NotFoundException;
 import com.kt.repository.AccountRepository;
 import com.kt.repository.UserRepository;
@@ -88,7 +89,7 @@ public class AuthServiceImpl implements AuthService {
 
 	private void isDuplicatedEmail(String email) {
 		if (userRepository.findByEmail(email).isPresent())
-			throw new AuthException(ErrorCode.AUTH_DUPLICATED_EMAIL);
+			throw new DuplicatedException(ErrorCode.DUPLICATED_EMAIL);
 	}
 
 }
