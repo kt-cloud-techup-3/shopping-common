@@ -6,12 +6,10 @@ import com.kt.domain.dto.request.LoginRequest;
 import com.kt.domain.dto.request.MemberRequest;
 
 import com.kt.domain.entity.AbstractAccountEntity;
-import com.kt.domain.entity.CourierEntity;
 import com.kt.domain.entity.UserEntity;
 
 import com.kt.exception.AuthException;
 import com.kt.exception.DuplicatedException;
-import com.kt.exception.NotFoundException;
 import com.kt.repository.AccountRepository;
 import com.kt.repository.UserRepository;
 
@@ -57,6 +55,7 @@ public class AuthServiceImpl implements AuthService {
 		AbstractAccountEntity account = accountRepository.findByEmail(request.email()).orElseThrow(
 			() -> new AuthException(ErrorCode.AUTH_FAILED_LOGIN)
 		);
+
 		validAccount(account, request.password());
 
 		String accessToken = jwtService.issue(
@@ -77,14 +76,14 @@ public class AuthServiceImpl implements AuthService {
 	}
 
 	private void validAccount(AbstractAccountEntity account, String rawPassword) {
-		if (passwordEncoder.matches(rawPassword, account.getPassword())) {
-			switch (account.getStatus()) {
-				case DELETED -> throw new AuthException(ErrorCode.AUTH_ACCOUNT_DELETED);
-				case DISABLED -> throw new AuthException(ErrorCode.AUTH_ACCOUNT_DISABLED);
-				case RETIRED -> throw new AuthException(ErrorCode.AUTH_ACCOUNT_RETIRED);
-			}
+		if (!passwordEncoder.matches(rawPassword, account.getPassword()))
+			throw new AuthException(ErrorCode.AUTH_FAILED_LOGIN);
+
+		switch (account.getStatus()) {
+			case DELETED -> throw new AuthException(ErrorCode.AUTH_ACCOUNT_DELETED);
+			case DISABLED -> throw new AuthException(ErrorCode.AUTH_ACCOUNT_DISABLED);
+			case RETIRED -> throw new AuthException(ErrorCode.AUTH_ACCOUNT_RETIRED);
 		}
-		throw new AuthException(ErrorCode.AUTH_FAILED_LOGIN);
 	}
 
 	private void isDuplicatedEmail(String email) {

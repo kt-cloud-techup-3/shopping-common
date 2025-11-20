@@ -45,4 +45,16 @@ public abstract class AbstractAccountEntity extends BaseEntity {
 	@Enumerated(EnumType.STRING)
 	protected UserStatus status;
 
+	public void disabled() {
+		this.status = UserStatus.DISABLED;
+	}
+
+	public void retired() {
+		this.status = UserStatus.RETIRED;
+	}
+
+	public void delete() {
+		this.status = UserStatus.DELETED;
+	}
+
 }
