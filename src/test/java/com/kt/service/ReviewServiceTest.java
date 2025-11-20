@@ -30,7 +30,7 @@ import com.kt.repository.ProductRepository;
 import com.kt.repository.ReviewRepository;
 import com.kt.repository.UserRepository;
 
-@SpringBootTest
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("test")
 class ReviewServiceTest {
 
