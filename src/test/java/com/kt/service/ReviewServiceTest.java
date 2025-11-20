@@ -49,7 +49,6 @@ class ReviewServiceTest {
 	@Autowired
 	OrderRepository orderRepository;
 
-
 	OrderProductEntity testOrderProduct;
 
 	@BeforeEach
@@ -68,7 +67,7 @@ class ReviewServiceTest {
 			Gender.MALE,
 			LocalDate.now(),
 			"010-1234-5678"
-		)	;
+		);
 		userRepository.save(user);
 
 		ReceiverVO receiver = new ReceiverVO(
@@ -86,7 +85,7 @@ class ReviewServiceTest {
 		);
 		orderRepository.save(order);
 
-		ProductEntity product= ProductEntity.create(
+		ProductEntity product = ProductEntity.create(
 			"테스트상품명",
 			1000L,
 			5L,
@@ -106,31 +105,31 @@ class ReviewServiceTest {
 
 
 	@Test
-	void 리뷰생성_성공(){
-		reviewService.create(testOrderProduct.getId(),"테스트리뷰내용");
+	void 리뷰생성_성공() {
+		reviewService.create(testOrderProduct.getId(), "테스트리뷰내용");
 
-		ReviewEntity foundedReview= reviewRepository
+		ReviewEntity foundedReview = reviewRepository
 			.findAll()
 			.stream()
 			.findFirst()
 			.orElseThrow(() -> new BaseException(ErrorCode.REVIEW_NOT_FOUND));
 
-		Assertions.assertEquals(testOrderProduct.getId(),foundedReview.getOrderProduct().getId());
+		Assertions.assertEquals(testOrderProduct.getId(), foundedReview.getOrderProduct().getId());
 	}
 
 	@Test
-	void 리뷰변경_성공(){
+	void 리뷰변경_성공() {
 		ReviewEntity review = ReviewEntity.create("테스트리뷰내용");
 		review.mapToOrderProduct(testOrderProduct);
 		reviewRepository.save(review);
 
-		reviewService.update(review.getId(),"변경된테스트리뷰내용");
+		reviewService.update(review.getId(), "변경된테스트리뷰내용");
 
 		Assertions.assertEquals("변경된테스트리뷰내용", review.getContent());
 	}
 
 	@Test
-	void 리뷰삭제_성공(){
+	void 리뷰삭제_성공() {
 		ReviewEntity review = ReviewEntity.create("테스트리뷰내용");
 		review.mapToOrderProduct(testOrderProduct);
 		reviewRepository.save(review);
