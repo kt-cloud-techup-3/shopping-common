@@ -54,4 +54,16 @@ public class CategoryServiceImpl implements CategoryService {
 		return rootCategory
 			.stream().map(CategoryResponse.CategoryTreeItem::of).toList();
 	}
+
+	@Transactional
+	@Override
+	public void delete(UUID id) {
+		CategoryEntity category = categoryRepository.findById(id)
+			.orElseThrow(() -> new BaseException(ErrorCode.CATEGORY_NOT_FOUND));
+
+		if (category.getChildren().isEmpty())
+			throw new BaseException(ErrorCode.CHILD_CATEGORY_EXISTS);
+
+		categoryRepository.delete(category);
+	}
 }

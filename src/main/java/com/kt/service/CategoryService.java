@@ -10,5 +10,7 @@ public interface CategoryService {
 
 	void update(UUID id, String name);
 
+	void delete(UUID id);
+
 	List<CategoryResponse.CategoryTreeItem> getAll();
 }
