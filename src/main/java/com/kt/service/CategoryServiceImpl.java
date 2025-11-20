@@ -21,7 +21,7 @@ public class CategoryServiceImpl implements CategoryService {
 
 	@Transactional
 	@Override
-	public UUID create(String name, UUID parentId) {
+	public void create(String name, UUID parentId) {
 		CategoryEntity parentCategory = (parentId != null) ?
 			categoryRepository.findById(parentId).orElseThrow(() -> new BaseException(
 				ErrorCode.CATEGORY_NOT_FOUND)) : null;
@@ -29,7 +29,6 @@ public class CategoryServiceImpl implements CategoryService {
 		CategoryEntity category = CategoryEntity.create(name, parentCategory);
 		categoryRepository.save(category);
 
-		return category.getId();
 	}
 
 	@Transactional
@@ -66,4 +65,5 @@ public class CategoryServiceImpl implements CategoryService {
 
 		categoryRepository.delete(category);
 	}
+
 }

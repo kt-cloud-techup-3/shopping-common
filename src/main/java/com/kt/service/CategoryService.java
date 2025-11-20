@@ -6,7 +6,7 @@ import java.util.UUID;
 import com.kt.dto.CategoryResponse;
 
 public interface CategoryService {
-	UUID create(String name, UUID parentId);
+	void create(String name, UUID parentId);
 
 	void update(UUID id, String name);
 
