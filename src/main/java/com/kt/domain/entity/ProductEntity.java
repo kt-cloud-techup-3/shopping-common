@@ -45,6 +45,19 @@ public class ProductEntity extends BaseEntity {
 	public static ProductEntity create(
 		final String name,
 		final Long price,
+		final Long stock
+	) {
+		return new ProductEntity(
+			name,
+			price,
+			stock,
+			ProductStatus.ACTIVATED
+		);
+	}
+
+	public static ProductEntity create(
+		final String name,
+		final Long price,
 		final Long stock,
 		final ProductStatus status
 	) {
@@ -54,5 +67,15 @@ public class ProductEntity extends BaseEntity {
 			stock,
 			status
 		);
+	}
+
+	public void update(String name, Long price, Long stock) {
+		this.name = name;
+		this.price = price;
+		this.stock = stock;
+	}
+
+	public void delete() {
+		this.status = ProductStatus.DELETED;
 	}
 }
