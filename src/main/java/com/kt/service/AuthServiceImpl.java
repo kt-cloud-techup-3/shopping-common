@@ -1,11 +1,21 @@
 package com.kt.service;
 
 import com.kt.constant.UserRole;
+import com.kt.constant.message.ErrorCode;
+import com.kt.domain.dto.request.LoginRequest;
 import com.kt.domain.dto.request.MemberRequest;
 
+import com.kt.domain.entity.AbstractAccountEntity;
+import com.kt.domain.entity.CourierEntity;
 import com.kt.domain.entity.UserEntity;
 
+import com.kt.exception.AuthException;
+import com.kt.exception.NotFoundException;
+import com.kt.repository.AccountRepository;
 import com.kt.repository.UserRepository;
+
+import com.kt.security.JwtService;
+import com.mysema.commons.lang.Pair;
 
 import lombok.RequiredArgsConstructor;
 
@@ -19,7 +29,10 @@ public class AuthServiceImpl implements AuthService {
 
 	private final UserRepository userRepository;
 
+	private final AccountRepository accountRepository;
+
 	private final PasswordEncoder passwordEncoder;
+	private final JwtService jwtService;
 
 	@Override
 	@Transactional
@@ -37,9 +50,45 @@ public class AuthServiceImpl implements AuthService {
 		userRepository.save(member);
 	}
 
+	@Override
+	public Pair<String, String> login(LoginRequest request) {
+
+		AbstractAccountEntity account = accountRepository.findByEmail(request.email()).orElseThrow(
+			() -> new AuthException(ErrorCode.AUTH_FAILED_LOGIN)
+		);
+		validAccount(account, request.password());
+
+		String accessToken = jwtService.issue(
+			account.getId(),
+			account.getEmail(),
+			account.getRole(),
+			jwtService.getAccessExpiration()
+		);
+
+		String refreshToken = jwtService.issue(
+			account.getId(),
+			account.getEmail(),
+			account.getRole(),
+			jwtService.getRefreshExpiration()
+		);
+
+		return Pair.of(accessToken, refreshToken);
+	}
+
+	private void validAccount(AbstractAccountEntity account, String rawPassword) {
+		if (passwordEncoder.matches(rawPassword, account.getPassword())) {
+			switch (account.getStatus()) {
+				case DELETED -> throw new AuthException(ErrorCode.AUTH_ACCOUNT_DELETED);
+				case DISABLED -> throw new AuthException(ErrorCode.AUTH_ACCOUNT_DISABLED);
+				case RETIRED -> throw new AuthException(ErrorCode.AUTH_ACCOUNT_RETIRED);
+			}
+		}
+		throw new AuthException(ErrorCode.AUTH_FAILED_LOGIN);
+	}
+
 	private void isDuplicatedEmail(String email) {
 		if (userRepository.findByEmail(email).isPresent())
-			throw new IllegalArgumentException("중복된 이메일입니다");
+			throw new AuthException(ErrorCode.AUTH_DUPLICATED_EMAIL);
 	}
 
 }

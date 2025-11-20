@@ -17,6 +17,7 @@ public enum ErrorCode {
 	AUTH_ACCOUNT_DELETED(HttpStatus.FORBIDDEN, "해당 계정은 삭제된 계정입니다"),
 	AUTH_ACCOUNT_DISABLED(HttpStatus.FORBIDDEN, "해당 계정은 비활성화된 계정입니다."),
 	AUTH_ACCOUNT_RETIRED(HttpStatus.FORBIDDEN, "해당 계정은 탈퇴한 계정입니다."),
+	AUTH_DUPLICATED_EMAIL(HttpStatus.CONFLICT, "해당 이메일로 등록된 계정이 이미 존재합니다."),
 	ORDER_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 주문은 존재하지 않습니다."),
 	PRODUCT_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 상품은 존재하지 않습니다."),
 	REVIEW_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 리뷰입니다."),
