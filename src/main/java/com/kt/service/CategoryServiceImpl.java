@@ -44,7 +44,7 @@ public class CategoryServiceImpl implements CategoryService {
 
 	@Transactional
 	@Override
-	public List<CategoryResponse.getAll> getAll() {
+	public List<CategoryResponse.CategoryTreeItem> getAll() {
 		List<CategoryEntity> list = categoryRepository.findAll();
 
 		List<CategoryEntity> rootCategory = list.stream()
@@ -52,6 +52,6 @@ public class CategoryServiceImpl implements CategoryService {
 			.toList();
 
 		return rootCategory
-			.stream().map(CategoryResponse.getAll::of).toList();
+			.stream().map(CategoryResponse.CategoryTreeItem::of).toList();
 	}
 }

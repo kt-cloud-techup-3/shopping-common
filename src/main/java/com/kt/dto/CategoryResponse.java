@@ -11,17 +11,17 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class CategoryResponse {
 
-	public record getAll(
+	public record CategoryTreeItem(
 		UUID id,
 		String name,
-		List<getAll> children
+		List<CategoryTreeItem> children
 	) {
-		public static getAll of(CategoryEntity category) {
-			return new getAll(
+		public static CategoryTreeItem of(CategoryEntity category) {
+			return new CategoryTreeItem(
 				category.getId(),
 				category.getName(),
 				category.getChildren().stream()
-					.map(getAll::of)
+					.map(CategoryTreeItem::of)
 					.toList()
 			);
 		}

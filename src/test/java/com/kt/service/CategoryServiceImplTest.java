@@ -83,12 +83,12 @@ class CategoryServiceImplTest {
 	@Test
 	void 카테고리_전체_조회() {
 		// when
-		List<CategoryResponse.getAll> result = categoryService.getAll();
+		List<CategoryResponse.CategoryTreeItem> result = categoryService.getAll();
 		// then
 		assertThat(result).isNotNull();
 		assertThat(result).hasSize(2);
 
-		CategoryResponse.getAll parent = result
+		CategoryResponse.CategoryTreeItem parent = result
 			.stream()
 			.filter(res -> res.name().equals("부모카테고리명"))
 			.findFirst()

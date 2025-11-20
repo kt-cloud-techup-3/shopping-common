@@ -10,5 +10,5 @@ public interface CategoryService {
 
 	void update(UUID id, String name);
 
-	List<CategoryResponse.getAll> getAll();
+	List<CategoryResponse.CategoryTreeItem> getAll();
 }
