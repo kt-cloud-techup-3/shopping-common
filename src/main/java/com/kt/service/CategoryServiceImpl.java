@@ -21,13 +21,15 @@ public class CategoryServiceImpl implements CategoryService {
 
 	@Transactional
 	@Override
-	public void create(String name, UUID parentId) {
+	public UUID create(String name, UUID parentId) {
 		CategoryEntity parentCategoryEntity = (parentId != null) ?
 			categoryRepository.findById(parentId).orElseThrow(() -> new BaseException(
 				ErrorCode.CATEGORY_NOT_FOUND)) : null;
 
 		CategoryEntity categoryEntity = CategoryEntity.create(name, parentCategoryEntity);
 		categoryRepository.save(categoryEntity);
+
+		return categoryEntity.getId();
 	}
 
 	@Transactional
@@ -40,6 +42,7 @@ public class CategoryServiceImpl implements CategoryService {
 		categoryEntity.updateName(name);
 	}
 
+	@Transactional
 	@Override
 	public List<CategoryResponse.getAll> getAll() {
 		List<CategoryEntity> list = categoryRepository.findAll();
