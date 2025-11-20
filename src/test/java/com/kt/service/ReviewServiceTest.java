@@ -2,6 +2,7 @@ package com.kt.service;
 
 import java.time.LocalDate;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -30,15 +31,14 @@ import com.kt.repository.ReviewRepository;
 import com.kt.repository.UserRepository;
 
 @SpringBootTest
-@Transactional
 @ActiveProfiles("test")
 class ReviewServiceTest {
 
 	@Autowired
 	ReviewService reviewService;
+
 	@Autowired
 	ReviewRepository reviewRepository;
-
 	@Autowired
 	OrderProductRepository orderProductRepository;
 	@Autowired
@@ -53,6 +53,12 @@ class ReviewServiceTest {
 
 	@BeforeEach
 	void setUp() throws Exception {
+		orderProductRepository.deleteAll();
+		userRepository.deleteAll();
+		productRepository.deleteAll();
+		orderRepository.deleteAll();
+		reviewRepository.deleteAll();
+
 		UserEntity user = UserEntity.create(
 			"주문자테스터1",
 			"wjd123@naver.com",
@@ -96,6 +102,7 @@ class ReviewServiceTest {
 		);
 		orderProductRepository.save(testOrderProduct);
 	}
+
 
 	@Test
 	void 리뷰생성_성공(){
