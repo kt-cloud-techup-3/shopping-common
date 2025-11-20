@@ -10,8 +10,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import com.kt.domain.dto.response.CategoryResponse;
 import com.kt.domain.entity.CategoryEntity;
-import com.kt.dto.CategoryResponse;
 import com.kt.exception.BaseException;
 import com.kt.repository.CategoryRepository;
 
