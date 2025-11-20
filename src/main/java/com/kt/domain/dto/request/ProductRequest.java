@@ -10,10 +10,10 @@ public class ProductRequest {
 		@NotBlank(message = "상품 이름은 필수 항목입니다.")
 		String name,
 		@NotNull(message = "상품 가격은 필수 항목입니다.")
-		@Min(value = 0, message = "상품 가격은 0원 이상이어야 합니다.")
+		@Min(value = 0, message = "상품 가격은 최소 0원이어야 합니다.")
 		Long price,
 		@NotNull(message = "상품 재고는 필수 항목입니다.")
-		@Positive(message = "상품 재고는 0개 이상이어야 합니다.")
+		@Positive(message = "상품 재고는 0보다 작을 수 없습니다.")
 		Long stock
 	) {
 	}
@@ -22,10 +22,10 @@ public class ProductRequest {
 		@NotBlank(message = "상품 이름은 필수 항목입니다.")
 		String name,
 		@NotNull(message = "상품 가격은 필수 항목입니다.")
-		@Min(value = 0, message = "상품 가격은 0원 이상이어야 합니다.")
+		@Min(value = 0, message = "상품 가격은 최소 0원이어야 합니다.")
 		Long price,
 		@NotNull(message = "상품 재고는 필수 항목입니다.")
-		@Positive(message = "상품 재고는 0개 이상이어야 합니다.")
+		@Positive(message = "상품 재고는 0보다 작을 수 없습니다.")
 		Long stock
 	) {
 	}
