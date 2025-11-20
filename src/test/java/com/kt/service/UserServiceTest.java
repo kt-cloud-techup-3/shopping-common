@@ -3,7 +3,7 @@ package com.kt.service;
 import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;
 
-import java.time.LocalDate;
+import java.util.UUID;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -11,6 +11,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.kt.constant.Gender;
 import com.kt.constant.OrderProductStatus;
@@ -29,7 +30,9 @@ import com.kt.repository.ProductRepository;
 import com.kt.repository.ReviewRepository;
 import com.kt.repository.UserRepository;
 import java.util.List;
+import com.kt.domain.dto.response.UserResponse;
 
+@Transactional
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("test")
 class UserServiceTest {
@@ -93,6 +96,22 @@ class UserServiceTest {
 			ProductStatus.ACTIVATED
 		);
 		productRepository.save(testProduct);
+	}
+	private UserService userService;
+
+	@Test
+	void 내_주문_조회() {
+		String uuid = "3f92c1dd-1e45-4b57-9a92-12df2a6fa4c3";
+		//given
+		UUID userId = UUID.fromString(uuid);
+
+		// when
+		UserResponse.Orders result = userService.getOrdersByUserId(userId);
+
+		// then
+		assertThat(result).isNotNull();
+		assertThat(result.userId()).isEqualTo(userId);
+		assertThat(result.orders()).isNotEmpty();
 	}
 
 	@Test
