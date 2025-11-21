@@ -10,15 +10,15 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.kt.constant.Gender;
 import com.kt.constant.OrderProductStatus;
 import com.kt.constant.ProductStatus;
 import com.kt.constant.UserRole;
-import com.kt.domain.dto.response.OrderResponse;
 import com.kt.domain.dto.request.OrderRequest;
+import com.kt.domain.dto.response.OrderResponse;
 import com.kt.domain.entity.OrderEntity;
 import com.kt.domain.entity.OrderProductEntity;
 import com.kt.domain.entity.ProductEntity;
@@ -34,8 +34,6 @@ import com.kt.repository.UserRepository;
 @ActiveProfiles("test")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class OrderServiceTest {
-
-	UUID orderId;
 
 	@Autowired
 	private OrderService orderService;
@@ -54,6 +52,7 @@ class OrderServiceTest {
 		orderRepository.deleteAll();
 		productRepository.deleteAll();
 		userRepository.deleteAll();
+
 	}
 
 	@Test
@@ -61,11 +60,28 @@ class OrderServiceTest {
 		// given
 		String email = "test@example.com";
 
-		UUID productId1 = UUID.fromString("dc3f261a-c60f-11f0-b06b-622bb1d1e593");
-		UUID productId2 = UUID.fromString("dc3f37ad-c60f-11f0-b06b-622bb1d1e593");
+		UserEntity savedUser = userRepository.save(
+			UserEntity.create(
+				"김도현",
+				"test@example.com",
+				"111",
+				UserRole.MEMBER,
+				Gender.MALE,
+				LocalDate.now(),
+				"0101010"
+			)
+		);
 
-		OrderRequest.Item item1 = new OrderRequest.Item(productId1, 2L);
-		OrderRequest.Item item2 = new OrderRequest.Item(productId2, 1L);
+		ProductEntity productId1 = productRepository.save(
+			ProductEntity.create("상품1", 10L, 10000L, ProductStatus.ACTIVATED)
+		);
+
+		ProductEntity productId2 = productRepository.save(
+			ProductEntity.create("상품2", 5L, 20000L, ProductStatus.ACTIVATED)
+		);
+
+		OrderRequest.Item item1 = new OrderRequest.Item(productId1.getId(), 2L);
+		OrderRequest.Item item2 = new OrderRequest.Item(productId2.getId(), 1L);
 
 		List<OrderRequest.Item> items = List.of(item1, item2);
 
@@ -92,7 +108,20 @@ class OrderServiceTest {
 	@Test
 	void 주문_생성_실패__상품없음() {
 		// given
+
 		String email = "test@example.com";
+		UserEntity user = userRepository.save(
+			UserEntity.create(
+				"김도현",
+				"test@example.com",
+				"111",
+				UserRole.MEMBER,
+				Gender.MALE,
+				LocalDate.now(),
+				"0101010"
+			)
+		);
+
 		UUID invalidProductId = UUID.fromString("11111111-2222-3333-4444-555555555555");
 
 		List<OrderRequest.Item> items = List.of(
@@ -107,17 +136,31 @@ class OrderServiceTest {
 
 	@Test
 	void 주문_생성_실패__재고부족() {
+
 		// given
-		String email = "test@example.com";
-
-		UUID productId = UUID.fromString("dc3f39e9-c60f-11f0-b06b-622bb1d1e593");
-
-		List<OrderRequest.Item> items = List.of(
-			new OrderRequest.Item(productId, 9999L)
+		UserEntity user = userRepository.save(
+			UserEntity.create(
+				"김도현",
+				"test@example.com",
+				"111",
+				UserRole.MEMBER,
+				Gender.MALE,
+				LocalDate.now(),
+				"0101010"
+			)
 		);
 
-		// when, then
-		assertThatThrownBy(() -> orderService.createOrder(email, items))
+		// given
+		ProductEntity product = productRepository.save(
+			ProductEntity.create("상품1", 3L, 1L, ProductStatus.ACTIVATED)
+		);
+
+		List<OrderRequest.Item> items = List.of(
+			new OrderRequest.Item(product.getId(), 2L)
+		);
+
+		// then
+		assertThatThrownBy(() -> orderService.createOrder(user.getEmail(), items))
 			.isInstanceOf(BaseException.class)
 			.hasMessageContaining("STOCK_NOT_ENOUGH");
 	}
@@ -125,10 +168,10 @@ class OrderServiceTest {
 	@Test
 	void 주문상품_조회() {
 		// given
-		UserEntity savedUser = userRepository.save(
+		UserEntity user = userRepository.save(
 			UserEntity.create(
 				"김도현",
-				"ddd",
+				"test@example.com",
 				"111",
 				UserRole.MEMBER,
 				Gender.MALE,
@@ -138,22 +181,15 @@ class OrderServiceTest {
 		);
 
 		ProductEntity savedProduct = productRepository.save(
-			ProductEntity.create(
-				"테스트물건",
-				3L,
-				3L,
-				ProductStatus.ACTIVATED
-			)
+			ProductEntity.create("테스트 상품", 5L, 10000L, ProductStatus.ACTIVATED)
 		);
 
 		OrderEntity savedOrder = orderRepository.save(
 			OrderEntity.create(
-				ReceiverVO.create("이름", "번호", "도시", "시군구", "동", "상세"),
-				savedUser
+				ReceiverVO.create("이름", "번호", "도시", "시군구", "도로명", "상세"),
+				user
 			)
 		);
-
-		orderId = savedOrder.getId();
 
 		OrderProductEntity savedOrderProduct = orderProductRepository.save(
 			OrderProductEntity.create(
@@ -165,16 +201,13 @@ class OrderServiceTest {
 			)
 		);
 
-		// when
-		OrderResponse.OrderProducts foundOrderProduct = orderService.getOrderProducts(orderId);
+		OrderResponse.OrderProducts foundOrderProduct = orderService.getOrderProducts(savedOrder.getId());
 
 		// then
 		assertThat(foundOrderProduct).isNotNull();
-		assertThat(foundOrderProduct.orderId()).isEqualTo(orderId);
+		assertThat(foundOrderProduct.orderId()).isEqualTo(savedOrder.getId());
 		assertThat(foundOrderProduct.orderProducts()).isNotEmpty();
 		assertThat(foundOrderProduct.orderProducts().size()).isEqualTo(1);
 	}
-
-
 
 }

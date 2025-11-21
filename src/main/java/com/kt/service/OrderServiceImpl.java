@@ -6,18 +6,20 @@ import java.util.UUID;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.kt.domain.dto.response.OrderResponse;
+import com.kt.constant.OrderProductStatus;
+import com.kt.constant.message.ErrorCode;
 import com.kt.domain.dto.request.OrderRequest;
-import com.kt.domain.entity.ProductEntity;
-import com.kt.domain.entity.UserEntity;
+import com.kt.domain.dto.response.OrderResponse;
 import com.kt.domain.entity.OrderEntity;
 import com.kt.domain.entity.OrderProductEntity;
+import com.kt.domain.entity.ProductEntity;
 import com.kt.domain.entity.ReceiverVO;
+import com.kt.domain.entity.UserEntity;
 import com.kt.exception.BaseException;
+import com.kt.repository.OrderProductRepository;
+import com.kt.repository.OrderRepository;
 import com.kt.repository.ProductRepository;
 import com.kt.repository.UserRepository;
-import com.kt.repository.OrderRepository;
-import com.kt.repository.OrderProductRepository;
 
 import lombok.RequiredArgsConstructor;
 
