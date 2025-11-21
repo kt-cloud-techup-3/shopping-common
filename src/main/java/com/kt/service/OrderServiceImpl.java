@@ -48,9 +48,8 @@ public class OrderServiceImpl implements OrderService {
 			"111호"
 		);
 
-		OrderEntity order = orderRepository.save(
-			OrderEntity.create(receiverVO, user)
-		);
+		OrderEntity order = OrderEntity.create(receiverVO, user);
+		orderRepository.save(order);
 
 		for (OrderRequest.Item item : items) {
 
