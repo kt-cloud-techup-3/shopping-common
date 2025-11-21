@@ -2,7 +2,6 @@ package com.kt.service;
 
 import java.time.LocalDate;
 
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -31,6 +30,7 @@ import com.kt.repository.ProductRepository;
 import com.kt.repository.ReviewRepository;
 import com.kt.repository.UserRepository;
 
+@Transactional
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("test")
 class ReviewServiceTest {
@@ -103,7 +103,6 @@ class ReviewServiceTest {
 		orderProductRepository.save(testOrderProduct);
 	}
 
-
 	@Test
 	void 리뷰생성_성공() {
 		reviewService.create(testOrderProduct.getId(), "테스트리뷰내용");
@@ -138,13 +137,13 @@ class ReviewServiceTest {
 	}
 
 	@Test
-	void 리뷰조회_성공(){
+	void 리뷰조회_성공() {
 		ReviewEntity review = ReviewEntity.create("테스트리뷰내용");
 		review.mapToOrderProduct(testOrderProduct);
 		reviewRepository.save(review);
 
 		ReviewResponse.Search foundedReviewDto = reviewService.getReview(testOrderProduct.getId());
 
-		Assertions.assertEquals(review.getId(),foundedReviewDto.reviewId());
+		Assertions.assertEquals(review.getId(), foundedReviewDto.reviewId());
 	}
 }
