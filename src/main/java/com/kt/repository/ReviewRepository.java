@@ -1,5 +1,6 @@
 package com.kt.repository;
 
+import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -13,5 +14,11 @@ import com.kt.exception.BaseException;
 public interface ReviewRepository extends JpaRepository<ReviewEntity, UUID> {
 	default ReviewEntity findByIdOrThrow(UUID reviewId) {
 		return findById(reviewId).orElseThrow(() -> new BaseException(ErrorCode.REVIEW_NOT_FOUND));
+	}
+
+	Optional<ReviewEntity> findByOrderProductId(UUID orderProductId);
+
+	default ReviewEntity findByOrderProductIdOrThrow(UUID orderProductId) {
+		return findByOrderProductId(orderProductId).orElseThrow(() -> new BaseException(ErrorCode.REVIEW_NOT_FOUND));
 	}
 }

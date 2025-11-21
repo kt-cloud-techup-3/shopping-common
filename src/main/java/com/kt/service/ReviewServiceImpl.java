@@ -7,6 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.kt.domain.entity.OrderProductEntity;
 import com.kt.domain.entity.ReviewEntity;
+import com.kt.dto.response.ReviewResponse;
 import com.kt.repository.OrderProductRepository;
 import com.kt.repository.ReviewRepository;
 
@@ -38,5 +39,14 @@ public class ReviewServiceImpl implements ReviewService {
 	public void delete(UUID reviewId){
 		ReviewEntity review = reviewRepository.findByIdOrThrow(reviewId);
 		review.delete();
+	}
+
+	@Override
+	public ReviewResponse.Search getReview(UUID orderProductId){
+		ReviewEntity reviewEntity = reviewRepository.findByOrderProductIdOrThrow(orderProductId);
+		return new ReviewResponse.Search(
+			reviewEntity.getId(),
+			reviewEntity.getContent()
+		);
 	}
 }

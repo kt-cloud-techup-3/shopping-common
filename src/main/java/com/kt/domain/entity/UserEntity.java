@@ -5,6 +5,7 @@ import static lombok.AccessLevel.*;
 import java.time.LocalDate;
 import java.util.List;
 
+
 import com.kt.constant.Gender;
 import com.kt.constant.UserRole;
 import com.kt.constant.UserStatus;
@@ -14,11 +15,13 @@ import jakarta.persistence.Column;
 import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Getter
-@Entity(name = "\"user\"")
+@Entity
+@Table(name = "\"user\"")
 @NoArgsConstructor(access = PROTECTED)
 @DiscriminatorValue("USER")
 public class UserEntity extends AbstractAccountEntity {

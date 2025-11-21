@@ -10,8 +10,10 @@ import com.kt.domain.entity.OrderProductEntity;
 import com.kt.exception.BaseException;
 
 @Repository
-public interface OrderProductRepository extends JpaRepository<OrderProductEntity, UUID> {
+public interface OrderProductRepository
+	extends JpaRepository<OrderProductEntity, UUID> , OrderProductRepositoryCustom {
+
 	default OrderProductEntity findByIdOrThrow(UUID orderProductId) {
-		return findById(orderProductId).orElseThrow(() -> new BaseException(ErrorCode.REVIEW_NOT_FOUND));
+		return findById(orderProductId).orElseThrow(() -> new BaseException(ErrorCode.ORDER_PRODUCT_NOT_FOUND));
 	}
 }
