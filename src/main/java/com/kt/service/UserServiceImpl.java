@@ -6,10 +6,10 @@ import java.util.UUID;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.kt.dto.response.OrderProductResponse;
-import com.kt.repository.OrderProductRepository;
+import com.kt.domain.dto.response.OrderProductResponse;
 import com.kt.domain.dto.response.UserResponse;
 import com.kt.domain.entity.OrderEntity;
+import com.kt.repository.OrderProductRepository;
 import com.kt.repository.OrderRepository;
 
 import lombok.RequiredArgsConstructor;

@@ -2,7 +2,7 @@ package com.kt.service;
 
 import java.util.UUID;
 
-import com.kt.dto.response.ReviewResponse;
+import com.kt.domain.dto.response.ReviewResponse;
 
 public interface ReviewService {
 	void create(UUID orderProductId, String content);

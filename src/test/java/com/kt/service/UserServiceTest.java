@@ -1,13 +1,12 @@
 package com.kt.service;
 
 import static org.assertj.core.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.*;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.UUID;
 
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,29 +18,18 @@ import com.kt.constant.Gender;
 import com.kt.constant.OrderProductStatus;
 import com.kt.constant.ProductStatus;
 import com.kt.constant.UserRole;
+import com.kt.domain.dto.response.OrderProductResponse;
+import com.kt.domain.dto.response.UserResponse;
 import com.kt.domain.entity.OrderEntity;
 import com.kt.domain.entity.OrderProductEntity;
 import com.kt.domain.entity.ProductEntity;
 import com.kt.domain.entity.ReceiverVO;
 import com.kt.domain.entity.ReviewEntity;
 import com.kt.domain.entity.UserEntity;
-import com.kt.dto.response.OrderProductResponse;
 import com.kt.repository.OrderProductRepository;
 import com.kt.repository.OrderRepository;
 import com.kt.repository.ProductRepository;
 import com.kt.repository.ReviewRepository;
-import com.kt.repository.UserRepository;
-import java.util.List;
-import com.kt.constant.Gender;
-import com.kt.constant.ProductStatus;
-import com.kt.constant.UserRole;
-import com.kt.domain.dto.response.UserResponse;
-import com.kt.domain.entity.OrderEntity;
-import com.kt.domain.entity.ProductEntity;
-import com.kt.domain.entity.ReceiverVO;
-import com.kt.domain.entity.UserEntity;
-import com.kt.repository.OrderRepository;
-import com.kt.repository.ProductRepository;
 import com.kt.repository.UserRepository;
 
 @Transactional
@@ -49,8 +37,6 @@ import com.kt.repository.UserRepository;
 @ActiveProfiles("test")
 class UserServiceTest {
 
-
-	private UUID userId;
 	@Autowired
 	UserService userService;
 	@Autowired
@@ -63,10 +49,10 @@ class UserServiceTest {
 	ReviewRepository reviewRepository;
 	@Autowired
 	ProductRepository productRepository;
-
 	UserEntity testUser;
 	OrderEntity testOrder;
 	ProductEntity testProduct;
+	private UUID userId;
 
 	@BeforeEach
 	void setUp() throws Exception {
@@ -102,7 +88,7 @@ class UserServiceTest {
 		);
 		orderRepository.save(testOrder);
 
-		testProduct= ProductEntity.create(
+		testProduct = ProductEntity.create(
 			"테스트상품명",
 			1000L,
 			5L,
@@ -151,9 +137,8 @@ class UserServiceTest {
 		assertThat(foundOrder.orders()).isNotEmpty();
 	}
 
-
 	@Test
-	void 리뷰_가능한_주문상품_존재(){
+	void 리뷰_가능한_주문상품_존재() {
 		OrderProductEntity orderProduct = new OrderProductEntity(
 			5L,
 			5000L,
@@ -174,7 +159,7 @@ class UserServiceTest {
 	}
 
 	@Test
-	void 리뷰_가능한_주문상품_없음__작성한_리뷰_존재(){
+	void 리뷰_가능한_주문상품_없음__작성한_리뷰_존재() {
 		OrderProductEntity orderProduct = new OrderProductEntity(
 			5L,
 			5000L,
@@ -189,16 +174,14 @@ class UserServiceTest {
 		review.mapToOrderProduct(orderProduct);
 		reviewRepository.save(review);
 
-
 		List<OrderProductResponse.SearchReviewable> foundedOrderProductResponses = userService
 			.getReviewableOrderProducts(testUser.getId());
 
-		Assertions.assertEquals(0,foundedOrderProductResponses.size());
+		Assertions.assertEquals(0, foundedOrderProductResponses.size());
 	}
 
-
 	@Test
-	void 리뷰_가능한_주문상품_없음__주문상품_상태_구매확정_아님(){
+	void 리뷰_가능한_주문상품_없음__주문상품_상태_구매확정_아님() {
 		OrderProductEntity orderProduct = new OrderProductEntity(
 			5L,
 			5000L,
@@ -211,6 +194,6 @@ class UserServiceTest {
 		List<OrderProductResponse.SearchReviewable> foundedOrderProductResponses = userService
 			.getReviewableOrderProducts(testUser.getId());
 
-		Assertions.assertEquals(0,foundedOrderProductResponses.size());
+		Assertions.assertEquals(0, foundedOrderProductResponses.size());
 	}
 }
