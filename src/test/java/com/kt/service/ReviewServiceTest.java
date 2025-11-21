@@ -107,13 +107,13 @@ class ReviewServiceTest {
 	void 리뷰생성_성공() {
 		reviewService.create(testOrderProduct.getId(), "테스트리뷰내용");
 
-		ReviewEntity foundedReview = reviewRepository
+		ReviewEntity savedReview = reviewRepository
 			.findAll()
 			.stream()
 			.findFirst()
 			.orElseThrow(() -> new BaseException(ErrorCode.REVIEW_NOT_FOUND));
 
-		Assertions.assertEquals(testOrderProduct.getId(), foundedReview.getOrderProduct().getId());
+		Assertions.assertEquals(testOrderProduct.getId(), savedReview.getOrderProduct().getId());
 	}
 
 	@Test
@@ -142,8 +142,8 @@ class ReviewServiceTest {
 		review.mapToOrderProduct(testOrderProduct);
 		reviewRepository.save(review);
 
-		ReviewResponse.Search foundedReviewDto = reviewService.getReview(testOrderProduct.getId());
+		ReviewResponse.Search savedReviewDto = reviewService.getReview(testOrderProduct.getId());
 
-		Assertions.assertEquals(review.getId(), foundedReviewDto.reviewId());
+		Assertions.assertEquals(review.getId(), savedReviewDto.reviewId());
 	}
 }
