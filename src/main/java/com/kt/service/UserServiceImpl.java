@@ -6,8 +6,8 @@ import java.util.UUID;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.kt.domain.entity.OrderProductEntity;
-import com.kt.repository.UserRepository;
+import com.kt.dto.response.OrderProductResponse;
+import com.kt.repository.OrderProductRepository;
 
 import lombok.RequiredArgsConstructor;
 
@@ -16,10 +16,10 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
 
-	private final UserRepository userRepository;
+	private final OrderProductRepository orderProductRepository;
 
 	@Override
-	public List<OrderProductEntity> getReviewableOrderProducts(UUID userId) {
-		return userRepository.getReviewtableOrderProducts(userId);
+	public List<OrderProductResponse.SearchReviewable> getReviewableOrderProducts(UUID userId) {
+		return orderProductRepository.getReviewableOrderProductsByUserId(userId);
 	}
 }

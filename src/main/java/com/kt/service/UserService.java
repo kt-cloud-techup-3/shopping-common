@@ -5,8 +5,8 @@ import java.util.UUID;
 
 
 import java.util.List;
-import com.kt.domain.entity.OrderProductEntity;
+import com.kt.dto.response.OrderProductResponse;
 
 public interface UserService{
-	List<OrderProductEntity> getReviewableOrderProducts(UUID userId);
+	List<OrderProductResponse.SearchReviewable> getReviewableOrderProducts(UUID userId);
 }
