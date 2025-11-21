@@ -2,33 +2,59 @@ package com.kt.service;
 
 import static org.assertj.core.api.Assertions.*;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.test.context.ActiveProfiles;
 
+import com.kt.constant.Gender;
+import com.kt.constant.OrderProductStatus;
+import com.kt.constant.ProductStatus;
+import com.kt.constant.UserRole;
+import com.kt.domain.dto.response.OrderResponse;
 import com.kt.domain.dto.request.OrderRequest;
 import com.kt.domain.entity.OrderEntity;
 import com.kt.domain.entity.OrderProductEntity;
+import com.kt.domain.entity.ProductEntity;
+import com.kt.domain.entity.ReceiverVO;
+import com.kt.domain.entity.UserEntity;
 import com.kt.exception.BaseException;
 import com.kt.repository.OrderProductRepository;
 import com.kt.repository.OrderRepository;
+import com.kt.repository.ProductRepository;
+import com.kt.repository.UserRepository;
 
+@Transactional
 @ActiveProfiles("test")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class OrderServiceTest {
 
+	UUID orderId;
+
 	@Autowired
 	private OrderService orderService;
-
+	@Autowired
+	private UserRepository userRepository;
+	@Autowired
+	private ProductRepository productRepository;
 	@Autowired
 	private OrderRepository orderRepository;
-
 	@Autowired
 	private OrderProductRepository orderProductRepository;
+
+	@BeforeEach
+	void setup() {
+		orderProductRepository.deleteAll();
+		orderRepository.deleteAll();
+		productRepository.deleteAll();
+		userRepository.deleteAll();
+	}
 
 	@Test
 	void 주문_생성_성공() {
@@ -96,6 +122,58 @@ class OrderServiceTest {
 			.hasMessageContaining("STOCK_NOT_ENOUGH");
 	}
 
+	@Test
+	void 주문상품_조회() {
+		// given
+		UserEntity savedUser = userRepository.save(
+			UserEntity.create(
+				"김도현",
+				"ddd",
+				"111",
+				UserRole.MEMBER,
+				Gender.MALE,
+				LocalDate.now(),
+				"0101010"
+			)
+		);
+
+		ProductEntity savedProduct = productRepository.save(
+			ProductEntity.create(
+				"테스트물건",
+				3L,
+				3L,
+				ProductStatus.ACTIVATED
+			)
+		);
+
+		OrderEntity savedOrder = orderRepository.save(
+			OrderEntity.create(
+				ReceiverVO.create("이름", "번호", "도시", "시군구", "동", "상세"),
+				savedUser
+			)
+		);
+
+		orderId = savedOrder.getId();
+
+		OrderProductEntity savedOrderProduct = orderProductRepository.save(
+			OrderProductEntity.create(
+				2L,
+				10000L,
+				OrderProductStatus.CREATED,
+				savedOrder,
+				savedProduct
+			)
+		);
+
+		// when
+		OrderResponse.OrderProducts foundOrderProduct = orderService.getOrderProducts(orderId);
+
+		// then
+		assertThat(foundOrderProduct).isNotNull();
+		assertThat(foundOrderProduct.orderId()).isEqualTo(orderId);
+		assertThat(foundOrderProduct.orderProducts()).isNotEmpty();
+		assertThat(foundOrderProduct.orderProducts().size()).isEqualTo(1);
+	}
 
 
 

@@ -27,4 +27,13 @@ public class OrderProductEntity extends BaseEntity {
 	@JoinColumn(name = "product_id", nullable = false)
 	private ProductEntity product;
 
+	public static OrderProductEntity create(
+		Long quantity,
+		Long unitPrice,
+		OrderProductStatus status,
+		OrderEntity order,
+		ProductEntity product
+	) {
+		return new OrderProductEntity(quantity, unitPrice, status, order, product);
+	}
 }
