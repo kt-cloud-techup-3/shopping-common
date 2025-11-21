@@ -3,11 +3,13 @@ package com.kt.service;
 import com.kt.constant.Gender;
 import com.kt.constant.UserRole;
 import com.kt.constant.UserStatus;
+import com.kt.constant.redis.RedisKey;
 import com.kt.domain.dto.request.LoginRequest;
-import com.kt.domain.dto.request.MemberRequest;
+import com.kt.domain.dto.request.SignupRequest;
 import com.kt.domain.entity.UserEntity;
 import com.kt.exception.AuthException;
 import com.kt.exception.DuplicatedException;
+import com.kt.infra.redis.RedisCache;
 import com.kt.repository.AccountRepository;
 import com.kt.repository.UserRepository;
 
@@ -34,11 +36,21 @@ import static org.junit.jupiter.api.Assertions.*;
 @SpringBootTest
 public class AuthServiceTest {
 
-	@Autowired AuthServiceImpl authService;
+	@Autowired
+	AuthServiceImpl authService;
 
-	@Autowired UserRepository userRepository;
-	@Autowired AccountRepository accountRepository;
-	@Autowired PasswordEncoder passwordEncoder;
+	@Autowired
+	UserRepository userRepository;
+
+	@Autowired
+	AccountRepository accountRepository;
+
+	@Autowired
+	PasswordEncoder passwordEncoder;
+
+	@Autowired
+	RedisCache redisCache;
+
 	final static String SUCCESS_USER_LOGIN = "유저 로그인 성공";
 	final static String FAIL_USER_LOGIN_INVALID_PASSWORD = "유저 로그인 실패 비밀번호 틀림";
 	final static String FAIL_USER_LOGIN_STATUS_DISABLED = "유저 로그인 실패 비활성화 상태";
@@ -47,6 +59,7 @@ public class AuthServiceTest {
 
 	UserEntity user;
 	String rawPassword = "1231231!";
+
 	@BeforeEach
 	void setUp(TestInfo testInfo) {
 		userRepository.deleteAll();
@@ -79,7 +92,7 @@ public class AuthServiceTest {
 
 	@Test
 	void 맴버_회원가입_성공_테스트() {
-		MemberRequest.SignupMember signup = new MemberRequest.SignupMember(
+		SignupRequest.SignupMember signup = new SignupRequest.SignupMember(
 			"황테스터",
 			"test@email.com",
 			"1231231!",
@@ -96,7 +109,7 @@ public class AuthServiceTest {
 
 	@Test
 	void 맴버_회원가입_실패_email_중복() {
-		MemberRequest.SignupMember firstSignup = new MemberRequest.SignupMember(
+		SignupRequest.SignupMember firstSignup = new SignupRequest.SignupMember(
 			"황테스터1",
 			"test@email.com",
 			"1231231!",
@@ -105,7 +118,7 @@ public class AuthServiceTest {
 			"010-1234-0001"
 		);
 
-		MemberRequest.SignupMember secondSignup = new MemberRequest.SignupMember(
+		SignupRequest.SignupMember secondSignup = new SignupRequest.SignupMember(
 			"황테스터2",
 			"test@email.com",
 			"1231231!",
@@ -202,6 +215,36 @@ public class AuthServiceTest {
 			AuthException.class,
 			() -> authService.login(login)
 		);
+	}
+
+	@Test
+	void 유저_회원가입_이메일_인증_redis_저장_데이터_존재() {
+		SignupRequest.SignupEmail signupEmail = new SignupRequest.SignupEmail(
+			"bjwnstkdbj@naver.com"
+		);
+		authService.sendAuthCode(signupEmail);
+		String value = redisCache.get(
+			RedisKey.SIGNUP_CODE.key(signupEmail.email()),
+			String.class
+		);
+		assertNotNull(value);
+		log.info("authCode :: {}", value);
+	}
+
+	@Test
+	void 유저_회원가입_이메일_인증_redis_저장_데이터_미존재() {
+		String requestEmail = "bjwnstkdbj@naver.com";
+		String differentEmail = "test@email.com";
+		SignupRequest.SignupEmail signupEmail = new SignupRequest.SignupEmail(
+			requestEmail
+		);
+		authService.sendAuthCode(signupEmail);
+		String value = redisCache.get(
+			RedisKey.SIGNUP_CODE.key(differentEmail),
+			String.class
+		);
+		assertNull(value);
+		log.info("authCode :: {}", value);
 	}
 
 

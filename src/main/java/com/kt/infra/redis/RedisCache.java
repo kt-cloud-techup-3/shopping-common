@@ -1,5 +1,7 @@
 package com.kt.infra.redis;
 
+import com.kt.constant.redis.RedisKey;
+
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.data.redis.core.RedisTemplate;
@@ -20,6 +22,10 @@ public class RedisCache {
 
 	public <T> void set(String key, T value, Duration ttl) {
 		redisTemplate.opsForValue().set(key, value, ttl.toMillis(), TimeUnit.MILLISECONDS);
+	}
+
+	public <T> void set(RedisKey redisKey, Object val, T value) {
+		set(redisKey.key(val), value, redisKey.getTtl());
 	}
 
 	public <T> T get(String key, Class<T> clazz) {
