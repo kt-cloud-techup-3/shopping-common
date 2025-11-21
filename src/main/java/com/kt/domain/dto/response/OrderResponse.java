@@ -5,10 +5,6 @@ import java.util.UUID;
 
 import com.kt.domain.entity.OrderProductEntity;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
-
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class OrderResponse {
 	public record OrderProducts(
 		UUID orderId,
