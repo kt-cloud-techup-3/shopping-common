@@ -6,8 +6,6 @@ import java.util.UUID;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.kt.constant.OrderProductStatus;
-import com.kt.constant.message.ErrorCode;
 import com.kt.domain.dto.response.OrderResponse;
 import com.kt.domain.dto.request.OrderRequest;
 import com.kt.domain.entity.ProductEntity;
@@ -35,10 +33,7 @@ public class OrderServiceImpl implements OrderService {
 
 	@Override
 	public OrderResponse.OrderProducts getOrderProducts(UUID orderId) {
-		List<OrderProductEntity> orderProducts = orderProductRepository.findAllByOrder_Id(orderId).orElseThrow(() ->
-			new BaseException(ErrorCode.ORDER_NOT_FOUND)
-		);
-
+		List<OrderProductEntity> orderProducts = orderProductRepository.findAllByOrder_Id(orderId);
 		return OrderResponse.OrderProducts.of(orderId, orderProducts);
 	}
 
