@@ -55,7 +55,7 @@ class OrderServiceTest {
 		List<OrderProductEntity> orderProducts =
 			orderProductRepository.findAll()
 				.stream()
-				.filter(op -> op.getOrder().getId().equals(savedOrder.getId()))
+				.filter(orderProductEntity -> orderProductEntity.getOrder().getId().equals(savedOrder.getId()))
 				.toList();
 
 		assertThat(orderProducts).hasSize(2);
