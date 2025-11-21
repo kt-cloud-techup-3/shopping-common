@@ -12,6 +12,8 @@ public record OrderRequest(
 	public record Item(
 		@NotNull
 		UUID productId,
+
+		@NotNull
 		@Min(1)
 		Long quantity
 	){}
