@@ -72,16 +72,14 @@ class OrderServiceTest {
 			)
 		);
 
-		ProductEntity productId1 = productRepository.save(
-			ProductEntity.create("상품1", 10L, 10000L, ProductStatus.ACTIVATED)
-		);
+		ProductEntity product1 = ProductEntity.create("상품1", 10L, 10000L, ProductStatus.ACTIVATED);
+		productRepository.save(product1);
 
-		ProductEntity productId2 = productRepository.save(
-			ProductEntity.create("상품2", 5L, 20000L, ProductStatus.ACTIVATED)
-		);
+		ProductEntity product2 = ProductEntity.create("상품2", 5L, 20000L, ProductStatus.ACTIVATED);
+		productRepository.save(product2);
 
-		OrderRequest.Item item1 = new OrderRequest.Item(productId1.getId(), 2L);
-		OrderRequest.Item item2 = new OrderRequest.Item(productId2.getId(), 1L);
+		OrderRequest.Item item1 = new OrderRequest.Item(product1.getId(), 2L);
+		OrderRequest.Item item2 = new OrderRequest.Item(product2.getId(), 1L);
 
 		List<OrderRequest.Item> items = List.of(item1, item2);
 
@@ -110,17 +108,17 @@ class OrderServiceTest {
 		// given
 
 		String email = "test@example.com";
-		UserEntity user = userRepository.save(
-			UserEntity.create(
-				"김도현",
-				"test@example.com",
-				"111",
-				UserRole.MEMBER,
-				Gender.MALE,
-				LocalDate.now(),
-				"0101010"
-			)
+		UserEntity user = UserEntity.create(
+			"김도현",
+			"test@example.com",
+			"111",
+			UserRole.MEMBER,
+			Gender.MALE,
+			LocalDate.now(),
+			"0101010"
 		);
+
+		UserEntity savedEntity = userRepository.save(user);
 
 		UUID invalidProductId = UUID.fromString("11111111-2222-3333-4444-555555555555");
 
@@ -138,29 +136,30 @@ class OrderServiceTest {
 	void 주문_생성_실패__재고부족() {
 
 		// given
-		UserEntity user = userRepository.save(
-			UserEntity.create(
-				"김도현",
-				"test@example.com",
-				"111",
-				UserRole.MEMBER,
-				Gender.MALE,
-				LocalDate.now(),
-				"0101010"
-			)
+		UserEntity user = UserEntity.create(
+			"김도현",
+			"test@example.com",
+			"111",
+			UserRole.MEMBER,
+			Gender.MALE,
+			LocalDate.now(),
+			"0101010"
 		);
 
-		// given
 		ProductEntity product = productRepository.save(
 			ProductEntity.create("상품1", 3L, 1L, ProductStatus.ACTIVATED)
 		);
 
+		UserEntity savedUser = userRepository.save(user);
+		ProductEntity savedProduct = productRepository.save(product);
+		// given
+
 		List<OrderRequest.Item> items = List.of(
-			new OrderRequest.Item(product.getId(), 2L)
+			new OrderRequest.Item(savedProduct.getId(), 2L)
 		);
 
 		// then
-		assertThatThrownBy(() -> orderService.createOrder(user.getEmail(), items))
+		assertThatThrownBy(() -> orderService.createOrder(savedUser.getEmail(), items))
 			.isInstanceOf(BaseException.class)
 			.hasMessageContaining("STOCK_NOT_ENOUGH");
 	}
@@ -168,39 +167,34 @@ class OrderServiceTest {
 	@Test
 	void 주문상품_조회() {
 		// given
-		UserEntity user = userRepository.save(
-			UserEntity.create(
-				"김도현",
-				"test@example.com",
-				"111",
-				UserRole.MEMBER,
-				Gender.MALE,
-				LocalDate.now(),
-				"0101010"
-			)
+		UserEntity user = UserEntity.create(
+			"김도현",
+			"test@example.com",
+			"111",
+			UserRole.MEMBER,
+			Gender.MALE,
+			LocalDate.now(),
+			"0101010"
 		);
+		UserEntity savedUser = userRepository.save(user);
+		ProductEntity product = ProductEntity.create("테스트 상품", 5L, 10000L, ProductStatus.ACTIVATED);
+		ProductEntity savedProduct = productRepository.save(product);
 
-		ProductEntity savedProduct = productRepository.save(
-			ProductEntity.create("테스트 상품", 5L, 10000L, ProductStatus.ACTIVATED)
+		OrderEntity order = OrderEntity.create(
+			ReceiverVO.create("이름", "번호", "도시", "시군구", "도로명", "상세"),
+			savedUser
 		);
-
-		OrderEntity savedOrder = orderRepository.save(
-			OrderEntity.create(
-				ReceiverVO.create("이름", "번호", "도시", "시군구", "도로명", "상세"),
-				user
-			)
+		OrderEntity savedOrder = orderRepository.save(order);
+		OrderProductEntity orderProduct = OrderProductEntity.create(
+			2L,
+			10000L,
+			OrderProductStatus.CREATED,
+			savedOrder,
+			savedProduct
 		);
+		OrderProductEntity savedOrderProduct = orderProductRepository.save(orderProduct);
 
-		OrderProductEntity savedOrderProduct = orderProductRepository.save(
-			OrderProductEntity.create(
-				2L,
-				10000L,
-				OrderProductStatus.CREATED,
-				savedOrder,
-				savedProduct
-			)
-		);
-
+		// when
 		OrderResponse.OrderProducts foundOrderProduct = orderService.getOrderProducts(savedOrder.getId());
 
 		// then
