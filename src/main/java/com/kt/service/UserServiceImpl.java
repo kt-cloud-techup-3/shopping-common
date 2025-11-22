@@ -95,4 +95,18 @@ public class UserServiceImpl implements UserService {
 		UserEntity user = userRepository.findByIdOrThrow(id);
 		user.retired();
 	}
+
+	@Override
+	public UserResponse.UserDetail getUserDetail(UUID id) {
+		UserEntity user = userRepository.findByIdOrThrow(id);
+		return new UserResponse.UserDetail(
+			user.getId(),
+			user.getName(),
+			user.getEmail(),
+			user.getRole(),
+			user.getGender(),
+			user.getBirth(),
+			user.getMobile()
+		);
+	}
 }
