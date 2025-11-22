@@ -25,9 +25,8 @@ public enum ErrorCode {
 	ORDER_PRODUCT_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 주문상품이 존재하지 않습니다."),
 	CATEGORY_NOT_FOUND(HttpStatus.NOT_FOUND, "카테고리가 존재하지 않습니다."),
 	CHILD_CATEGORY_EXISTS(HttpStatus.BAD_REQUEST, "자식 카테고리가 존재합니다."),
-	STOCK_NOT_ENOUGH(HttpStatus.BAD_REQUEST, "상품 재고가 없습니다.");
-
-
+	STOCK_NOT_ENOUGH(HttpStatus.BAD_REQUEST, "상품 재고가 없습니다."),
+	USER_NOT_FOUND(HttpStatus.NOT_FOUND, "유저가 존재하지 않습니다.");
 
 	private final HttpStatus status;
 	private final String message;

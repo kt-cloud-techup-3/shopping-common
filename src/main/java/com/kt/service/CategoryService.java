@@ -3,7 +3,7 @@ package com.kt.service;
 import java.util.List;
 import java.util.UUID;
 
-import com.kt.dto.CategoryResponse;
+import com.kt.domain.dto.response.CategoryResponse;
 
 public interface CategoryService {
 	void create(String name, UUID parentId);

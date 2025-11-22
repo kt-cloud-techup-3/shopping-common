@@ -2,7 +2,6 @@ package com.kt.service;
 
 import java.time.LocalDate;
 
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -17,13 +16,13 @@ import com.kt.constant.ProductStatus;
 import com.kt.constant.ReviewStatus;
 import com.kt.constant.UserRole;
 import com.kt.constant.message.ErrorCode;
+import com.kt.domain.dto.response.ReviewResponse;
 import com.kt.domain.entity.OrderEntity;
 import com.kt.domain.entity.OrderProductEntity;
 import com.kt.domain.entity.ProductEntity;
 import com.kt.domain.entity.ReceiverVO;
 import com.kt.domain.entity.ReviewEntity;
 import com.kt.domain.entity.UserEntity;
-import com.kt.dto.response.ReviewResponse;
 import com.kt.exception.BaseException;
 import com.kt.repository.OrderProductRepository;
 import com.kt.repository.OrderRepository;
@@ -31,6 +30,7 @@ import com.kt.repository.ProductRepository;
 import com.kt.repository.ReviewRepository;
 import com.kt.repository.UserRepository;
 
+@Transactional
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("test")
 class ReviewServiceTest {
@@ -48,7 +48,6 @@ class ReviewServiceTest {
 	UserRepository userRepository;
 	@Autowired
 	OrderRepository orderRepository;
-
 
 	OrderProductEntity testOrderProduct;
 
@@ -68,7 +67,7 @@ class ReviewServiceTest {
 			Gender.MALE,
 			LocalDate.now(),
 			"010-1234-5678"
-		)	;
+		);
 		userRepository.save(user);
 
 		ReceiverVO receiver = new ReceiverVO(
@@ -86,7 +85,7 @@ class ReviewServiceTest {
 		);
 		orderRepository.save(order);
 
-		ProductEntity product= ProductEntity.create(
+		ProductEntity product = ProductEntity.create(
 			"테스트상품명",
 			1000L,
 			5L,
@@ -104,33 +103,32 @@ class ReviewServiceTest {
 		orderProductRepository.save(testOrderProduct);
 	}
 
-
 	@Test
-	void 리뷰생성_성공(){
-		reviewService.create(testOrderProduct.getId(),"테스트리뷰내용");
+	void 리뷰생성_성공() {
+		reviewService.create(testOrderProduct.getId(), "테스트리뷰내용");
 
-		ReviewEntity foundedReview= reviewRepository
+		ReviewEntity savedReview = reviewRepository
 			.findAll()
 			.stream()
 			.findFirst()
 			.orElseThrow(() -> new BaseException(ErrorCode.REVIEW_NOT_FOUND));
 
-		Assertions.assertEquals(testOrderProduct.getId(),foundedReview.getOrderProduct().getId());
+		Assertions.assertEquals(testOrderProduct.getId(), savedReview.getOrderProduct().getId());
 	}
 
 	@Test
-	void 리뷰변경_성공(){
+	void 리뷰변경_성공() {
 		ReviewEntity review = ReviewEntity.create("테스트리뷰내용");
 		review.mapToOrderProduct(testOrderProduct);
 		reviewRepository.save(review);
 
-		reviewService.update(review.getId(),"변경된테스트리뷰내용");
+		reviewService.update(review.getId(), "변경된테스트리뷰내용");
 
 		Assertions.assertEquals("변경된테스트리뷰내용", review.getContent());
 	}
 
 	@Test
-	void 리뷰삭제_성공(){
+	void 리뷰삭제_성공() {
 		ReviewEntity review = ReviewEntity.create("테스트리뷰내용");
 		review.mapToOrderProduct(testOrderProduct);
 		reviewRepository.save(review);
@@ -139,13 +137,13 @@ class ReviewServiceTest {
 	}
 
 	@Test
-	void 리뷰조회_성공(){
+	void 리뷰조회_성공() {
 		ReviewEntity review = ReviewEntity.create("테스트리뷰내용");
 		review.mapToOrderProduct(testOrderProduct);
 		reviewRepository.save(review);
 
-		ReviewResponse.Search foundedReviewDto = reviewService.getReview(testOrderProduct.getId());
+		ReviewResponse.Search savedReviewDto = reviewService.getReview(testOrderProduct.getId());
 
-		Assertions.assertEquals(review.getId(),foundedReviewDto.reviewId());
+		Assertions.assertEquals(review.getId(), savedReviewDto.reviewId());
 	}
 }

@@ -7,8 +7,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.kt.constant.message.ErrorCode;
+import com.kt.domain.dto.response.CategoryResponse;
 import com.kt.domain.entity.CategoryEntity;
-import com.kt.dto.CategoryResponse;
 import com.kt.exception.BaseException;
 import com.kt.repository.CategoryRepository;
 

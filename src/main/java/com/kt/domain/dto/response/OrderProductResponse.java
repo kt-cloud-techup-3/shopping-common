@@ -1,4 +1,4 @@
-package com.kt.dto.response;
+package com.kt.domain.dto.response;
 
 import java.util.UUID;
 
@@ -11,8 +11,9 @@ public class OrderProductResponse {
 		Long quantity,
 		Long unitPrice,
 		OrderProductStatus status
-	){
+	) {
 		@QueryProjection
-		public SearchReviewable{}
+		public SearchReviewable {
+		}
 	}
 }

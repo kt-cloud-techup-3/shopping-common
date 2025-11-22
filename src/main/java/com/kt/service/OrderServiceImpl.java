@@ -9,16 +9,17 @@ import org.springframework.transaction.annotation.Transactional;
 import com.kt.constant.OrderProductStatus;
 import com.kt.constant.message.ErrorCode;
 import com.kt.domain.dto.request.OrderRequest;
-import com.kt.domain.entity.ProductEntity;
-import com.kt.domain.entity.UserEntity;
+import com.kt.domain.dto.response.OrderResponse;
 import com.kt.domain.entity.OrderEntity;
 import com.kt.domain.entity.OrderProductEntity;
+import com.kt.domain.entity.ProductEntity;
 import com.kt.domain.entity.ReceiverVO;
+import com.kt.domain.entity.UserEntity;
 import com.kt.exception.BaseException;
+import com.kt.repository.OrderProductRepository;
+import com.kt.repository.OrderRepository;
 import com.kt.repository.ProductRepository;
 import com.kt.repository.UserRepository;
-import com.kt.repository.OrderRepository;
-import com.kt.repository.OrderProductRepository;
 
 import lombok.RequiredArgsConstructor;
 
@@ -31,6 +32,12 @@ public class OrderServiceImpl implements OrderService {
 	private final ProductRepository productRepository;
 	private final OrderRepository orderRepository;
 	private final OrderProductRepository orderProductRepository;
+
+	@Override
+	public OrderResponse.OrderProducts getOrderProducts(UUID orderId) {
+		List<OrderProductEntity> orderProducts = orderProductRepository.findAllByOrder_Id(orderId);
+		return OrderResponse.OrderProducts.of(orderId, orderProducts);
+	}
 
 	@Override
 	public void createOrder(String email, List<OrderRequest.Item> items) {

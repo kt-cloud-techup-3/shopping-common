@@ -1,4 +1,4 @@
-package com.kt.dto;
+package com.kt.domain.dto.request;
 
 import java.util.UUID;
 
