@@ -56,4 +56,28 @@ public class UserServiceImpl implements UserService {
 			user.getMobile()
 		);
 	}
+
+	@Override
+	public void enableUser(UUID id) {
+		UserEntity user = userRepository.findByIdOrThrow(id);
+		user.enabled();
+	}
+
+	@Override
+	public void disableUser(UUID id) {
+		UserEntity user = userRepository.findByIdOrThrow(id);
+		user.disabled();
+	}
+
+	@Override
+	public void deleteUser(UUID id) {
+		UserEntity user = userRepository.findByIdOrThrow(id);
+		user.delete();
+	}
+
+	@Override
+	public void retireUser(UUID id) {
+		UserEntity user = userRepository.findByIdOrThrow(id);
+		user.retired();
+	}
 }
