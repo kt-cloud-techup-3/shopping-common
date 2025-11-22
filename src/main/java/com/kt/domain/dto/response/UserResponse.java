@@ -30,6 +30,18 @@ public class UserResponse {
 		}
 	}
 
+	public record UserDetail(
+		UUID id,
+		String name,
+		String email,
+		UserRole role,
+		Gender gender,
+		LocalDate birth,
+		String mobile
+	) {
+	
+	}
+
 	public record Orders(
 		UUID userId,
 		List<OrderItem> orders
