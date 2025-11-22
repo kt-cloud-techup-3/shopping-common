@@ -23,13 +23,17 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Duration;
 import java.time.LocalDate;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertThrowsExactly;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @Slf4j
 @ActiveProfiles("test")
@@ -51,6 +55,9 @@ public class AuthServiceTest {
 	@Autowired
 	RedisCache redisCache;
 
+	@Autowired
+	RedisTemplate redisTemplate;
+
 	final static String SUCCESS_USER_LOGIN = "유저 로그인 성공";
 	final static String FAIL_USER_LOGIN_INVALID_PASSWORD = "유저 로그인 실패 비밀번호 틀림";
 	final static String FAIL_USER_LOGIN_STATUS_DISABLED = "유저 로그인 실패 비활성화 상태";
@@ -64,7 +71,8 @@ public class AuthServiceTest {
 	void setUp(TestInfo testInfo) {
 		userRepository.deleteAll();
 		accountRepository.deleteAll();
-
+		var connection = redisTemplate.getConnectionFactory().getConnection();
+		connection.flushAll();
 		switch (testInfo.getDisplayName()) {
 			case SUCCESS_USER_LOGIN,
 					 FAIL_USER_LOGIN_INVALID_PASSWORD,
@@ -92,9 +100,16 @@ public class AuthServiceTest {
 
 	@Test
 	void 맴버_회원가입_성공_테스트() {
+		String email = "test@email.com";
+		redisCache.set(
+			RedisKey.SIGNUP_VERIFIED,
+			email,
+			true
+		);
+
 		SignupRequest.SignupMember signup = new SignupRequest.SignupMember(
 			"황테스터",
-			"test@email.com",
+			email,
 			"1231231!",
 			Gender.MALE,
 			LocalDate.of(2011, 11, 11),
@@ -106,6 +121,59 @@ public class AuthServiceTest {
 		);
 		assertNotNull(member);
 	}
+	// 해야함 인증 정보 null 이거나 false 일때 에러 에러
+
+	@Test
+	void 맴버_회원가입_실패_인증정보_없음_시간초과() throws InterruptedException {
+		String email = "test@email.com";
+		redisCache.set(
+			RedisKey.SIGNUP_VERIFIED.key(email),
+			true,
+			Duration.ofSeconds(2)
+		);
+
+		Thread.sleep(2500);
+
+		SignupRequest.SignupMember signup = new SignupRequest.SignupMember(
+			"황테스터1",
+			email,
+			"1231231!",
+			Gender.MALE,
+			LocalDate.of(2011, 11, 10),
+			"010-1234-0001"
+		);
+
+		assertThrowsExactly(
+			IllegalArgumentException.class, () ->
+				authService.memberSignup(signup)
+		);
+	}
+
+	@Test
+	void 맴버_회원가입_실패_인증정보_없음_이메일_키값() {
+		String email = "test@email.com";
+		String differentEmail = "test_different@email.com";
+		redisCache.set(
+			RedisKey.SIGNUP_VERIFIED,
+			email,
+			true
+		);
+
+		SignupRequest.SignupMember signup = new SignupRequest.SignupMember(
+			"황테스터1",
+			differentEmail,
+			"1231231!",
+			Gender.MALE,
+			LocalDate.of(2011, 11, 10),
+			"010-1234-0001"
+		);
+
+		assertThrowsExactly(
+			IllegalArgumentException.class, () ->
+				authService.memberSignup(signup)
+		);
+	}
+
 
 	@Test
 	void 맴버_회원가입_실패_email_중복() {
@@ -218,7 +286,7 @@ public class AuthServiceTest {
 	}
 
 	@Test
-	void 유저_회원가입_이메일_인증_redis_저장_데이터_존재() {
+	void 유저_회원가입_이메일_인증_성공_redis_저장_데이터_존재() {
 		SignupRequest.SignupEmail signupEmail = new SignupRequest.SignupEmail(
 			"bjwnstkdbj@naver.com"
 		);
@@ -232,7 +300,7 @@ public class AuthServiceTest {
 	}
 
 	@Test
-	void 유저_회원가입_이메일_인증_redis_저장_데이터_미존재() {
+	void 유저_회원가입_이메일_인증_실패_redis_저장_데이터_미존재() {
 		String requestEmail = "bjwnstkdbj@naver.com";
 		String differentEmail = "test@email.com";
 		SignupRequest.SignupEmail signupEmail = new SignupRequest.SignupEmail(
@@ -247,7 +315,61 @@ public class AuthServiceTest {
 		log.info("authCode :: {}", value);
 	}
 
+	@Test
+	void 유저_회원가입_이메일_검증_redis_저장_데이터_존재() {
+		String email = "bjwnstkdbj@naver.com";
+		String authCode = "123123";
+		redisCache.set(RedisKey.SIGNUP_CODE, email, authCode);
 
+		SignupRequest.VerifySignupCode verifyRequest = new SignupRequest.VerifySignupCode(
+			"bjwnstkdbj@naver.com",
+			authCode
+		);
 
+		authService.verifySignupCode(verifyRequest);
+
+		Boolean isVerify = redisCache.get(
+			RedisKey.SIGNUP_VERIFIED.key(email),
+			Boolean.class
+		);
+		assertNotNull(isVerify);
+		assertTrue(isVerify);
+	}
+
+	@Test
+	void 유저_회원가입_이메일_검증_실패_이메일_키값_없음() {
+		String originEmail = "bjwnstkdbj@naver.com";
+		String differentEmail = "test@email.com";
+		String authCode = "123123";
+		redisCache.set(RedisKey.SIGNUP_CODE, originEmail, authCode);
+
+		SignupRequest.VerifySignupCode verifyRequest = new SignupRequest.VerifySignupCode(
+			differentEmail,
+			authCode
+		);
+
+		assertThrowsExactly(
+			IllegalArgumentException.class, () ->
+				authService.verifySignupCode(verifyRequest)
+		);
+	}
+
+	@Test
+	void 유저_회원가입_이메일_검증_실패_인증코드_틀림() {
+		String originEmail = "bjwnstkdbj@naver.com";
+		String authCode = "123123";
+		String differentCode = "999999";
+		redisCache.set(RedisKey.SIGNUP_CODE, originEmail, authCode);
+
+		SignupRequest.VerifySignupCode verifyRequest = new SignupRequest.VerifySignupCode(
+			originEmail,
+			differentCode
+		);
+
+		assertThrowsExactly(
+			IllegalArgumentException.class, () ->
+			authService.verifySignupCode(verifyRequest)
+		);
+	}
 
 }

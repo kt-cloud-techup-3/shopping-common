@@ -11,4 +11,6 @@ public interface AuthService {
 	Pair<String, String> login(LoginRequest request);
 
 	void sendAuthCode(SignupRequest.SignupEmail request);
+
+	void verifySignupCode(SignupRequest.VerifySignupCode request);
 }
