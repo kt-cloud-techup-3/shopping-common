@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.kt.domain.dto.response.OrderProductResponse;
 import com.kt.domain.dto.response.UserResponse;
 import com.kt.domain.entity.OrderEntity;
+import com.kt.domain.entity.UserEntity;
 import com.kt.repository.OrderProductRepository;
 import com.kt.repository.OrderRepository;
 import com.kt.repository.user.UserRepository;
@@ -40,5 +41,19 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public Page<UserResponse.Search> getUsers(Pageable pageable) {
 		return userRepository.searchUsers(pageable);
+	}
+
+	@Override
+	public UserResponse.UserDetail getUserDetail(UUID id) {
+		UserEntity user = userRepository.findByIdOrThrow(id);
+		return new UserResponse.UserDetail(
+			user.getId(),
+			user.getName(),
+			user.getEmail(),
+			user.getRole(),
+			user.getGender(),
+			user.getBirth(),
+			user.getMobile()
+		);
 	}
 }
