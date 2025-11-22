@@ -1,7 +1,5 @@
 package com.kt.repository;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 import java.time.LocalDate;
 
 import org.junit.jupiter.api.Assertions;
@@ -21,6 +19,7 @@ import com.kt.domain.entity.ProductEntity;
 import com.kt.domain.entity.ReceiverVO;
 import com.kt.domain.entity.ReviewEntity;
 import com.kt.domain.entity.UserEntity;
+import com.kt.repository.user.UserRepository;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("test")
@@ -56,7 +55,7 @@ class ReviewRepositoryTest {
 			Gender.MALE,
 			LocalDate.now(),
 			"010-1234-5678"
-		)	;
+		);
 		userRepository.save(user);
 
 		ReceiverVO receiver = new ReceiverVO(
@@ -74,7 +73,7 @@ class ReviewRepositoryTest {
 		);
 		orderRepository.save(order);
 
-		ProductEntity product= ProductEntity.create(
+		ProductEntity product = ProductEntity.create(
 			"테스트상품명",
 			1000L,
 			5L,
@@ -93,7 +92,7 @@ class ReviewRepositoryTest {
 	}
 
 	@Test
-	void 주문상품번호_으로_리뷰_조회_성공(){
+	void 주문상품번호_으로_리뷰_조회_성공() {
 		ReviewEntity review = ReviewEntity.create(
 			"테스트리뷰내용"
 		);
@@ -103,6 +102,6 @@ class ReviewRepositoryTest {
 		ReviewEntity foundedReview = reviewRepository
 			.findByOrderProductIdOrThrow(testOrderProduct.getId());
 
-		Assertions.assertEquals(review.getId(),foundedReview.getId());
+		Assertions.assertEquals(review.getId(), foundedReview.getId());
 	}
 }

@@ -19,7 +19,7 @@ import com.kt.exception.BaseException;
 import com.kt.repository.OrderProductRepository;
 import com.kt.repository.OrderRepository;
 import com.kt.repository.ProductRepository;
-import com.kt.repository.UserRepository;
+import com.kt.repository.user.UserRepository;
 
 import lombok.RequiredArgsConstructor;
 

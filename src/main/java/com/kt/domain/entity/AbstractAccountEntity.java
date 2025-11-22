@@ -57,4 +57,8 @@ public abstract class AbstractAccountEntity extends BaseEntity {
 		this.status = UserStatus.DELETED;
 	}
 
+	public void enabled() {
+		this.status = UserStatus.ENABLED;
+	}
+
 }

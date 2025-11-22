@@ -5,7 +5,6 @@ import static lombok.AccessLevel.*;
 import java.time.LocalDate;
 import java.util.List;
 
-
 import com.kt.constant.Gender;
 import com.kt.constant.UserRole;
 import com.kt.constant.UserStatus;
