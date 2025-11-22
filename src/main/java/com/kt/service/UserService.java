@@ -17,4 +17,12 @@ public interface UserService {
 	Page<UserResponse.Search> getUsers(Pageable pageable);
 
 	UserResponse.UserDetail getUserDetail(UUID id);
+
+	void disableUser(UUID id);
+
+	void enableUser(UUID id);
+
+	void deleteUser(UUID id);
+
+	void retireUser(UUID id);
 }
