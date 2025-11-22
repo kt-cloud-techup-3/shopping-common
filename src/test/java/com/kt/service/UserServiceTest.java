@@ -99,35 +99,36 @@ class UserServiceTest {
 
 	@Test
 	void 내_주문_조회() {
-		UserEntity savedUser = userRepository.save(
-			UserEntity.create(
-				"김도현",
-				"ddd",
-				"111",
-				UserRole.MEMBER,
-				Gender.MALE,
-				LocalDate.now(),
-				"0101010"
-			)
+
+		UserEntity user = UserEntity.create(
+			"김도현",
+			"ddd",
+			"111",
+			UserRole.MEMBER,
+			Gender.MALE,
+			LocalDate.now(),
+			"0101010"
 		);
+
+		UserEntity savedUser = userRepository.save(user);
 
 		userId = savedUser.getId();
 
-		productRepository.save(
-			ProductEntity.create(
-				"테스트물건",
-				3L,
-				3L,
-				ProductStatus.ACTIVATED
-			)
+		ProductEntity product = ProductEntity.create(
+			"테스트물건",
+			3L,
+			3L,
+			ProductStatus.ACTIVATED
 		);
 
-		orderRepository.save(
-			OrderEntity.create(
-				ReceiverVO.create("이름", "번호", "도시", "시군구", "동", "상세"),
-				savedUser
-			)
+		productRepository.save(product);
+
+		OrderEntity order = OrderEntity.create(
+			ReceiverVO.create("이름", "번호", "도시", "시군구", "동", "상세"),
+			savedUser
 		);
+
+		OrderEntity savedOrder = orderRepository.save(order);
 		// when
 		UserResponse.Orders foundOrder = userService.getOrdersByUserId(userId);
 

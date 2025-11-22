@@ -146,9 +146,7 @@ class OrderServiceTest {
 			"0101010"
 		);
 
-		ProductEntity product = productRepository.save(
-			ProductEntity.create("상품1", 3L, 1L, ProductStatus.ACTIVATED)
-		);
+		ProductEntity product = ProductEntity.create("상품1", 3L, 1L, ProductStatus.ACTIVATED);
 
 		UserEntity savedUser = userRepository.save(user);
 		ProductEntity savedProduct = productRepository.save(product);
