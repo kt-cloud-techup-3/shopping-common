@@ -30,7 +30,7 @@ import com.kt.repository.OrderProductRepository;
 import com.kt.repository.OrderRepository;
 import com.kt.repository.ProductRepository;
 import com.kt.repository.ReviewRepository;
-import com.kt.repository.UserRepository;
+import com.kt.repository.user.UserRepository;
 
 @Transactional
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
