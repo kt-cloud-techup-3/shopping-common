@@ -1,26 +1,23 @@
 package com.kt.service;
 
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.kt.constant.UserRole;
 import com.kt.constant.message.ErrorCode;
 import com.kt.domain.dto.request.LoginRequest;
 import com.kt.domain.dto.request.MemberRequest;
-
 import com.kt.domain.entity.AbstractAccountEntity;
 import com.kt.domain.entity.UserEntity;
-
 import com.kt.exception.AuthException;
 import com.kt.exception.DuplicatedException;
 import com.kt.repository.AccountRepository;
-import com.kt.repository.UserRepository;
-
+import com.kt.repository.user.UserRepository;
 import com.kt.security.JwtService;
 import com.mysema.commons.lang.Pair;
 
 import lombok.RequiredArgsConstructor;
-
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor

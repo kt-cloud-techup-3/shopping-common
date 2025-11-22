@@ -1,19 +1,8 @@
 package com.kt.service;
 
-import com.kt.constant.Gender;
-import com.kt.constant.UserRole;
-import com.kt.constant.UserStatus;
-import com.kt.domain.dto.request.LoginRequest;
-import com.kt.domain.dto.request.MemberRequest;
-import com.kt.domain.entity.UserEntity;
-import com.kt.exception.AuthException;
-import com.kt.exception.DuplicatedException;
-import com.kt.repository.AccountRepository;
-import com.kt.repository.UserRepository;
+import static org.junit.jupiter.api.Assertions.*;
 
-import com.mysema.commons.lang.Pair;
-
-import lombok.extern.slf4j.Slf4j;
+import java.time.LocalDate;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -25,28 +14,41 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDate;
+import com.kt.constant.Gender;
+import com.kt.constant.UserRole;
+import com.kt.constant.UserStatus;
+import com.kt.domain.dto.request.LoginRequest;
+import com.kt.domain.dto.request.MemberRequest;
+import com.kt.domain.entity.UserEntity;
+import com.kt.exception.AuthException;
+import com.kt.exception.DuplicatedException;
+import com.kt.repository.AccountRepository;
+import com.kt.repository.user.UserRepository;
+import com.mysema.commons.lang.Pair;
 
-import static org.junit.jupiter.api.Assertions.*;
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @ActiveProfiles("test")
 @SpringBootTest
 public class AuthServiceTest {
 
-	@Autowired AuthServiceImpl authService;
-
-	@Autowired UserRepository userRepository;
-	@Autowired AccountRepository accountRepository;
-	@Autowired PasswordEncoder passwordEncoder;
 	final static String SUCCESS_USER_LOGIN = "유저 로그인 성공";
 	final static String FAIL_USER_LOGIN_INVALID_PASSWORD = "유저 로그인 실패 비밀번호 틀림";
 	final static String FAIL_USER_LOGIN_STATUS_DISABLED = "유저 로그인 실패 비활성화 상태";
 	final static String FAIL_USER_LOGIN_STATUS_DELETED = "유저 로그인 실패 삭제 상태";
 	final static String FAIL_USER_LOGIN_STATUS_RETIRED = "유저 로그인 실패 탈퇴 상태";
-
+	@Autowired
+	AuthServiceImpl authService;
+	@Autowired
+	UserRepository userRepository;
+	@Autowired
+	AccountRepository accountRepository;
+	@Autowired
+	PasswordEncoder passwordEncoder;
 	UserEntity user;
 	String rawPassword = "1231231!";
+
 	@BeforeEach
 	void setUp(TestInfo testInfo) {
 		userRepository.deleteAll();
@@ -203,8 +205,5 @@ public class AuthServiceTest {
 			() -> authService.login(login)
 		);
 	}
-
-
-
 
 }
