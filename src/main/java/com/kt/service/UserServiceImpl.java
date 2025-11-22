@@ -3,6 +3,8 @@ package com.kt.service;
 import java.util.List;
 import java.util.UUID;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -11,6 +13,7 @@ import com.kt.domain.dto.response.UserResponse;
 import com.kt.domain.entity.OrderEntity;
 import com.kt.repository.OrderProductRepository;
 import com.kt.repository.OrderRepository;
+import com.kt.repository.user.UserRepository;
 
 import lombok.RequiredArgsConstructor;
 
@@ -21,6 +24,7 @@ public class UserServiceImpl implements UserService {
 
 	private final OrderProductRepository orderProductRepository;
 	private final OrderRepository orderRepository;
+	private final UserRepository userRepository;
 
 	@Override
 	public UserResponse.Orders getOrdersByUserId(UUID id) {
@@ -31,5 +35,10 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public List<OrderProductResponse.SearchReviewable> getReviewableOrderProducts(UUID userId) {
 		return orderProductRepository.getReviewableOrderProductsByUserId(userId);
+	}
+
+	@Override
+	public Page<UserResponse.Search> getUsers(Pageable pageable) {
+		return userRepository.searchUsers(pageable);
 	}
 }
