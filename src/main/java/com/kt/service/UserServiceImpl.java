@@ -8,6 +8,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.kt.constant.UserRole;
 import com.kt.domain.dto.response.OrderProductResponse;
 import com.kt.domain.dto.response.UserResponse;
 import com.kt.domain.entity.OrderEntity;
@@ -39,8 +40,8 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public Page<UserResponse.Search> getUsers(Pageable pageable, String keyword) {
-		return userRepository.searchUsers(pageable, keyword);
+	public Page<UserResponse.Search> getUsers(Pageable pageable, String name, UserRole role) {
+		return userRepository.searchUsers(pageable, name, role);
 	}
 
 	@Override
