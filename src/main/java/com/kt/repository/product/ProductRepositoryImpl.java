@@ -9,6 +9,7 @@ import org.springframework.data.domain.Pageable;
 import com.kt.constant.searchtype.ProductSearchType;
 import com.kt.domain.dto.response.ProductResponse;
 import com.kt.domain.dto.response.QProductResponse_Search;
+import com.kt.domain.entity.QCategoryEntity;
 import com.kt.domain.entity.QProductEntity;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.dsl.BooleanExpression;
@@ -17,10 +18,11 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
-public class ProductRepositoryImpl implements ProductQueryDslRepository {
+public class ProductRepositoryImpl implements ProductRepositoryCustom {
 
 	private final JPAQueryFactory jpaQueryFactory;
 	private final QProductEntity product = QProductEntity.productEntity;
+	private final QCategoryEntity category = QCategoryEntity.categoryEntity;
 
 	@Override
 	public Page<ProductResponse.Search> search(Pageable pageable, String keyword, ProductSearchType type) {
@@ -32,9 +34,11 @@ public class ProductRepositoryImpl implements ProductQueryDslRepository {
 			.select(new QProductResponse_Search(
 				product.id,
 				product.name,
-				product.price
+				product.price,
+				product.category.name
 			))
 			.from(product)
+			.leftJoin(category).on(category.id.eq(product.category.id))
 			.where(booleanBuilder)
 			.offset(pageable.getOffset())
 			.limit(pageable.getPageSize())
@@ -42,6 +46,7 @@ public class ProductRepositoryImpl implements ProductQueryDslRepository {
 
 		int total = jpaQueryFactory.select(product.id)
 			.from(product)
+			.leftJoin(category).on(category.id.eq(product.category.id))
 			.where(booleanBuilder)
 			.fetch().size();
 
@@ -55,6 +60,10 @@ public class ProductRepositoryImpl implements ProductQueryDslRepository {
 
 		if (type == ProductSearchType.NAME) {
 			return product.name.containsIgnoreCase(keyword);
+		}
+
+		if (type == ProductSearchType.CATEGORY) {
+			return category.name.containsIgnoreCase(keyword);
 		}
 
 		return null;

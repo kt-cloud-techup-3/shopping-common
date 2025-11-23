@@ -9,7 +9,8 @@ public class ProductResponse {
 	public record Search(
 		UUID id,
 		String name,
-		Long price
+		Long price,
+		String categoryName
 	) {
 		@QueryProjection
 		public Search {

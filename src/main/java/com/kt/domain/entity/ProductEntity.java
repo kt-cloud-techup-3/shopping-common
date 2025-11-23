@@ -9,6 +9,8 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -30,28 +32,36 @@ public class ProductEntity extends BaseEntity {
 	@Enumerated(EnumType.STRING)
 	private ProductStatus status;
 
+	@ManyToOne
+	@JoinColumn(name = "category_id", nullable = false)
+	private CategoryEntity category;
+
 	protected ProductEntity(
 		String name,
 		Long price,
 		Long stock,
-		ProductStatus status
+		ProductStatus status,
+		CategoryEntity category
 	) {
 		this.name = name;
 		this.price = price;
 		this.stock = stock;
 		this.status = status;
+		this.category = category;
 	}
 
 	public static ProductEntity create(
 		final String name,
 		final Long price,
-		final Long stock
+		final Long stock,
+		final CategoryEntity category
 	) {
 		return new ProductEntity(
 			name,
 			price,
 			stock,
-			ProductStatus.ACTIVATED
+			ProductStatus.ACTIVATED,
+			category
 		);
 	}
 
@@ -65,14 +75,16 @@ public class ProductEntity extends BaseEntity {
 			name,
 			price,
 			stock,
-			status
+			status,
+			null
 		);
 	}
 
-	public void update(String name, Long price, Long stock) {
+	public void update(String name, Long price, Long stock, CategoryEntity category) {
 		this.name = name;
 		this.price = price;
 		this.stock = stock;
+		this.category = category;
 	}
 
 	public void delete() {
@@ -83,7 +95,7 @@ public class ProductEntity extends BaseEntity {
 		this.status = ProductStatus.ACTIVATED;
 	}
 
-	public void deactivate() {
+	public void inActivate() {
 		this.status = ProductStatus.IN_ACTIVATED;
 	}
 

@@ -10,15 +10,15 @@ import com.kt.domain.dto.response.ProductResponse;
 
 public interface ProductService {
 
-	void create(String name, Long price, Long stock);
+	void create(String name, Long price, Long stock, UUID categoryId);
 
-	void update(UUID productId, String name, Long price, Long stock);
+	void update(UUID productId, String name, Long price, Long stock, UUID categoryId);
 
 	void delete(UUID productId);
 
 	void activate(UUID productId);
 
-	void deactivate(UUID productId);
+	void inActivate(UUID productId);
 
 	Page<ProductResponse.Search> search(Pageable pageable, String keyword, ProductSearchType type);
 
