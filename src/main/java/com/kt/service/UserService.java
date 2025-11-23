@@ -14,7 +14,7 @@ public interface UserService {
 
 	UserResponse.Orders getOrdersByUserId(UUID id);
 
-	Page<UserResponse.Search> getUsers(Pageable pageable);
+	Page<UserResponse.Search> getUsers(Pageable pageable, String keyword);
 
 	UserResponse.UserDetail getUserDetail(UUID id);
 

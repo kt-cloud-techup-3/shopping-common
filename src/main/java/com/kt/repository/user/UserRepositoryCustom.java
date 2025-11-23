@@ -6,5 +6,5 @@ import org.springframework.data.domain.Pageable;
 import com.kt.domain.dto.response.UserResponse;
 
 public interface UserRepositoryCustom {
-	Page<UserResponse.Search> searchUsers(Pageable pageable);
+	Page<UserResponse.Search> searchUsers(Pageable pageable, String keyword);
 }
