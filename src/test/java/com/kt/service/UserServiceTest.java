@@ -245,10 +245,10 @@ class UserServiceTest {
 
 	@Test
 	void 내_정보_조회(){
-		UserResponse.Details foundedUserResponse = userService.getUser(testUser.getId());
+		UserResponse.UserDetail foundedUserResponse = userService.getUser(testUser.getId());
 
 		Assertions.assertNotNull(foundedUserResponse);
-		Assertions.assertEquals(testUser.getId(), foundedUserResponse.userId());
+		Assertions.assertEquals(testUser.getId(), foundedUserResponse.id());
 	}
 
 	@Test

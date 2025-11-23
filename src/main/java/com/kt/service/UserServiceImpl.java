@@ -59,16 +59,16 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public UserResponse.Details getUser(UUID userId){
+	public UserResponse.UserDetail getUser(UUID userId){
 		UserEntity user = userRepository.findByUserIdOrThrow(userId);
-		return new UserResponse.Details(
+		return new UserResponse.UserDetail(
 			user.getId(),
 			user.getName(),
-			user.getMobile(),
-			user.getBirth(),
-			user.getGender(),
+			user.getEmail(),
 			user.getRole(),
-			user.getStatus()
+			user.getGender(),
+			user.getBirth(),
+			user.getMobile()
 		);
 	}
 

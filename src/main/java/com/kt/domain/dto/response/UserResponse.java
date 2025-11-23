@@ -42,13 +42,15 @@ public class UserResponse {
 		}
 	}
 
-	public record Details(
-		UUID userId,
+	public record UserDetail(
+		UUID id,
 		String name,
-		String mobile,
-		LocalDate birth,
-		Gender gender,
+		String email,
 		UserRole role,
-		UserStatus userStatus
-	){}
+		Gender gender,
+		LocalDate birth,
+		String mobile
+	) {
+
+	}
 }

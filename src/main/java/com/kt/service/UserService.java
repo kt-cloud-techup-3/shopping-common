@@ -16,7 +16,7 @@ public interface UserService {
 
 	void delete(UUID userId);
 
-	UserResponse.Details getUser(UUID userId);
+	UserResponse.UserDetail getUser(UUID userId);
 
 	void updateUserDetails(UUID userId, UserRequest.UpdateDetails details);
 }
