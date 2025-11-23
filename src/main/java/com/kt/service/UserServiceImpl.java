@@ -47,6 +47,12 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
+	public void delete(UUID userId) {
+		UserEntity user = userRepository.findByUserIdOrThrow(userId);
+		user.delete();
+	}
+
+	@Override
 	public List<OrderProductResponse.SearchReviewable> getReviewableOrderProducts(UUID userId) {
 		return orderProductRepository.getReviewableOrderProductsByUserId(userId);
 	}

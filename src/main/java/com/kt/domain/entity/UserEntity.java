@@ -73,4 +73,6 @@ public class UserEntity extends AbstractAccountEntity {
 	public void updatePassword(String password){
 		this.password = password;
 	}
+
+	public void delete(){ this.status = UserStatus.DELETED; }
 }

@@ -12,4 +12,6 @@ public interface UserService {
 	UserResponse.Orders getOrdersByUserId(UUID id);
 
 	void updatePassword(UUID userId, String oldPassword , String newPassword);
+
+	void delete(UUID userId);
 }
