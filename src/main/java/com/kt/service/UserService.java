@@ -19,6 +19,8 @@ public interface UserService {
 
 	UserResponse.UserDetail getUserDetail(UUID id);
 
+	UserResponse.UserDetail getAdminDetail(UUID id);
+
 	void disableUser(UUID id);
 
 	void enableUser(UUID id);
