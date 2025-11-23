@@ -14,6 +14,7 @@ public class ValidationUtil {
 	static final String NOT_NULL_MESSAGE = "{0}은(는) null 일 수 없습니다.";
 	static final String PASSWORD_MIN_LENGTH_MESSAGE = "은(는) 60자 이상이여야 합니다";
 	static final String INVALID_ENUM_VALUE_MESSAGE = "{0} 값이 유효하지 않습니다. 허용값 {1}";
+	static final String STRING_EQUAL_MESSAGE = "동일한 {0}로 변경할 수 없습니다.";
 
 	public static void validateNotNullAndBlank(String value, String fieldName) {
 		if (!StringUtils.hasText(value)) {
@@ -27,13 +28,22 @@ public class ValidationUtil {
 	public static void validateCollectPassword(String value, String fieldName) {
 		validateNotNullAndBlank(value, fieldName);
 
-		if (fieldName.equals("유저 비밀번호")) {
-			if (value.length() < 60) {
+		if (fieldName.equals("비밀번호")) {
+			if (value.length() < 10) {
 				String errorMessage = fieldName + PASSWORD_MIN_LENGTH_MESSAGE;
 				throw new FieldValidationException(
 					ErrorCode.INVALID_DOMAIN_FIELD, errorMessage
 				);
 			}
+		}
+	}
+
+	public static void validateSameString(String value1, String value2, String fieldName) {
+		if ( value1.equals(value2) ){
+			String errorMessage = fieldName + STRING_EQUAL_MESSAGE;
+			throw new FieldValidationException(
+				ErrorCode.INVALID_DOMAIN_FIELD, errorMessage
+			);
 		}
 	}
 

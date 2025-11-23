@@ -70,4 +70,7 @@ public class UserEntity extends AbstractAccountEntity {
 		);
 	}
 
+	public void updatePassword(String password){
+		this.password = password;
+	}
 }

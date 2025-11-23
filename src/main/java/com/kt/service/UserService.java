@@ -10,4 +10,6 @@ public interface UserService {
 	List<OrderProductResponse.SearchReviewable> getReviewableOrderProducts(UUID userId);
 
 	UserResponse.Orders getOrdersByUserId(UUID id);
+
+	void updatePassword(UUID userId, String oldPassword , String newPassword);
 }
