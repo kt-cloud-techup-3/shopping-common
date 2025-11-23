@@ -46,7 +46,7 @@ public class UserResponse {
 		UUID userId,
 		String name,
 		String mobile,
-		LocalDate birthday,
+		LocalDate birth,
 		Gender gender,
 		UserRole role,
 		UserStatus userStatus

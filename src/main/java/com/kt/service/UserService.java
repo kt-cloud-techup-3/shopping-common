@@ -3,6 +3,7 @@ package com.kt.service;
 import java.util.List;
 import java.util.UUID;
 
+import com.kt.domain.dto.request.UserRequest;
 import com.kt.domain.dto.response.OrderProductResponse;
 import com.kt.domain.dto.response.UserResponse;
 
@@ -16,4 +17,6 @@ public interface UserService {
 	void delete(UUID userId);
 
 	UserResponse.Details getUser(UUID userId);
+
+	void updateUserDetails(UUID userId, UserRequest.UpdateDetails details);
 }

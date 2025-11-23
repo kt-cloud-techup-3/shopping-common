@@ -3,6 +3,7 @@ package com.kt.service;
 import java.util.List;
 import java.util.UUID;
 
+import org.apache.logging.log4j.util.Strings;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -68,6 +69,17 @@ public class UserServiceImpl implements UserService {
 			user.getGender(),
 			user.getRole(),
 			user.getStatus()
+		);
+	}
+
+	@Override
+	public void updateUserDetails(UUID userId, UserRequest.UpdateDetails details) {
+		UserEntity user = userRepository.findByUserIdOrThrow(userId);
+		user.updateDetails(
+			( Strings.isBlank(details.name()) )? user.getName() : details.name(),
+			( Strings.isBlank(details.mobile()) )? user.getMobile() : details.mobile(),
+			( details.birth() == null )? user.getBirth() : details.birth(),
+			( details.gender() == null )? user.getGender() : details.gender()
 		);
 	}
 }
