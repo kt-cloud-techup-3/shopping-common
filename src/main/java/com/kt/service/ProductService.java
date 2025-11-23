@@ -16,6 +16,10 @@ public interface ProductService {
 
 	void delete(UUID productId);
 
+	void activate(UUID productId);
+
+	void deactivate(UUID productId);
+
 	Page<ProductResponse.Search> search(Pageable pageable, String keyword, ProductSearchType type);
 
 	ProductResponse.Detail detail(UUID productId);

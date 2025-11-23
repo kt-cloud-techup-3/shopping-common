@@ -49,6 +49,18 @@ public class ProductServiceImpl implements ProductService {
 	}
 
 	@Override
+	public void activate(UUID productId) {
+		ProductEntity product = productRepository.findByIdOrThrow(productId);
+		product.activate();
+	}
+
+	@Override
+	public void deactivate(UUID productId) {
+		ProductEntity product = productRepository.findByIdOrThrow(productId);
+		product.deactivate();
+	}
+
+	@Override
 	public Page<ProductResponse.Search> search(Pageable pageable, String keyword, ProductSearchType type) {
 		return productRepository.search(pageable, keyword, type);
 	}

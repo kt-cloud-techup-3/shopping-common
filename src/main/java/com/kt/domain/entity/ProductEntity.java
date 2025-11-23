@@ -78,4 +78,13 @@ public class ProductEntity extends BaseEntity {
 	public void delete() {
 		this.status = ProductStatus.DELETED;
 	}
+
+	public void activate() {
+		this.status = ProductStatus.ACTIVATED;
+	}
+
+	public void deactivate() {
+		this.status = ProductStatus.IN_ACTIVATED;
+	}
+
 }
