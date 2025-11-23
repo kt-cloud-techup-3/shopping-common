@@ -241,4 +241,12 @@ class UserServiceTest {
 		userService.delete(testUser.getId());
 		Assertions.assertEquals(UserStatus.DELETED, testUser.getStatus());
 	}
+
+	@Test
+	void 내_정보_조회(){
+		UserResponse.Details foundedUserResponse = userService.getUser(testUser.getId());
+
+		Assertions.assertNotNull(foundedUserResponse);
+		Assertions.assertEquals(testUser.getId(), foundedUserResponse.userId());
+	}
 }
