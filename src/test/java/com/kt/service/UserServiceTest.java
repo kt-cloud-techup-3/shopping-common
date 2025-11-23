@@ -1,6 +1,7 @@
 package com.kt.service;
 
 import static org.assertj.core.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -26,6 +27,7 @@ import com.kt.domain.entity.ProductEntity;
 import com.kt.domain.entity.ReceiverVO;
 import com.kt.domain.entity.ReviewEntity;
 import com.kt.domain.entity.UserEntity;
+import com.kt.exception.FieldValidationException;
 import com.kt.repository.OrderProductRepository;
 import com.kt.repository.OrderRepository;
 import com.kt.repository.ProductRepository;
@@ -49,6 +51,7 @@ class UserServiceTest {
 	ReviewRepository reviewRepository;
 	@Autowired
 	ProductRepository productRepository;
+
 	UserEntity testUser;
 	OrderEntity testOrder;
 	ProductEntity testProduct;
@@ -65,7 +68,7 @@ class UserServiceTest {
 		testUser = UserEntity.create(
 			"주문자테스터1",
 			"wjd123@naver.com",
-			"1234",
+			"1234567891011",
 			UserRole.MEMBER,
 			Gender.MALE,
 			LocalDate.of(1990, 1, 1),
@@ -195,5 +198,40 @@ class UserServiceTest {
 			.getReviewableOrderProducts(testUser.getId());
 
 		Assertions.assertEquals(0, foundedOrderProductResponses.size());
+	}
+
+	@Test
+	void 비밀번호변경_성공(){
+		userService.updatePassword(
+			testUser.getId(),
+			testUser.getPassword(),
+			"12345678910"
+		);
+
+		Assertions.assertEquals("12345678910", testUser.getPassword());
+	}
+
+	@Test
+	void 비밀번호변경_실패__비밀번호_10자리_이하(){
+		assertThrowsExactly(
+			FieldValidationException.class,
+			()-> userService.updatePassword(
+					testUser.getId(),
+					testUser.getPassword(),
+					"123456789"
+			)
+		);
+	}
+
+	@Test
+	void 비밀번호변경_실패__비밀번호_동일(){
+		assertThrowsExactly(
+			FieldValidationException.class,
+			()-> userService.updatePassword(
+				testUser.getId(),
+				testUser.getPassword(),
+				"1234567891011"
+			)
+		);
 	}
 }
