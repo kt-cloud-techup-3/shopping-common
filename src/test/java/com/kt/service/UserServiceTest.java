@@ -19,6 +19,7 @@ import com.kt.constant.Gender;
 import com.kt.constant.OrderProductStatus;
 import com.kt.constant.ProductStatus;
 import com.kt.constant.UserRole;
+import com.kt.constant.UserStatus;
 import com.kt.domain.dto.response.OrderProductResponse;
 import com.kt.domain.dto.response.UserResponse;
 import com.kt.domain.entity.OrderEntity;
@@ -233,5 +234,11 @@ class UserServiceTest {
 				"1234567891011"
 			)
 		);
+	}
+
+	@Test
+	void 유저삭제_성공(){
+		userService.delete(testUser.getId());
+		Assertions.assertEquals(UserStatus.DELETED, testUser.getStatus());
 	}
 }
