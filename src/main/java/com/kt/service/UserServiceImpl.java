@@ -40,10 +40,12 @@ public class UserServiceImpl implements UserService {
 		String currentPassword ,
 		String newPassword)
 	{
-		ValidationUtil.validateSameString(currentPassword, newPassword, "비밀번호");
-		ValidationUtil.validateCollectPassword(newPassword, "비밀번호");
-
 		UserEntity user = userRepository.findByUserIdOrThrow(userId);
+
+		ValidationUtil.validateValidPassword(newPassword, "비밀번호");
+		ValidationUtil.validateCollectPassword(currentPassword, user.getPassword(), "비밀번호");
+		ValidationUtil.validateDuplicatedString(user.getPassword(), newPassword, "비밀번호");
+
 		user.updatePassword(newPassword);
 	}
 

@@ -12,7 +12,7 @@ public interface UserService {
 
 	UserResponse.Orders getOrdersByUserId(UUID id);
 
-	void updatePassword(UUID userId, String oldPassword , String newPassword);
+	void updatePassword(UUID userId, String currentPassword , String newPassword);
 
 	void delete(UUID userId);
 

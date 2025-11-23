@@ -226,20 +226,37 @@ class UserServiceTest {
 	}
 
 	@Test
-	void 비밀번호변경_실패__비밀번호_동일(){
+	void 비밀번호변경_실패__현재_비밀번호_불일치(){
 		assertThrowsExactly(
 			FieldValidationException.class,
-			()-> userService.updatePassword(
-				testUser.getId(),
-				testUser.getPassword(),
-				"1234567891011"
-			)
+			()-> {
+				userService.updatePassword(
+					testUser.getId(),
+					"틀린비밀번호입니다.......",
+					"22222222222222"
+				);
+			}
+		);
+	}
+
+	@Test
+	void 비밀번호변경_실패__변경할_비밀번호_동일(){
+		assertThrowsExactly(
+			FieldValidationException.class,
+			()-> {
+				userService.updatePassword(
+					testUser.getId(),
+					testUser.getPassword(),
+					testUser.getPassword()
+				);
+			}
 		);
 	}
 
 	@Test
 	void 유저삭제_성공(){
 		userService.delete(testUser.getId());
+
 		Assertions.assertEquals(UserStatus.DELETED, testUser.getStatus());
 	}
 

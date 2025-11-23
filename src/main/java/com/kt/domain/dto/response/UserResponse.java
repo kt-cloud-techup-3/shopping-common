@@ -50,7 +50,5 @@ public class UserResponse {
 		Gender gender,
 		LocalDate birth,
 		String mobile
-	) {
-
-	}
+	) {}
 }
