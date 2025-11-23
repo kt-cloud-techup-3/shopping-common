@@ -56,4 +56,18 @@ public class UserServiceImpl implements UserService {
 	public List<OrderProductResponse.SearchReviewable> getReviewableOrderProducts(UUID userId) {
 		return orderProductRepository.getReviewableOrderProductsByUserId(userId);
 	}
+
+	@Override
+	public UserResponse.Details getUser(UUID userId){
+		UserEntity user = userRepository.findByUserIdOrThrow(userId);
+		return new UserResponse.Details(
+			user.getId(),
+			user.getName(),
+			user.getMobile(),
+			user.getBirth(),
+			user.getGender(),
+			user.getRole(),
+			user.getStatus()
+		);
+	}
 }

@@ -14,4 +14,6 @@ public interface UserService {
 	void updatePassword(UUID userId, String oldPassword , String newPassword);
 
 	void delete(UUID userId);
+
+	UserResponse.Details getUser(UUID userId);
 }

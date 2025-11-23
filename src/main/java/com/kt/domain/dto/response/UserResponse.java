@@ -1,8 +1,12 @@
 package com.kt.domain.dto.response;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 
+import com.kt.constant.Gender;
+import com.kt.constant.UserRole;
+import com.kt.constant.UserStatus;
 import com.kt.domain.entity.OrderEntity;
 import com.kt.domain.entity.ReceiverVO;
 
@@ -37,4 +41,14 @@ public class UserResponse {
 			);
 		}
 	}
+
+	public record Details(
+		UUID userId,
+		String name,
+		String mobile,
+		LocalDate birthday,
+		Gender gender,
+		UserRole role,
+		UserStatus userStatus
+	){}
 }
