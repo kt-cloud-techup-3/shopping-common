@@ -5,6 +5,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
+import com.kt.constant.UserStatus;
 import com.kt.domain.dto.response.QUserResponse_Search;
 import com.kt.domain.dto.response.UserResponse;
 import com.kt.domain.entity.QUserEntity;
@@ -23,9 +24,10 @@ public class UserRepositoryImpl implements UserRepositoryCustom {
 	private final QUserEntity user = QUserEntity.userEntity;
 
 	@Override
-	public Page<UserResponse.Search> searchUsers(Pageable pageable) {
+	public Page<UserResponse.Search> searchUsers(Pageable pageable, String keyword) {
 
-		BooleanExpression condition = isEnabled();
+		BooleanExpression condition = isEnabled()
+			.and(containsName(keyword));
 
 		var contentQuery = jpaQueryFactory
 			.select(new QUserResponse_Search(
@@ -55,7 +57,15 @@ public class UserRepositoryImpl implements UserRepositoryCustom {
 		);
 	}
 
+	private BooleanExpression containsName(String keyword) {
+		if (keyword == null || keyword.isBlank()) {
+			return null;
+		}
+		return user.name.contains(keyword);
+	}
+
 	private BooleanExpression isEnabled() {
-		return null;
+		// TODO: 유저 상태 논의 후 enabled 결정
+		return user.status.eq(UserStatus.ENABLED);
 	}
 }

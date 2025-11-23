@@ -217,7 +217,7 @@ class UserServiceTest {
 	void 유저_리스트_조회() {
 
 		// when
-		Page<UserResponse.Search> result = userService.getUsers(Pageable.ofSize(10));
+		Page<UserResponse.Search> result = userService.getUsers(Pageable.ofSize(10), "테스터");
 
 		// then
 		assertThat(result).isNotNull();
