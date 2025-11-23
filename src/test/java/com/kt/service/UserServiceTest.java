@@ -20,6 +20,7 @@ import com.kt.constant.OrderProductStatus;
 import com.kt.constant.ProductStatus;
 import com.kt.constant.UserRole;
 import com.kt.constant.UserStatus;
+import com.kt.domain.dto.request.UserRequest;
 import com.kt.domain.dto.response.OrderProductResponse;
 import com.kt.domain.dto.response.UserResponse;
 import com.kt.domain.entity.OrderEntity;
@@ -248,5 +249,20 @@ class UserServiceTest {
 
 		Assertions.assertNotNull(foundedUserResponse);
 		Assertions.assertEquals(testUser.getId(), foundedUserResponse.userId());
+	}
+
+	@Test
+	void 내_정보_수정_성공_필드2개(){
+		UserRequest.UpdateDetails updateDetails =  new UserRequest.UpdateDetails(
+			"삼정수",
+			null,
+			LocalDate.of(1996, 1, 1),
+			null
+		);
+		userService.updateUserDetails(testUser.getId(), updateDetails);
+
+		Assertions.assertEquals("삼정수", testUser.getName());
+		Assertions.assertNotNull(testUser.getMobile());
+		Assertions.assertNotNull(testUser.getGender());
 	}
 }
