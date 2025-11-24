@@ -7,11 +7,13 @@ import com.kt.constant.redis.RedisKey;
 import com.kt.domain.dto.request.LoginRequest;
 import com.kt.domain.dto.request.ResetPasswordRequest;
 import com.kt.domain.dto.request.SignupRequest;
+import com.kt.domain.entity.CourierEntity;
 import com.kt.domain.entity.UserEntity;
 import com.kt.exception.AuthException;
 import com.kt.exception.DuplicatedException;
 import com.kt.infra.redis.RedisCache;
 import com.kt.repository.AccountRepository;
+import com.kt.repository.CourierRepository;
 import com.kt.repository.user.UserRepository;
 
 import com.mysema.commons.lang.Pair;
@@ -54,6 +56,8 @@ public class AuthServiceTest {
 	UserRepository userRepository;
 	@Autowired
 	AccountRepository accountRepository;
+	@Autowired
+	CourierRepository courierRepository;
 	@Autowired
 	PasswordEncoder passwordEncoder;
 	@Autowired
@@ -112,7 +116,7 @@ public class AuthServiceTest {
 			LocalDate.of(2011, 11, 11),
 			"010-1234-1234"
 		);
-		authService.memberSignup(signup);
+		authService.signupMember(signup);
 		UserEntity member = userRepository.findByEmail(signup.email()).orElseGet(
 			() -> null
 		);
@@ -142,7 +146,7 @@ public class AuthServiceTest {
 
 		assertThrowsExactly(
 			IllegalArgumentException.class, () ->
-				authService.memberSignup(signup)
+				authService.signupMember(signup)
 		);
 	}
 
@@ -167,7 +171,7 @@ public class AuthServiceTest {
 
 		assertThrowsExactly(
 			IllegalArgumentException.class, () ->
-				authService.memberSignup(signup)
+				authService.signupMember(signup)
 		);
 	}
 
@@ -196,11 +200,11 @@ public class AuthServiceTest {
 			LocalDate.of(2011, 11, 11),
 			"010-1234-0002"
 		);
-		authService.memberSignup(firstSignup);
+		authService.signupMember(firstSignup);
 
 		assertThrowsExactly(
 			DuplicatedException.class, () ->
-				authService.memberSignup(secondSignup)
+				authService.signupMember(secondSignup)
 		);
 
 	}
@@ -344,12 +348,16 @@ public class AuthServiceTest {
 	void 유저_회원가입_이메일_검증_실패_이메일_키값_없음() {
 		String differentEmail = "test@email.com";
 		String authCode = "123123";
-		redisCache.set(RedisKey.SIGNUP_CODE, email, authCode);
-
-		SignupRequest.VerifySignupCode verifyRequest = new SignupRequest.VerifySignupCode(
-			differentEmail,
+		redisCache.set(
+			RedisKey.SIGNUP_CODE,
+			email,
 			authCode
 		);
+
+		SignupRequest.VerifySignupCode verifyRequest =
+			new SignupRequest.VerifySignupCode(
+				differentEmail, authCode
+			);
 
 		assertThrowsExactly(
 			IllegalArgumentException.class, () ->
@@ -361,12 +369,16 @@ public class AuthServiceTest {
 	void 유저_회원가입_이메일_검증_실패_인증코드_틀림() {
 		String authCode = "123123";
 		String differentCode = "999999";
-		redisCache.set(RedisKey.SIGNUP_CODE, email, authCode);
-
-		SignupRequest.VerifySignupCode verifyRequest = new SignupRequest.VerifySignupCode(
+		redisCache.set(
+			RedisKey.SIGNUP_CODE,
 			email,
-			differentCode
+			authCode
 		);
+
+		SignupRequest.VerifySignupCode verifyRequest =
+			new SignupRequest.VerifySignupCode(
+				email, differentCode
+			);
 
 		assertThrowsExactly(
 			IllegalArgumentException.class, () ->
@@ -397,6 +409,78 @@ public class AuthServiceTest {
 		assertThrowsExactly(
 			IllegalArgumentException.class, () ->
 				authService.resetPassword(resetRequest)
+		);
+	}
+
+	@Test
+	void 기사_회원가입_성공() {
+		SignupRequest.SignupCourier signup = new SignupRequest.SignupCourier(
+			"테스트기사",
+			email,
+			rawPassword,
+			Gender.MALE
+		);
+
+		redisCache.set(
+			RedisKey.SIGNUP_VERIFIED,
+			email,
+			true
+		);
+
+		authService.signupCourier(signup);
+
+		CourierEntity savedCourier = courierRepository.findByEmail(email).orElse(null);
+		assertNotNull(savedCourier);
+
+	}
+
+	@Test
+	void 기사_회원가입_실패_이메일_검증_실패_이메일_키값_없음() {
+		String differentEmail = "test@email.com";
+
+		SignupRequest.SignupCourier signup = new SignupRequest.SignupCourier(
+			"테스트기사",
+			differentEmail,
+			rawPassword,
+			Gender.MALE
+		);
+
+		redisCache.set(
+			RedisKey.SIGNUP_VERIFIED,
+			email,
+			true
+		);
+
+		assertThrowsExactly(
+			IllegalArgumentException.class, () ->
+				authService.signupCourier(signup)
+		);
+	}
+
+	@Test
+	void 기사_회원가입_실패_email_중복() {
+
+		SignupRequest.SignupCourier firstSignup =
+			new SignupRequest.SignupCourier(
+				"테스트기사_1", email, rawPassword, Gender.MALE
+			);
+
+		SignupRequest.SignupCourier secondSignup =
+			new SignupRequest.SignupCourier(
+				"테스트기사_2", email, rawPassword, Gender.MALE
+			);
+
+		redisCache.set(
+			RedisKey.SIGNUP_VERIFIED,
+			email,
+			true
+		);
+
+		authService.signupCourier(firstSignup);
+
+		assertThrowsExactly(
+			DuplicatedException.class, () ->
+				authService.signupCourier(secondSignup)
 		);
 	}
 

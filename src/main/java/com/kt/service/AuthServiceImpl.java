@@ -9,6 +9,7 @@ import com.kt.domain.dto.request.LoginRequest;
 import com.kt.domain.dto.request.ResetPasswordRequest;
 import com.kt.domain.dto.request.SignupRequest;
 import com.kt.domain.entity.AbstractAccountEntity;
+import com.kt.domain.entity.CourierEntity;
 import com.kt.domain.entity.UserEntity;
 
 import com.kt.exception.AuthException;
@@ -16,6 +17,7 @@ import com.kt.exception.DuplicatedException;
 import com.kt.infra.mail.EmailClient;
 import com.kt.infra.redis.RedisCache;
 import com.kt.repository.AccountRepository;
+import com.kt.repository.CourierRepository;
 import com.kt.repository.user.UserRepository;
 
 import com.kt.security.JwtService;
@@ -30,11 +32,12 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Random;
 
 @Service
+@Transactional
 @RequiredArgsConstructor
 public class AuthServiceImpl implements AuthService {
 
 	private final UserRepository userRepository;
-
+	private final CourierRepository courierRepository;
 	private final AccountRepository accountRepository;
 
 	private final PasswordEncoder passwordEncoder;
@@ -45,25 +48,40 @@ public class AuthServiceImpl implements AuthService {
 	private final EmailClient emailClient;
 
 	@Override
-	@Transactional
-	public void memberSignup(SignupRequest.SignupMember request) {
-		Boolean isVerify = redisCache.get(
-			RedisKey.SIGNUP_VERIFIED.key(request.email()),
-			Boolean.class
-		);
-		if (isVerify == null || !isVerify)
-			throw new IllegalArgumentException("인증되지 않은 이메일입니다.");
-		isDuplicatedEmail(request.email());
+	public void signupMember(SignupRequest.SignupMember request) {
+		String email = request.email();
+		requireVerifiedEmail(email);
+		requireDuplicatedEmail(email);
+
 		UserEntity member = UserEntity.create(
 			request.name(),
-			request.email(),
+			email,
 			passwordEncoder.encode(request.password()),
 			UserRole.MEMBER,
 			request.gender(),
 			request.birth(),
 			request.mobile()
 		);
+
 		userRepository.save(member);
+	}
+
+
+
+	@Override
+	public void signupCourier(SignupRequest.SignupCourier request) {
+		String email = request.email();
+		requireVerifiedEmail(email);
+		requireDuplicatedEmail(email);
+
+		CourierEntity courier = CourierEntity.create(
+			request.name(),
+			request.email(),
+			request.password(),
+			request.gender()
+		);
+
+		courierRepository.save(courier);
 	}
 
 	@Override
@@ -162,9 +180,18 @@ public class AuthServiceImpl implements AuthService {
 		}
 	}
 
-	private void isDuplicatedEmail(String email) {
-		if (userRepository.findByEmail(email).isPresent())
+	private void requireDuplicatedEmail(String email) {
+		if (accountRepository.findByEmail(email).isPresent())
 			throw new DuplicatedException(ErrorCode.DUPLICATED_EMAIL);
+	}
+
+	private void requireVerifiedEmail(String email) {
+		Boolean result = redisCache.get(
+			RedisKey.SIGNUP_VERIFIED.key(email),
+			Boolean.class
+		);
+		if (!Boolean.TRUE.equals(result))
+			throw new IllegalArgumentException("인증되지 않은 이메일입니다.");
 	}
 
 	private String getAuthenticationCode() {
