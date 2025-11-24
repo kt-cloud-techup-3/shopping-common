@@ -51,6 +51,8 @@ class OrderServiceTest {
 	@Autowired
 	private CategoryRepository categoryRepository;
 
+	private CategoryEntity defaultCategory;
+
 	@BeforeEach
 	void setup() {
 		orderProductRepository.deleteAll();
@@ -58,6 +60,8 @@ class OrderServiceTest {
 		productRepository.deleteAll();
 		userRepository.deleteAll();
 
+		CategoryEntity category = CategoryEntity.create("테스트 기본 카테고리", null);
+		defaultCategory = categoryRepository.save(category);
 	}
 
 	@Test
@@ -77,13 +81,10 @@ class OrderServiceTest {
 			)
 		);
 
-		CategoryEntity category = CategoryEntity.create("카테고리", null);
-		categoryRepository.save(category);
-
-		ProductEntity product1 = ProductEntity.create("상품1", 10L, 10000L, category);
+		ProductEntity product1 = ProductEntity.create("상품1", 10L, 10000L, defaultCategory);
 		productRepository.save(product1);
 
-		ProductEntity product2 = ProductEntity.create("상품2", 5L, 20000L, category);
+		ProductEntity product2 = ProductEntity.create("상품2", 5L, 20000L, defaultCategory);
 		productRepository.save(product2);
 
 		OrderRequest.Item item1 = new OrderRequest.Item(product1.getId(), 2L);
@@ -154,11 +155,8 @@ class OrderServiceTest {
 			"0101010"
 		);
 
-		CategoryEntity category = CategoryEntity.create("카테고리", null);
-		categoryRepository.save(category);
-
 		ProductEntity product = productRepository.save(
-			ProductEntity.create("상품1", 3L, 1L, category)
+			ProductEntity.create("상품1", 3L, 1L, defaultCategory)
 		);
 
 		UserEntity savedUser = userRepository.save(user);
@@ -189,10 +187,7 @@ class OrderServiceTest {
 		);
 		UserEntity savedUser = userRepository.save(user);
 
-		CategoryEntity category = CategoryEntity.create("카테고리", null);
-		categoryRepository.save(category);
-
-		ProductEntity product = ProductEntity.create("테스트 상품", 5L, 10000L, category);
+		ProductEntity product = ProductEntity.create("테스트 상품", 5L, 10000L, defaultCategory);
 		ProductEntity savedProduct = productRepository.save(product);
 
 		OrderEntity order = OrderEntity.create(
@@ -230,7 +225,7 @@ class OrderServiceTest {
 		);
 
 		ProductEntity product = productRepository.save(
-			ProductEntity.create("취소상품", initialStock, 10000L, ProductStatus.ACTIVATED)
+			ProductEntity.create("취소상품", 10000L, initialStock, ProductStatus.ACTIVATED, defaultCategory)
 		);
 
 		OrderEntity order = orderRepository.save(
@@ -295,7 +290,7 @@ class OrderServiceTest {
 		);
 
 		ProductEntity product = productRepository.save(
-			ProductEntity.create("기존 상품", initialStock, 10000L, ProductStatus.ACTIVATED)
+			ProductEntity.create("기존 상품", 10000L, initialStock, ProductStatus.ACTIVATED, defaultCategory)
 		);
 
 		OrderEntity order = orderRepository.save(
