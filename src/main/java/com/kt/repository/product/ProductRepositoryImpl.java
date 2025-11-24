@@ -38,7 +38,7 @@ public class ProductRepositoryImpl implements ProductRepositoryCustom {
 				product.category.name
 			))
 			.from(product)
-			.leftJoin(category).on(category.id.eq(product.category.id))
+			.join(category).on(category.id.eq(product.category.id))
 			.where(booleanBuilder)
 			.offset(pageable.getOffset())
 			.limit(pageable.getPageSize())
@@ -46,7 +46,7 @@ public class ProductRepositoryImpl implements ProductRepositoryCustom {
 
 		int total = jpaQueryFactory.select(product.id)
 			.from(product)
-			.leftJoin(category).on(category.id.eq(product.category.id))
+			.join(category).on(category.id.eq(product.category.id))
 			.where(booleanBuilder)
 			.fetch().size();
 
