@@ -68,6 +68,7 @@ public class AuthServiceTest {
 	UserEntity user;
 	String rawPassword = "1231231!";
 	String email = "bjwnstkdbj@naver.com";
+
 	@BeforeEach
 	void setUp(TestInfo testInfo) {
 		userRepository.deleteAll();
@@ -392,7 +393,7 @@ public class AuthServiceTest {
 	@DisplayName(FAIL_RESET_PASSWORD_NOT_FOUND_EMAIL)
 	void 유저_비밀번호_초기화_성공() {
 		ResetPasswordRequest resetRequest = new ResetPasswordRequest(
-				user.getEmail()
+			user.getEmail()
 		);
 
 		authService.resetPassword(resetRequest);
