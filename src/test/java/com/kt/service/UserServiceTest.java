@@ -11,6 +11,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,6 +20,7 @@ import com.kt.constant.Gender;
 import com.kt.constant.OrderProductStatus;
 import com.kt.constant.ProductStatus;
 import com.kt.constant.UserRole;
+import com.kt.constant.UserStatus;
 import com.kt.domain.dto.response.OrderProductResponse;
 import com.kt.domain.dto.response.UserResponse;
 import com.kt.domain.entity.OrderEntity;
@@ -30,7 +33,7 @@ import com.kt.repository.OrderProductRepository;
 import com.kt.repository.OrderRepository;
 import com.kt.repository.ProductRepository;
 import com.kt.repository.ReviewRepository;
-import com.kt.repository.UserRepository;
+import com.kt.repository.user.UserRepository;
 
 @Transactional
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -50,9 +53,12 @@ class UserServiceTest {
 	@Autowired
 	ProductRepository productRepository;
 	UserEntity testUser;
+	UserEntity testUser2;
+	UserEntity testAdmin;
 	OrderEntity testOrder;
 	ProductEntity testProduct;
 	private UUID userId;
+	private UUID AdminId;
 
 	@BeforeEach
 	void setUp() throws Exception {
@@ -71,7 +77,32 @@ class UserServiceTest {
 			LocalDate.of(1990, 1, 1),
 			"010-1234-5678"
 		);
+
+		testUser2 = UserEntity.create(
+			"주문자테스터2",
+			"dohyun@naver.com",
+			"1234",
+			UserRole.MEMBER,
+			Gender.MALE,
+			LocalDate.of(1990, 1, 1),
+			"010-1234-5678"
+		);
+
+		testAdmin = UserEntity.create(
+			"어드민테스터",
+			"dohyun@naver.com",
+			"1234",
+			UserRole.ADMIN,
+			Gender.MALE,
+			LocalDate.of(1990, 1, 1),
+			"010-1234-5678"
+		);
+
 		userRepository.save(testUser);
+		UserEntity savedUser = userRepository.save(testUser2);
+		UserEntity savedAdmin = userRepository.save(testAdmin);
+		userId = savedUser.getId();
+		AdminId = savedAdmin.getId();
 
 		ReceiverVO receiver = new ReceiverVO(
 			"수신자테스터1",
@@ -99,35 +130,34 @@ class UserServiceTest {
 
 	@Test
 	void 내_주문_조회() {
-		UserEntity savedUser = userRepository.save(
-			UserEntity.create(
-				"김도현",
-				"ddd",
-				"111",
-				UserRole.MEMBER,
-				Gender.MALE,
-				LocalDate.now(),
-				"0101010"
-			)
+		UserEntity user = UserEntity.create(
+			"김도현",
+			"ddd",
+			"111",
+			UserRole.MEMBER,
+			Gender.MALE,
+			LocalDate.now(),
+			"0101010"
 		);
+
+		UserEntity savedUser = userRepository.save(user);
 
 		userId = savedUser.getId();
-
-		productRepository.save(
-			ProductEntity.create(
-				"테스트물건",
-				3L,
-				3L,
-				ProductStatus.ACTIVATED
-			)
+		ProductEntity product = ProductEntity.create(
+			"테스트물건",
+			3L,
+			3L,
+			ProductStatus.ACTIVATED
 		);
 
-		orderRepository.save(
-			OrderEntity.create(
-				ReceiverVO.create("이름", "번호", "도시", "시군구", "동", "상세"),
-				savedUser
-			)
+		ProductEntity savedProduct = productRepository.save(product);
+
+		OrderEntity order = OrderEntity.create(
+			ReceiverVO.create("이름", "번호", "도시", "시군구", "동", "상세"),
+			savedUser
 		);
+
+		orderRepository.save(order);
 		// when
 		UserResponse.Orders foundOrder = userService.getOrdersByUserId(userId);
 
@@ -196,4 +226,96 @@ class UserServiceTest {
 
 		Assertions.assertEquals(0, foundedOrderProductResponses.size());
 	}
+
+	@Test
+	void 유저_리스트_조회() {
+
+		// when
+		Page<UserResponse.Search> result = userService.getUsers(Pageable.ofSize(10), "테스터", UserRole.MEMBER);
+
+		// then
+		assertThat(result).isNotNull();
+		assertThat(result.getContent()).hasSize(2);
+	}
+
+	@Test
+	void 어드민_리스트_조회() {
+
+		// when
+		Page<UserResponse.Search> result = userService.getUsers(Pageable.ofSize(10), "어드민", UserRole.ADMIN);
+
+		// then
+		assertThat(result).isNotNull();
+		assertThat(result.getContent()).hasSize(1);
+	}
+
+	@Test
+	void 유저_상세_조회() {
+		UserResponse.UserDetail savedUser = userService.getUserDetail(userId);
+
+		// then
+		assertThat(userId).isNotNull();
+		assertThat(savedUser.name()).isEqualTo("주문자테스터2");
+	}
+
+	@Test
+	void 어드민_상세_조회() {
+		UserResponse.UserDetail savedUser = userService.getAdminDetail(AdminId);
+
+		// then
+		assertThat(AdminId).isNotNull();
+		assertThat(savedUser.name()).isEqualTo("어드민테스터");
+	}
+
+	@Test
+	void 유저_상태_변경_disabled() {
+
+		// when
+		userService.disableUser(testUser.getId());
+		UserEntity foundedUser = userRepository.findById(testUser.getId()).orElseThrow();
+
+		// then
+		assertThat(foundedUser).isNotNull();
+		assertThat(foundedUser.getStatus()).isEqualTo(UserStatus.DISABLED);
+
+	}
+
+	@Test
+	void 유저_상태_변경_enabled() {
+
+		// when
+		userService.disableUser(testUser.getId());
+		userService.enableUser(testUser.getId());
+		UserEntity foundedUser = userRepository.findById(testUser.getId()).orElseThrow();
+
+		// then
+		assertThat(foundedUser).isNotNull();
+		assertThat(foundedUser.getStatus()).isEqualTo(UserStatus.ENABLED);
+
+	}
+
+	@Test
+	void 유저_상태_변경_retired() {
+
+		// when
+		userService.retireUser(testUser.getId());
+		UserEntity foundedUser = userRepository.findById(testUser.getId()).orElseThrow();
+		// then
+		assertThat(foundedUser).isNotNull();
+		assertThat(foundedUser.getStatus()).isEqualTo(UserStatus.RETIRED);
+
+	}
+
+	@Test
+	void 유저_상태_변경_delete() {
+
+		// when
+		userService.deleteUser(testUser.getId());
+		UserEntity foundedUser = userRepository.findById(testUser.getId()).orElseThrow();
+		// then
+		assertThat(foundedUser).isNotNull();
+		assertThat(foundedUser.getStatus()).isEqualTo(UserStatus.DELETED);
+
+	}
+
 }
