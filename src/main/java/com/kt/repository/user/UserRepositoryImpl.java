@@ -1,4 +1,4 @@
-package com.kt.repository;
+package com.kt.repository.user;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -10,7 +10,6 @@ import com.kt.constant.UserStatus;
 import com.kt.domain.dto.response.QUserResponse_Search;
 import com.kt.domain.dto.response.UserResponse;
 import com.kt.domain.entity.QUserEntity;
-import com.kt.repository.user.UserRepositoryCustom;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 
