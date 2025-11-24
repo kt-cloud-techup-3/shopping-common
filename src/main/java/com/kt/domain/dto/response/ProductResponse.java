@@ -2,6 +2,7 @@ package com.kt.domain.dto.response;
 
 import java.util.UUID;
 
+import com.kt.constant.ProductStatus;
 import com.kt.domain.entity.ProductEntity;
 import com.querydsl.core.annotations.QueryProjection;
 
@@ -10,7 +11,9 @@ public class ProductResponse {
 		UUID id,
 		String name,
 		Long price,
-		String categoryName
+		ProductStatus status,
+		UUID categoryId,
+		Long stock
 	) {
 		@QueryProjection
 		public Search {
@@ -21,6 +24,8 @@ public class ProductResponse {
 		UUID id,
 		String name,
 		Long price,
+		ProductStatus status,
+		UUID categoryId,
 		Long stock
 	) {
 
@@ -29,6 +34,8 @@ public class ProductResponse {
 				product.getId(),
 				product.getName(),
 				product.getPrice(),
+				product.getStatus(),
+				product.getCategory().getId(),
 				product.getStock()
 			);
 		}

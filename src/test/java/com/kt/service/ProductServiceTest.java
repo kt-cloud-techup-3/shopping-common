@@ -227,4 +227,116 @@ class ProductServiceTest {
 		assertThat(search.getTotalPages()).isEqualTo(1);
 		assertThat(search.getContent().size()).isEqualTo(1);
 	}
+
+	@Test
+	void 상품_상세_조회() {
+		// given
+		CategoryEntity categorySports = CategoryEntity.create("운동", null);
+		categoryRepository.save(categorySports);
+		ProductEntity product = ProductEntity.create("상품", 1000L, 10L, categorySports);
+		productRepository.save(product);
+
+		// when
+		ProductResponse.Detail detail = productService.detail(product.getId());
+
+		// then
+		assertThat(detail.name()).isEqualTo("상품");
+		assertThat(detail.categoryId()).isEqualTo(categorySports.getId());
+	}
+
+	@Test
+	void 상품_활성화() {
+		// given
+		CategoryEntity categorySports = CategoryEntity.create("운동", null);
+		categoryRepository.save(categorySports);
+		ProductEntity product = ProductEntity.create("상품", 1000L, 10L, categorySports);
+		productRepository.save(product);
+
+		// when
+		productService.activate(product.getId());
+
+		// then
+		ProductEntity savedProduct = productRepository.findByIdOrThrow(product.getId());
+		assertThat(savedProduct.getStatus()).isEqualTo(ProductStatus.ACTIVATED);
+	}
+
+	@Test
+	void 상품_비활성화() {
+		// given
+		CategoryEntity categorySports = CategoryEntity.create("운동", null);
+		categoryRepository.save(categorySports);
+		ProductEntity product = ProductEntity.create("상품", 1000L, 10L, categorySports);
+		productRepository.save(product);
+
+		// when
+		productService.inActivate(product.getId());
+
+		// then
+		ProductEntity savedProduct = productRepository.findByIdOrThrow(product.getId());
+		assertThat(savedProduct.getStatus()).isEqualTo(ProductStatus.IN_ACTIVATED);
+	}
+
+	@Test
+	void 상품_품절_토글__비활성화에서_활성화() {
+		// given
+		CategoryEntity categorySports = CategoryEntity.create("운동", null);
+		categoryRepository.save(categorySports);
+		ProductEntity product = ProductEntity.create("상품", 1000L, 10L, categorySports);
+		productRepository.save(product);
+		productService.inActivate(product.getId());
+
+		// when
+		productService.toggleActive(product.getId());
+
+		// then
+		ProductEntity savedProduct = productRepository.findByIdOrThrow(product.getId());
+		assertThat(savedProduct.getStatus()).isEqualTo(ProductStatus.ACTIVATED);
+	}
+
+	@Test
+	void 상품_품절_토글__활성화에서_비활성화() {
+		// given
+		CategoryEntity categorySports = CategoryEntity.create("운동", null);
+		categoryRepository.save(categorySports);
+		ProductEntity product = ProductEntity.create("상품", 1000L, 10L, categorySports);
+		productRepository.save(product);
+		productService.activate(product.getId());
+
+		// when
+		productService.toggleActive(product.getId());
+
+		// then
+		ProductEntity savedProduct = productRepository.findByIdOrThrow(product.getId());
+		assertThat(savedProduct.getStatus()).isEqualTo(ProductStatus.IN_ACTIVATED);
+	}
+
+	@Test
+	void 상품_다중_품절() {
+		// when
+		CategoryEntity categorySports = CategoryEntity.create("운동", null);
+		categoryRepository.save(categorySports);
+		List<ProductEntity> products = new ArrayList<>();
+		for (int i = 0; i < 5; i++) {
+			ProductEntity product = ProductEntity.create(
+				"상품" + i,
+				1000L,
+				10L,
+				categorySports
+			);
+			products.add(product);
+		}
+		productRepository.saveAll(products);
+
+		// when
+		productService.soldOutProducts(
+			products.stream().map(ProductEntity::getId).toList()
+		);
+
+		// then
+		assertThat(
+			productRepository.findAll()
+				.stream()
+				.allMatch(it -> it.getStatus() == ProductStatus.IN_ACTIVATED)
+		).isTrue();
+	}
 }

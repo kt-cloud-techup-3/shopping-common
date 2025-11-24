@@ -1,5 +1,6 @@
 package com.kt.service;
 
+import java.util.List;
 import java.util.UUID;
 
 import org.springframework.data.domain.Page;
@@ -19,6 +20,10 @@ public interface ProductService {
 	void activate(UUID productId);
 
 	void inActivate(UUID productId);
+
+	void soldOutProducts(List<UUID> productIds);
+
+	void toggleActive(UUID productId);
 
 	Page<ProductResponse.Search> search(Pageable pageable, String keyword, ProductSearchType type);
 

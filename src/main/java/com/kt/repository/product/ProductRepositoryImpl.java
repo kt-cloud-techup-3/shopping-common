@@ -35,7 +35,9 @@ public class ProductRepositoryImpl implements ProductRepositoryCustom {
 				product.id,
 				product.name,
 				product.price,
-				product.category.name
+				product.status,
+				product.category.id,
+				product.stock
 			))
 			.from(product)
 			.join(category).on(category.id.eq(product.category.id))

@@ -1,5 +1,6 @@
 package com.kt.service;
 
+import java.util.List;
 import java.util.UUID;
 
 import org.springframework.stereotype.Service;
@@ -48,5 +49,18 @@ public class ReviewServiceImpl implements ReviewService {
 			reviewEntity.getId(),
 			reviewEntity.getContent()
 		);
+	}
+
+	@Override
+	public List<ReviewResponse.Search> getReviewByProductId(UUID productId) {
+		List<OrderProductEntity> orderProducts = orderProductRepository.findAllByProductId(productId);
+
+		return orderProducts.stream().map(orderProduct -> {
+			ReviewEntity reviewEntity = reviewRepository.findByOrderProductIdOrThrow(orderProduct.getId());
+			return new ReviewResponse.Search(
+				reviewEntity.getId(),
+				reviewEntity.getContent()
+			);
+		}).toList();
 	}
 }
