@@ -15,6 +15,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.kt.constant.Gender;
 import com.kt.constant.OrderProductStatus;
+import com.kt.constant.OrderStatus;
+import com.kt.constant.ProductStatus;
 import com.kt.constant.UserRole;
 import com.kt.domain.dto.request.OrderRequest;
 import com.kt.domain.dto.response.OrderResponse;
@@ -215,6 +217,146 @@ class OrderServiceTest {
 		assertThat(foundOrderProduct.orderId()).isEqualTo(savedOrder.getId());
 		assertThat(foundOrderProduct.orderProducts()).isNotEmpty();
 		assertThat(foundOrderProduct.orderProducts().size()).isEqualTo(1);
+	}
+
+	@Test
+	void 주문_취소_성공() {
+		// given
+		long initialStock = 10000L;
+		long orderQuantity = 3L;
+
+		UserEntity user = userRepository.save(
+			UserEntity.create("유저5", "cancel_test@example.com", "111", UserRole.MEMBER, Gender.MALE, LocalDate.now(), "0101010")
+		);
+
+		ProductEntity product = productRepository.save(
+			ProductEntity.create("취소상품", initialStock, 10000L, ProductStatus.ACTIVATED)
+		);
+
+		OrderEntity order = orderRepository.save(
+			OrderEntity.create(ReceiverVO.create("이름", "번호", "도시", "시군구", "도로명", "상세"), user, OrderStatus.CREATED)
+		);
+
+		product.decreaseStock(orderQuantity);
+		productRepository.save(product);
+
+		OrderProductEntity orderProduct = orderProductRepository.save(
+			OrderProductEntity.create(
+				orderQuantity, 10000L, OrderProductStatus.CREATED, order, product
+			)
+		);
+
+		UUID orderId = order.getId();
+
+		// when
+		orderService.cancelOrder(orderId);
+
+		// then
+		OrderProductEntity canceledOrderProduct = orderProductRepository.findById(orderProduct.getId())
+			.orElseThrow(() -> new IllegalStateException("취소된 주문 상품을 찾을 수 없습니다."));
+		assertThat(canceledOrderProduct.getStatus()).isEqualTo(OrderProductStatus.CANCELED);
+
+		ProductEntity finalProduct = productRepository.findById(product.getId())
+			.orElseThrow(() -> new IllegalStateException("상품을 찾을 수 없습니다."));
+		assertThat(finalProduct.getStock()).isEqualTo(initialStock);
+
+	}
+
+	@Test
+	void 주문_취소_실패__이미_처리됨() {
+		// given
+
+		UserEntity user = userRepository.save(
+			UserEntity.create("유저", "cancel_fail@example.com", "111", UserRole.MEMBER, Gender.MALE, LocalDate.now(), "0101010")
+		);
+
+		OrderEntity order = orderRepository.save(
+			OrderEntity.create(
+				ReceiverVO.create("이름", "번호", "도시", "시군구", "도로명", "상세"),
+				user,
+				OrderStatus.PURCHASE_CONFIRMED
+			)
+		);
+		UUID orderId = order.getId();
+
+		// when, then
+		assertThatThrownBy(() -> orderService.cancelOrder(orderId))
+			.isInstanceOf(BaseException.class)
+			.hasMessageContaining("ORDER_ALREADY_SHIPPED");
+	}
+
+	@Test
+	void 주문_수정_성공__배송정보_변경() {
+		// given
+		long initialStock = 10000L;
+
+		UserEntity user = userRepository.save(
+			UserEntity.create("유저", "update_test@example.com", "111", UserRole.MEMBER, Gender.MALE, LocalDate.now(), "0101010")
+		);
+
+		ProductEntity product = productRepository.save(
+			ProductEntity.create("기존 상품", initialStock, 10000L, ProductStatus.ACTIVATED)
+		);
+
+		OrderEntity order = orderRepository.save(
+			OrderEntity.create(ReceiverVO.create("김기존", "01011112222", "서울시", "강남구", "역삼로", "1층"), user, OrderStatus.CREATED)
+		);
+		product.decreaseStock(2L);
+		productRepository.save(product);
+		orderProductRepository.save(
+			OrderProductEntity.create(2L, 10000L, OrderProductStatus.CREATED, order, product)
+		);
+
+		OrderRequest.Update updateRequest = new OrderRequest.Update(
+			"박수정",
+			"01099998888",
+			"서울특별시",
+			"강동구",
+			"김김대로",
+			"2층",
+			List.of(new OrderRequest.Item(product.getId(), 2L))
+		);
+
+		UUID orderId = order.getId();
+
+		// when
+		orderService.updateOrder(orderId, updateRequest);
+
+		// then
+		OrderEntity updatedOrder = orderRepository.findById(orderId).get();
+
+		assertThat(updatedOrder.getReceiverVO().getName()).isEqualTo("박수정");
+		assertThat(updatedOrder.getReceiverVO().getMobile()).isEqualTo("01099998888");
+
+		ProductEntity finalProduct = productRepository.findById(product.getId()).get();
+		assertThat(finalProduct.getStock()).isEqualTo(initialStock - 2L);
+	}
+
+	@Test
+	void 주문_수정_실패__이미_처리됨() {
+		// given
+		UserEntity user = userRepository.save(
+			UserEntity.create("유저", "update_fail@example.com", "111", UserRole.MEMBER, Gender.MALE, LocalDate.now(), "0101010")
+		);
+
+		OrderEntity order = orderRepository.save(
+			OrderEntity.create(
+				ReceiverVO.create("이름", "번호", "도시", "시군구", "도로명", "상세"),
+				user,
+				OrderStatus.PURCHASE_CONFIRMED
+			)
+		);
+
+		UUID orderId = order.getId();
+
+		OrderRequest.Update updateRequest = new OrderRequest.Update(
+			"박수정", "01099998888", "부산시", "해운대구", "센텀대로", "2층", List.of()
+		);
+
+		// when, then
+		assertThatThrownBy(() -> orderService.updateOrder(orderId, updateRequest))
+			.isInstanceOf(BaseException.class)
+			.hasMessageContaining("ORDER_ALREADY_SHIPPED");
 	}
 
 }
