@@ -25,10 +25,10 @@ public class UserRepositoryImpl implements UserRepositoryCustom {
 	private final QUserEntity user = QUserEntity.userEntity;
 
 	@Override
-	public Page<UserResponse.Search> searchUsers(Pageable pageable, String name, UserRole role) {
+	public Page<UserResponse.Search> searchUsers(Pageable pageable, String keyword, UserRole role) {
 
 		BooleanExpression condition = isEnabled()
-			.and(containsName(name))
+			.and(containsName(keyword))
 			.and(equalRole(role));
 
 		var contentQuery = jpaQueryFactory
@@ -59,11 +59,11 @@ public class UserRepositoryImpl implements UserRepositoryCustom {
 		);
 	}
 
-	private BooleanExpression containsName(String name) {
-		if (name == null || name.isBlank()) {
+	private BooleanExpression containsName(String keyword) {
+		if (keyword == null || keyword.isBlank()) {
 			return null;
 		}
-		return user.name.contains(name);
+		return user.name.contains(keyword);
 	}
 
 	private BooleanExpression equalRole(UserRole role) {

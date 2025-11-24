@@ -40,8 +40,8 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public Page<UserResponse.Search> getUsers(Pageable pageable, String name, UserRole role) {
-		return userRepository.searchUsers(pageable, name, role);
+	public Page<UserResponse.Search> getUsers(Pageable pageable, String keyword, UserRole role) {
+		return userRepository.searchUsers(pageable, keyword, role);
 	}
 
 	@Override

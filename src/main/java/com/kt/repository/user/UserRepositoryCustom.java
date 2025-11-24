@@ -7,5 +7,5 @@ import com.kt.constant.UserRole;
 import com.kt.domain.dto.response.UserResponse;
 
 public interface UserRepositoryCustom {
-	Page<UserResponse.Search> searchUsers(Pageable pageable, String name, UserRole role);
+	Page<UserResponse.Search> searchUsers(Pageable pageable, String keyword, UserRole role);
 }
