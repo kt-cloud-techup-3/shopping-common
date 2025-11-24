@@ -62,7 +62,9 @@ class UserServiceTest {
 	UserEntity testUser;
 	OrderEntity testOrder;
 	ProductEntity testProduct;
+
 	private UUID userId;
+	private static final String TEST_PASSWORD = "1234567891011";
 
 	@BeforeEach
 	void setUp() throws Exception {
@@ -75,7 +77,7 @@ class UserServiceTest {
 		testUser = UserEntity.create(
 			"주문자테스터1",
 			"wjd123@naver.com",
-			passwordEncoder.encode("1234567891011"),
+			passwordEncoder.encode(TEST_PASSWORD),
 			UserRole.MEMBER,
 			Gender.MALE,
 			LocalDate.of(1990, 1, 1),
@@ -209,15 +211,26 @@ class UserServiceTest {
 
 	@Test
 	void 비밀번호변경_성공(){
+		UserEntity user = UserEntity.create(
+			"주문자테스터2",
+			"wjd123@naver.com",
+			passwordEncoder.encode(TEST_PASSWORD),
+			UserRole.MEMBER,
+			Gender.MALE,
+			LocalDate.of(1990, 1, 1),
+			"010-1234-5678"
+		);
+		userRepository.save(user);
+
 		userService.updatePassword(
-			testUser.getId(),
-			"1234567891011",
+			user.getId(),
+			TEST_PASSWORD,
 			"12345678910"
 		);
 
 		boolean validResult = passwordEncoder.matches(
 			"12345678910",
-			testUser.getPassword()
+			user.getPassword()
 		);
 
 		Assertions.assertTrue(validResult);
@@ -225,11 +238,22 @@ class UserServiceTest {
 
 	@Test
 	void 비밀번호변경_실패__현재_비밀번호_불일치(){
+		UserEntity user = UserEntity.create(
+			"주문자테스터1",
+			"wjd123@naver.com",
+			passwordEncoder.encode(TEST_PASSWORD),
+			UserRole.MEMBER,
+			Gender.MALE,
+			LocalDate.of(1990, 1, 1),
+			"010-1234-5678"
+		);
+		userRepository.save(user);
+
 		assertThrowsExactly(
 			AuthException.class,
 			()-> {
 				userService.updatePassword(
-					testUser.getId(),
+					user.getId(),
 					"틀린비밀번호입니다.......",
 					"22222222222222"
 				);
@@ -239,12 +263,23 @@ class UserServiceTest {
 
 	@Test
 	void 비밀번호변경_실패__변경할_비밀번호_동일(){
+		UserEntity user = UserEntity.create(
+			"주문자테스터2",
+			"wjd123@naver.com",
+			passwordEncoder.encode(TEST_PASSWORD),
+			UserRole.MEMBER,
+			Gender.MALE,
+			LocalDate.of(1990, 1, 1),
+			"010-1234-5678"
+		);
+		userRepository.save(user);
+
 		assertThrowsExactly(
 			DuplicatedException.class,
 			()->userService.updatePassword(
-					testUser.getId(),
-				"1234567891011",
-				"1234567891011"
+					user.getId(),
+				TEST_PASSWORD,
+				TEST_PASSWORD
 				)
 		);
 	}
