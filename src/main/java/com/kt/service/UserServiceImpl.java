@@ -111,6 +111,20 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
+	public UserResponse.UserDetail getAdminDetail(UUID id) {
+		UserEntity user = userRepository.findByIdOrThrow(id);
+		return new UserResponse.UserDetail(
+			user.getId(),
+			user.getName(),
+			user.getEmail(),
+			user.getRole(),
+			user.getGender(),
+			user.getBirth(),
+			user.getMobile()
+		);
+	}
+
+	@Override
 	public void enableUser(UUID id) {
 		UserEntity user = userRepository.findByIdOrThrow(id);
 		user.enabled();
