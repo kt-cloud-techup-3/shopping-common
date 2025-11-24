@@ -100,10 +100,13 @@ public class ProductEntity extends BaseEntity {
 	}
 
 	public void toggleActive() {
-		if (this.status == ProductStatus.ACTIVATED) {
-			this.inActivate();
-		} else if (this.status == ProductStatus.IN_ACTIVATED) {
-			this.activate();
+		if (status == ProductStatus.ACTIVATED) {
+			inActivate();
+			return;
+		}
+
+		if (status == ProductStatus.IN_ACTIVATED) {
+			activate();
 		}
 	}
 
