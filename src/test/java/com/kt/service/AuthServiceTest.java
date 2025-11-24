@@ -5,6 +5,7 @@ import com.kt.constant.UserRole;
 import com.kt.constant.UserStatus;
 import com.kt.constant.redis.RedisKey;
 import com.kt.domain.dto.request.LoginRequest;
+import com.kt.domain.dto.request.ResetPasswordRequest;
 import com.kt.domain.dto.request.SignupRequest;
 import com.kt.domain.entity.UserEntity;
 import com.kt.exception.AuthException;
@@ -45,6 +46,8 @@ public class AuthServiceTest {
 	final static String FAIL_USER_LOGIN_STATUS_DISABLED = "유저 로그인 실패 비활성화 상태";
 	final static String FAIL_USER_LOGIN_STATUS_DELETED = "유저 로그인 실패 삭제 상태";
 	final static String FAIL_USER_LOGIN_STATUS_RETIRED = "유저 로그인 실패 탈퇴 상태";
+	final static String FAIL_RESET_PASSWORD_NOT_FOUND_EMAIL = "계정 비밀 번호 초기화 실패 이메일 미존재";
+
 	@Autowired
 	AuthServiceImpl authService;
 	@Autowired
@@ -59,7 +62,7 @@ public class AuthServiceTest {
 	RedisTemplate redisTemplate;
 	UserEntity user;
 	String rawPassword = "1231231!";
-
+	String email = "bjwnstkdbj@naver.com";
 	@BeforeEach
 	void setUp(TestInfo testInfo) {
 		userRepository.deleteAll();
@@ -71,7 +74,8 @@ public class AuthServiceTest {
 					 FAIL_USER_LOGIN_INVALID_PASSWORD,
 					 FAIL_USER_LOGIN_STATUS_DISABLED,
 					 FAIL_USER_LOGIN_STATUS_DELETED,
-					 FAIL_USER_LOGIN_STATUS_RETIRED -> saveMember();
+					 FAIL_USER_LOGIN_STATUS_RETIRED,
+					 FAIL_RESET_PASSWORD_NOT_FOUND_EMAIL -> saveMember();
 		}
 
 	}
@@ -79,7 +83,7 @@ public class AuthServiceTest {
 	void saveMember() {
 		user = UserEntity.create(
 			"황테스트",
-			"test@email.com",
+			email,
 			passwordEncoder.encode(rawPassword),
 			UserRole.MEMBER,
 			Gender.MALE,
@@ -87,8 +91,8 @@ public class AuthServiceTest {
 			"010-1234-5678"
 		);
 		userRepository.save(user);
-		UserEntity foundedUser = userRepository.findById(user.getId()).orElse(null);
-		assertNotNull(foundedUser);
+		UserEntity savedUser = userRepository.findById(user.getId()).orElse(null);
+		assertNotNull(savedUser);
 	}
 
 	@Test
@@ -286,7 +290,7 @@ public class AuthServiceTest {
 	@Test
 	void 유저_회원가입_이메일_인증_성공_redis_저장_데이터_존재() {
 		SignupRequest.SignupEmail signupEmail = new SignupRequest.SignupEmail(
-			"bjwnstkdbj@naver.com"
+			email
 		);
 		authService.sendAuthCode(signupEmail);
 		String value = redisCache.get(
@@ -299,10 +303,9 @@ public class AuthServiceTest {
 
 	@Test
 	void 유저_회원가입_이메일_인증_실패_redis_저장_데이터_미존재() {
-		String requestEmail = "bjwnstkdbj@naver.com";
 		String differentEmail = "test@email.com";
 		SignupRequest.SignupEmail signupEmail = new SignupRequest.SignupEmail(
-			requestEmail
+			email
 		);
 		authService.sendAuthCode(signupEmail);
 		String value = redisCache.get(
@@ -315,7 +318,6 @@ public class AuthServiceTest {
 
 	@Test
 	void 유저_회원가입_이메일_검증_redis_저장_데이터_존재() {
-		String email = "bjwnstkdbj@naver.com";
 		String authCode = "123123";
 		redisCache.set(
 			RedisKey.SIGNUP_CODE,
@@ -340,10 +342,9 @@ public class AuthServiceTest {
 
 	@Test
 	void 유저_회원가입_이메일_검증_실패_이메일_키값_없음() {
-		String originEmail = "bjwnstkdbj@naver.com";
 		String differentEmail = "test@email.com";
 		String authCode = "123123";
-		redisCache.set(RedisKey.SIGNUP_CODE, originEmail, authCode);
+		redisCache.set(RedisKey.SIGNUP_CODE, email, authCode);
 
 		SignupRequest.VerifySignupCode verifyRequest = new SignupRequest.VerifySignupCode(
 			differentEmail,
@@ -358,19 +359,44 @@ public class AuthServiceTest {
 
 	@Test
 	void 유저_회원가입_이메일_검증_실패_인증코드_틀림() {
-		String originEmail = "bjwnstkdbj@naver.com";
 		String authCode = "123123";
 		String differentCode = "999999";
-		redisCache.set(RedisKey.SIGNUP_CODE, originEmail, authCode);
+		redisCache.set(RedisKey.SIGNUP_CODE, email, authCode);
 
 		SignupRequest.VerifySignupCode verifyRequest = new SignupRequest.VerifySignupCode(
-			originEmail,
+			email,
 			differentCode
 		);
 
 		assertThrowsExactly(
 			IllegalArgumentException.class, () ->
 				authService.verifySignupCode(verifyRequest)
+		);
+	}
+
+	@Test
+	@Transactional
+	@DisplayName(FAIL_RESET_PASSWORD_NOT_FOUND_EMAIL)
+	void 유저_비밀번호_초기화_성공() {
+		ResetPasswordRequest resetRequest = new ResetPasswordRequest(
+				user.getEmail()
+		);
+
+		authService.resetPassword(resetRequest);
+
+		assertEquals(false, passwordEncoder.matches(rawPassword, user.getPassword()));
+
+	}
+
+	@Test
+	void 유저_비밀번호_초기화_실패_계정_없음() {
+		String notExistsEmail = "test@email.com";
+		ResetPasswordRequest resetRequest = new ResetPasswordRequest(
+			notExistsEmail
+		);
+		assertThrowsExactly(
+			IllegalArgumentException.class, () ->
+				authService.resetPassword(resetRequest)
 		);
 	}
 

@@ -6,6 +6,7 @@ import com.kt.constant.message.ErrorCode;
 import com.kt.constant.redis.RedisKey;
 import com.kt.domain.dto.request.LoginRequest;
 
+import com.kt.domain.dto.request.ResetPasswordRequest;
 import com.kt.domain.dto.request.SignupRequest;
 import com.kt.domain.entity.AbstractAccountEntity;
 import com.kt.domain.entity.UserEntity;
@@ -125,6 +126,29 @@ public class AuthServiceImpl implements AuthService {
 			email,
 			true
 		);
+	}
+
+	@Override
+	@Transactional
+	public void resetPassword(ResetPasswordRequest request) {
+		String email = request.email();
+		AbstractAccountEntity account = accountRepository.findByEmail(email)
+			.orElseThrow(() ->
+				new IllegalArgumentException("해당 이메일로 가입된 계정이 존재하지 않습니다.")
+			);
+		String reset = getRandomPassword();
+
+		account.resetPassword(passwordEncoder.encode(reset));
+		emailClient.sendMail(
+			email,
+			MailTemplate.RESET_PASSWORD,
+			reset
+		);
+	}
+
+	private String getRandomPassword() {
+		int code = new Random().nextInt(900000) + 100000;
+		return String.valueOf(code);
 	}
 
 	private void validAccount(AbstractAccountEntity account, String rawPassword) {

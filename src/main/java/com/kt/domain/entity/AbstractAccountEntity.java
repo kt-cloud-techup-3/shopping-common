@@ -61,4 +61,8 @@ public abstract class AbstractAccountEntity extends BaseEntity {
 		this.status = UserStatus.ENABLED;
 	}
 
+	public void resetPassword(String reset) {
+		this.password = reset;
+	}
+
 }
