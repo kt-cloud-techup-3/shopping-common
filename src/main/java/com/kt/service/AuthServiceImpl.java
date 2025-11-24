@@ -15,7 +15,7 @@ import com.kt.exception.DuplicatedException;
 import com.kt.infra.mail.EmailClient;
 import com.kt.infra.redis.RedisCache;
 import com.kt.repository.AccountRepository;
-import com.kt.repository.UserRepository;
+import com.kt.repository.user.UserRepository;
 
 import com.kt.security.JwtService;
 import com.mysema.commons.lang.Pair;

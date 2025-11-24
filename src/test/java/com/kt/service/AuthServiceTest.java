@@ -11,7 +11,7 @@ import com.kt.exception.AuthException;
 import com.kt.exception.DuplicatedException;
 import com.kt.infra.redis.RedisCache;
 import com.kt.repository.AccountRepository;
-import com.kt.repository.UserRepository;
+import com.kt.repository.user.UserRepository;
 
 import com.mysema.commons.lang.Pair;
 
@@ -40,30 +40,23 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @SpringBootTest
 public class AuthServiceTest {
 
-	@Autowired
-	AuthServiceImpl authService;
-
-	@Autowired
-	UserRepository userRepository;
-
-	@Autowired
-	AccountRepository accountRepository;
-
-	@Autowired
-	PasswordEncoder passwordEncoder;
-
-	@Autowired
-	RedisCache redisCache;
-
-	@Autowired
-	RedisTemplate redisTemplate;
-
 	final static String SUCCESS_USER_LOGIN = "유저 로그인 성공";
 	final static String FAIL_USER_LOGIN_INVALID_PASSWORD = "유저 로그인 실패 비밀번호 틀림";
 	final static String FAIL_USER_LOGIN_STATUS_DISABLED = "유저 로그인 실패 비활성화 상태";
 	final static String FAIL_USER_LOGIN_STATUS_DELETED = "유저 로그인 실패 삭제 상태";
 	final static String FAIL_USER_LOGIN_STATUS_RETIRED = "유저 로그인 실패 탈퇴 상태";
-
+	@Autowired
+	AuthServiceImpl authService;
+	@Autowired
+	UserRepository userRepository;
+	@Autowired
+	AccountRepository accountRepository;
+	@Autowired
+	PasswordEncoder passwordEncoder;
+	@Autowired
+	RedisCache redisCache;
+	@Autowired
+	RedisTemplate redisTemplate;
 	UserEntity user;
 	String rawPassword = "1231231!";
 
@@ -173,7 +166,6 @@ public class AuthServiceTest {
 				authService.memberSignup(signup)
 		);
 	}
-
 
 	@Test
 	void 맴버_회원가입_실패_email_중복() {
@@ -368,7 +360,7 @@ public class AuthServiceTest {
 
 		assertThrowsExactly(
 			IllegalArgumentException.class, () ->
-			authService.verifySignupCode(verifyRequest)
+				authService.verifySignupCode(verifyRequest)
 		);
 	}
 
