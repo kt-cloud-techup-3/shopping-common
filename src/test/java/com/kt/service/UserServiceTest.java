@@ -12,6 +12,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -55,6 +56,8 @@ class UserServiceTest {
 	ReviewRepository reviewRepository;
 	@Autowired
 	ProductRepository productRepository;
+	@Autowired
+	PasswordEncoder passwordEncoder;
 
 	UserEntity testUser;
 	OrderEntity testOrder;
@@ -72,7 +75,7 @@ class UserServiceTest {
 		testUser = UserEntity.create(
 			"주문자테스터1",
 			"wjd123@naver.com",
-			"1234567891011",
+			passwordEncoder.encode("1234567891011"),
 			UserRole.MEMBER,
 			Gender.MALE,
 			LocalDate.of(1990, 1, 1),
@@ -208,11 +211,16 @@ class UserServiceTest {
 	void 비밀번호변경_성공(){
 		userService.updatePassword(
 			testUser.getId(),
-			testUser.getPassword(),
+			"1234567891011",
 			"12345678910"
 		);
 
-		Assertions.assertEquals("12345678910", testUser.getPassword());
+		boolean validResult = passwordEncoder.matches(
+			"12345678910",
+			testUser.getPassword()
+		);
+
+		Assertions.assertTrue(validResult);
 	}
 
 	@Test
@@ -235,8 +243,8 @@ class UserServiceTest {
 			DuplicatedException.class,
 			()->userService.updatePassword(
 					testUser.getId(),
-					testUser.getPassword(),
-					testUser.getPassword()
+				"1234567891011",
+				"1234567891011"
 				)
 		);
 	}

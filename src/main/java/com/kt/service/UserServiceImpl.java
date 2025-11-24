@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.UUID;
 
 import org.apache.logging.log4j.util.Strings;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,6 +31,8 @@ public class UserServiceImpl implements UserService {
 	private final OrderProductRepository orderProductRepository;
 	private final OrderRepository orderRepository;
 	private final UserRepository userRepository;
+	private final PasswordEncoder passwordEncoder;
+
 
 	@Override
 	public UserResponse.Orders getOrdersByUserId(UUID id) {
@@ -45,10 +48,14 @@ public class UserServiceImpl implements UserService {
 	{
 		UserEntity user = userRepository.findByUserIdOrThrow(userId);
 
-		if ( !currentPassword.equals(user.getPassword()) ) throw new AuthException(ErrorCode.NOT_CORRECT_PASSWORD);
-		if ( newPassword.equals(user.getPassword()) ) throw new DuplicatedException(ErrorCode.DUPLICATED_PASSWORD);
+		if ( newPassword.equals(currentPassword) )
+			throw new DuplicatedException(ErrorCode.DUPLICATED_PASSWORD);
 
-		user.updatePassword(newPassword);
+		if ( !passwordEncoder.matches(currentPassword,user.getPassword()) )
+			throw new AuthException(ErrorCode.NOT_CORRECT_PASSWORD);
+
+		String hashedPassword = passwordEncoder.encode(newPassword);
+		user.updatePassword(hashedPassword);
 	}
 
 	@Override
