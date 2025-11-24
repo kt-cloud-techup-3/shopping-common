@@ -69,14 +69,15 @@ public class ProductEntity extends BaseEntity {
 		final String name,
 		final Long price,
 		final Long stock,
-		final ProductStatus status
+		final ProductStatus status,
+		final CategoryEntity category
 	) {
 		return new ProductEntity(
 			name,
 			price,
 			stock,
 			status,
-			null
+			category
 		);
 	}
 
