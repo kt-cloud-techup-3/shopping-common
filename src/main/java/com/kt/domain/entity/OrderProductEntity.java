@@ -36,4 +36,8 @@ public class OrderProductEntity extends BaseEntity {
 	) {
 		return new OrderProductEntity(quantity, unitPrice, status, order, product);
 	}
+
+	public void cancel() {
+		this.status = OrderProductStatus.CANCELED;
+	}
 }

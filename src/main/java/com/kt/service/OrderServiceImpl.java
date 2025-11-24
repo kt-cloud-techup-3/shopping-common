@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.kt.constant.OrderProductStatus;
+import com.kt.constant.OrderStatus;
 import com.kt.constant.message.ErrorCode;
 import com.kt.domain.dto.request.OrderRequest;
 import com.kt.domain.dto.response.OrderResponse;
@@ -69,6 +70,8 @@ public class OrderServiceImpl implements OrderService {
 				throw new BaseException(ErrorCode.STOCK_NOT_ENOUGH);
 			}
 
+			product.decreaseStock(quantity);
+
 			OrderProductEntity orderProduct = new OrderProductEntity(
 				quantity,
 				product.getPrice(),
@@ -80,5 +83,54 @@ public class OrderServiceImpl implements OrderService {
 			orderProductRepository.save(orderProduct);
 		}
 	}
+
+	@Override
+	public void cancelOrder(UUID orderId) {
+		OrderEntity order = orderRepository.findById(orderId)
+			.orElseThrow(() -> new BaseException(ErrorCode.ORDER_NOT_FOUND));
+
+		if (order.getStatus() != OrderStatus.CREATED) {
+			throw new BaseException(ErrorCode.ORDER_ALREADY_SHIPPED);
+		}
+
+		List<OrderProductEntity> orderProducts = orderProductRepository.findAllByOrder_Id(orderId);
+
+		for (OrderProductEntity orderproduct : orderProducts) {
+			ProductEntity product = orderproduct.getProduct();
+			product.addStock(orderproduct.getQuantity());
+			productRepository.save(product);
+
+			orderproduct.cancel();
+			orderProductRepository.save(orderproduct);
+		}
+
+		order.cancel();
+		orderRepository.save(order);
+	}
+
+	@Override
+	public void updateOrder(UUID orderId, OrderRequest.Update request) {
+		OrderEntity order = orderRepository.findById(orderId)
+			.orElseThrow(() -> new BaseException(ErrorCode.ORDER_NOT_FOUND));
+
+		if (order.getStatus() != OrderStatus.CREATED) {
+			throw new BaseException(ErrorCode.ORDER_ALREADY_SHIPPED);
+		}
+
+		List<OrderProductEntity> existingOrderProducts = orderProductRepository.findAllByOrder_Id(orderId);
+
+		ReceiverVO newReceiverVO = ReceiverVO.create(
+			request.receiverName(),
+			request.receiverMobile(),
+			request.city(),
+			request.district(),
+			request.roadAddress(),
+			request.detail()
+		);
+
+		order.updateReceiverVO(newReceiverVO);
+		orderRepository.save(order);
+	}
+
 
 }
