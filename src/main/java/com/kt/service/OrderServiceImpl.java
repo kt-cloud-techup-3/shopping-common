@@ -89,23 +89,19 @@ public class OrderServiceImpl implements OrderService {
 		OrderEntity order = orderRepository.findById(orderId)
 			.orElseThrow(() -> new BaseException(ErrorCode.ORDER_NOT_FOUND));
 
-		if (order.getStatus() != OrderStatus.CREATED) {
-			throw new BaseException(ErrorCode.ORDER_ALREADY_SHIPPED);
+		if (order.getStatus() == OrderStatus.PURCHASE_CONFIRMED) {
+			throw new BaseException(ErrorCode.ORDER_ALREADY_CONFIRMED);
 		}
+
 
 		List<OrderProductEntity> orderProducts = orderProductRepository.findAllByOrderId(orderId);
 
 		for (OrderProductEntity orderproduct : orderProducts) {
 			ProductEntity product = orderproduct.getProduct();
 			product.addStock(orderproduct.getQuantity());
-			productRepository.save(product);
-
 			orderproduct.cancel();
-			orderProductRepository.save(orderproduct);
 		}
-
 		order.cancel();
-		orderRepository.save(order);
 	}
 
 	@Override
@@ -116,8 +112,6 @@ public class OrderServiceImpl implements OrderService {
 		if (order.getStatus() != OrderStatus.CREATED) {
 			throw new BaseException(ErrorCode.ORDER_ALREADY_SHIPPED);
 		}
-
-		List<OrderProductEntity> existingOrderProducts = orderProductRepository.findAllByOrderId(orderId);
 
 		ReceiverVO newReceiverVO = ReceiverVO.create(
 			request.receiverName(),
