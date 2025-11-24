@@ -1,5 +1,6 @@
 package com.kt.service;
 
+import java.util.List;
 import java.util.UUID;
 
 import org.springframework.data.domain.Page;
@@ -71,6 +72,17 @@ public class ProductServiceImpl implements ProductService {
 	public void inActivate(UUID productId) {
 		ProductEntity product = productRepository.findByIdOrThrow(productId);
 		product.inActivate();
+	}
+
+	@Override
+	public void soldOut(List<UUID> productIds) {
+		productRepository.findAllById(productIds).forEach(ProductEntity::inActivate);
+	}
+
+	@Override
+	public void toggleActive(UUID productId) {
+		ProductEntity product = productRepository.findByIdOrThrow(productId);
+		product.toggleActive();
 	}
 
 	@Override
