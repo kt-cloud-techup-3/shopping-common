@@ -12,11 +12,11 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.kt.constant.Gender;
 import com.kt.constant.OrderProductStatus;
-import com.kt.constant.ProductStatus;
 import com.kt.constant.ReviewStatus;
 import com.kt.constant.UserRole;
 import com.kt.constant.message.ErrorCode;
 import com.kt.domain.dto.response.ReviewResponse;
+import com.kt.domain.entity.CategoryEntity;
 import com.kt.domain.entity.OrderEntity;
 import com.kt.domain.entity.OrderProductEntity;
 import com.kt.domain.entity.ProductEntity;
@@ -24,6 +24,7 @@ import com.kt.domain.entity.ReceiverVO;
 import com.kt.domain.entity.ReviewEntity;
 import com.kt.domain.entity.UserEntity;
 import com.kt.exception.BaseException;
+import com.kt.repository.CategoryRepository;
 import com.kt.repository.OrderProductRepository;
 import com.kt.repository.OrderRepository;
 import com.kt.repository.ProductRepository;
@@ -48,6 +49,8 @@ class ReviewServiceTest {
 	UserRepository userRepository;
 	@Autowired
 	OrderRepository orderRepository;
+	@Autowired
+	CategoryRepository categoryRepository;
 
 	OrderProductEntity testOrderProduct;
 
@@ -85,11 +88,14 @@ class ReviewServiceTest {
 		);
 		orderRepository.save(order);
 
+		CategoryEntity category = CategoryEntity.create("카테고리", null);
+		categoryRepository.save(category);
+
 		ProductEntity product = ProductEntity.create(
 			"테스트상품명",
 			1000L,
 			5L,
-			ProductStatus.ACTIVATED
+			category
 		);
 		productRepository.save(product);
 

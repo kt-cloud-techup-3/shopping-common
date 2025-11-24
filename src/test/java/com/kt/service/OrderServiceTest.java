@@ -15,16 +15,17 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.kt.constant.Gender;
 import com.kt.constant.OrderProductStatus;
-import com.kt.constant.ProductStatus;
 import com.kt.constant.UserRole;
 import com.kt.domain.dto.request.OrderRequest;
 import com.kt.domain.dto.response.OrderResponse;
+import com.kt.domain.entity.CategoryEntity;
 import com.kt.domain.entity.OrderEntity;
 import com.kt.domain.entity.OrderProductEntity;
 import com.kt.domain.entity.ProductEntity;
 import com.kt.domain.entity.ReceiverVO;
 import com.kt.domain.entity.UserEntity;
 import com.kt.exception.BaseException;
+import com.kt.repository.CategoryRepository;
 import com.kt.repository.OrderProductRepository;
 import com.kt.repository.OrderRepository;
 import com.kt.repository.ProductRepository;
@@ -45,6 +46,8 @@ class OrderServiceTest {
 	private OrderRepository orderRepository;
 	@Autowired
 	private OrderProductRepository orderProductRepository;
+	@Autowired
+	private CategoryRepository categoryRepository;
 
 	@BeforeEach
 	void setup() {
@@ -72,10 +75,13 @@ class OrderServiceTest {
 			)
 		);
 
-		ProductEntity product1 = ProductEntity.create("상품1", 10L, 10000L, ProductStatus.ACTIVATED);
+		CategoryEntity category = CategoryEntity.create("카테고리", null);
+		categoryRepository.save(category);
+
+		ProductEntity product1 = ProductEntity.create("상품1", 10L, 10000L, category);
 		productRepository.save(product1);
 
-		ProductEntity product2 = ProductEntity.create("상품2", 5L, 20000L, ProductStatus.ACTIVATED);
+		ProductEntity product2 = ProductEntity.create("상품2", 5L, 20000L, category);
 		productRepository.save(product2);
 
 		OrderRequest.Item item1 = new OrderRequest.Item(product1.getId(), 2L);
@@ -146,8 +152,11 @@ class OrderServiceTest {
 			"0101010"
 		);
 
+		CategoryEntity category = CategoryEntity.create("카테고리", null);
+		categoryRepository.save(category);
+
 		ProductEntity product = productRepository.save(
-			ProductEntity.create("상품1", 3L, 1L, ProductStatus.ACTIVATED)
+			ProductEntity.create("상품1", 3L, 1L, category)
 		);
 
 		UserEntity savedUser = userRepository.save(user);
@@ -177,7 +186,11 @@ class OrderServiceTest {
 			"0101010"
 		);
 		UserEntity savedUser = userRepository.save(user);
-		ProductEntity product = ProductEntity.create("테스트 상품", 5L, 10000L, ProductStatus.ACTIVATED);
+
+		CategoryEntity category = CategoryEntity.create("카테고리", null);
+		categoryRepository.save(category);
+
+		ProductEntity product = ProductEntity.create("테스트 상품", 5L, 10000L, category);
 		ProductEntity savedProduct = productRepository.save(product);
 
 		OrderEntity order = OrderEntity.create(
