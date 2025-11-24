@@ -25,7 +25,6 @@ public record OrderRequest(
 		@NotBlank String city,
 		@NotBlank String district,
 		@NotBlank String roadAddress,
-		String detail,
-		@NotNull List<Item> items
+		String detail
 	) {}
 }
