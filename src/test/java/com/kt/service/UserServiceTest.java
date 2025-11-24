@@ -54,9 +54,11 @@ class UserServiceTest {
 	ProductRepository productRepository;
 	UserEntity testUser;
 	UserEntity testUser2;
+	UserEntity testAdmin;
 	OrderEntity testOrder;
 	ProductEntity testProduct;
 	private UUID userId;
+	private UUID AdminId;
 
 	@BeforeEach
 	void setUp() throws Exception {
@@ -75,7 +77,6 @@ class UserServiceTest {
 			LocalDate.of(1990, 1, 1),
 			"010-1234-5678"
 		);
-		userRepository.save(testUser);
 
 		testUser2 = UserEntity.create(
 			"주문자테스터2",
@@ -87,8 +88,21 @@ class UserServiceTest {
 			"010-1234-5678"
 		);
 
+		testAdmin = UserEntity.create(
+			"어드민테스터",
+			"dohyun@naver.com",
+			"1234",
+			UserRole.ADMIN,
+			Gender.MALE,
+			LocalDate.of(1990, 1, 1),
+			"010-1234-5678"
+		);
+
+		userRepository.save(testUser);
 		UserEntity savedUser = userRepository.save(testUser2);
+		UserEntity savedAdmin = userRepository.save(testAdmin);
 		userId = savedUser.getId();
+		AdminId = savedAdmin.getId();
 
 		ReceiverVO receiver = new ReceiverVO(
 			"수신자테스터1",
@@ -217,11 +231,22 @@ class UserServiceTest {
 	void 유저_리스트_조회() {
 
 		// when
-		Page<UserResponse.Search> result = userService.getUsers(Pageable.ofSize(10), "테스터");
+		Page<UserResponse.Search> result = userService.getUsers(Pageable.ofSize(10), "테스터", UserRole.MEMBER);
 
 		// then
 		assertThat(result).isNotNull();
 		assertThat(result.getContent()).hasSize(2);
+	}
+
+	@Test
+	void 어드민_리스트_조회() {
+
+		// when
+		Page<UserResponse.Search> result = userService.getUsers(Pageable.ofSize(10), "어드민", UserRole.ADMIN);
+
+		// then
+		assertThat(result).isNotNull();
+		assertThat(result.getContent()).hasSize(1);
 	}
 
 	@Test
@@ -231,6 +256,15 @@ class UserServiceTest {
 		// then
 		assertThat(userId).isNotNull();
 		assertThat(savedUser.name()).isEqualTo("주문자테스터2");
+	}
+
+	@Test
+	void 어드민_상세_조회() {
+		UserResponse.UserDetail savedUser = userService.getAdminDetail(AdminId);
+
+		// then
+		assertThat(AdminId).isNotNull();
+		assertThat(savedUser.name()).isEqualTo("어드민테스터");
 	}
 
 	@Test

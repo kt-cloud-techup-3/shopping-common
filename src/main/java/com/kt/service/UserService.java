@@ -6,6 +6,7 @@ import java.util.UUID;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import com.kt.constant.UserRole;
 import com.kt.domain.dto.response.OrderProductResponse;
 import com.kt.domain.dto.response.UserResponse;
 
@@ -14,9 +15,11 @@ public interface UserService {
 
 	UserResponse.Orders getOrdersByUserId(UUID id);
 
-	Page<UserResponse.Search> getUsers(Pageable pageable, String keyword);
+	Page<UserResponse.Search> getUsers(Pageable pageable, String keyword, UserRole role);
 
 	UserResponse.UserDetail getUserDetail(UUID id);
+
+	UserResponse.UserDetail getAdminDetail(UUID id);
 
 	void disableUser(UUID id);
 
