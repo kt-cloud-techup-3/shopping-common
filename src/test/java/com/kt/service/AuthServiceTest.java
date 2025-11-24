@@ -169,9 +169,15 @@ public class AuthServiceTest {
 
 	@Test
 	void 맴버_회원가입_실패_email_중복() {
+		String email = "test@email.com";
+		redisCache.set(
+			RedisKey.SIGNUP_VERIFIED,
+			email,
+			true
+		);
 		SignupRequest.SignupMember firstSignup = new SignupRequest.SignupMember(
 			"황테스터1",
-			"test@email.com",
+			email,
 			"1231231!",
 			Gender.MALE,
 			LocalDate.of(2011, 11, 10),
@@ -180,7 +186,7 @@ public class AuthServiceTest {
 
 		SignupRequest.SignupMember secondSignup = new SignupRequest.SignupMember(
 			"황테스터2",
-			"test@email.com",
+			email,
 			"1231231!",
 			Gender.MALE,
 			LocalDate.of(2011, 11, 11),
@@ -311,10 +317,14 @@ public class AuthServiceTest {
 	void 유저_회원가입_이메일_검증_redis_저장_데이터_존재() {
 		String email = "bjwnstkdbj@naver.com";
 		String authCode = "123123";
-		redisCache.set(RedisKey.SIGNUP_CODE, email, authCode);
+		redisCache.set(
+			RedisKey.SIGNUP_CODE,
+			email,
+			authCode
+		);
 
 		SignupRequest.VerifySignupCode verifyRequest = new SignupRequest.VerifySignupCode(
-			"bjwnstkdbj@naver.com",
+			email,
 			authCode
 		);
 

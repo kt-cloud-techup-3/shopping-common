@@ -106,23 +106,24 @@ public class AuthServiceImpl implements AuthService {
 	@Override
 	public void verifySignupCode(SignupRequest.VerifySignupCode request) {
 		String email = request.email();
-		if (redisCache.hasKey(RedisKey.SIGNUP_CODE.key(email))) {
-			String redisAuthCode = redisCache.get(
-				RedisKey.SIGNUP_CODE.key(email),
-				String.class
-			);
-
-			if (!redisAuthCode.equals(request.authCode()))
-				throw new IllegalArgumentException("인증 코드가 일치하지 않습니다.");
-
-			redisCache.set(
-				RedisKey.SIGNUP_VERIFIED,
-				email,
-				true
+		if (!redisCache.hasKey(RedisKey.SIGNUP_CODE.key(email))) {
+			throw new IllegalArgumentException(
+				"인증 시간이 만료되었거나, 해당 이메일로 전송된 인증 코드가 없습니다."
 			);
 		}
-		throw new IllegalArgumentException(
-			"인증 시간이 만료되었거나, 해당 이메일로 전송된 인증 코드가 없습니다."
+
+		String redisAuthCode = redisCache.get(
+			RedisKey.SIGNUP_CODE.key(email),
+			String.class
+		);
+
+		if (!redisAuthCode.equals(request.authCode()))
+			throw new IllegalArgumentException("인증 코드가 일치하지 않습니다.");
+
+		redisCache.set(
+			RedisKey.SIGNUP_VERIFIED,
+			email,
+			true
 		);
 	}
 
