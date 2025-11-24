@@ -14,11 +14,11 @@ import com.kt.exception.BaseException;
 public interface OrderProductRepository
 	extends JpaRepository<OrderProductEntity, UUID>, OrderProductRepositoryCustom {
 
-	List<OrderProductEntity> findAllByOrder_Id(UUID orderId);
+	List<OrderProductEntity> findAllByOrderId(UUID orderId);
 
 	default OrderProductEntity findByIdOrThrow(UUID orderProductId) {
 		return findById(orderProductId).orElseThrow(() -> new BaseException(ErrorCode.ORDER_PRODUCT_NOT_FOUND));
 	}
 
-	List<OrderProductEntity> findAllByProduct_Id(UUID productId);
+	List<OrderProductEntity> findAllByProductId(UUID productId);
 }

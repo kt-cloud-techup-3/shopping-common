@@ -35,7 +35,7 @@ public class OrderServiceImpl implements OrderService {
 
 	@Override
 	public OrderResponse.OrderProducts getOrderProducts(UUID orderId) {
-		List<OrderProductEntity> orderProducts = orderProductRepository.findAllByOrder_Id(orderId);
+		List<OrderProductEntity> orderProducts = orderProductRepository.findAllByOrderId(orderId);
 		return OrderResponse.OrderProducts.of(orderId, orderProducts);
 	}
 

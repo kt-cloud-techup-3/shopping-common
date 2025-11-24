@@ -53,7 +53,7 @@ public class ReviewServiceImpl implements ReviewService {
 
 	@Override
 	public List<ReviewResponse.Search> getReviewByProductId(UUID productId) {
-		List<OrderProductEntity> orderProducts = orderProductRepository.findAllByProduct_Id(productId);
+		List<OrderProductEntity> orderProducts = orderProductRepository.findAllByProductId(productId);
 
 		return orderProducts.stream().map(orderProduct -> {
 			ReviewEntity reviewEntity = reviewRepository.findByOrderProductIdOrThrow(orderProduct.getId());
