@@ -110,4 +110,12 @@ public class ProductEntity extends BaseEntity {
 		}
 	}
 
+
+	public void addStock(Long quantity) {
+		this.stock += quantity;
+	}
+
+	public void decreaseStock(Long quantity) {
+		this.stock -= quantity;
+	}
 }
