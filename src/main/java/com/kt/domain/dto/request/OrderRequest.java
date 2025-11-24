@@ -20,11 +20,20 @@ public record OrderRequest(
 	){}
 
 	public record Update(
-		@NotBlank String receiverName,
+		@NotBlank
+		String receiverName,
+
 		String receiverMobile,
-		@NotBlank String city,
-		@NotBlank String district,
-		@NotBlank String roadAddress,
+
+		@NotBlank
+		String city,
+
+		@NotBlank
+		String district,
+
+		@NotBlank
+		String roadAddress,
+
 		String detail
-	) {}
+	){}
 }
