@@ -9,7 +9,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.test.context.ActiveProfiles;
 
 import com.kt.constant.Gender;
-import com.kt.constant.ProductStatus;
 import com.kt.constant.UserRole;
 
 @ActiveProfiles("test")
@@ -17,6 +16,8 @@ class CartEntityTest {
 
 	UserEntity testUser;
 	ProductEntity testProduct;
+	CategoryEntity testCategory;
+
 	@BeforeEach
 	void setUp() throws Exception {
 		testUser = UserEntity.create(
@@ -28,11 +29,13 @@ class CartEntityTest {
 			LocalDate.of(1990, 1, 1),
 			"010-1234-5678"
 		);
+
+		testCategory = CategoryEntity.create("테스트 카테고리", null);
 		testProduct = ProductEntity.create(
 			"테스트상품명",
 			1000L,
 			5L,
-			ProductStatus.ACTIVATED
+			testCategory
 		);
 	}
 

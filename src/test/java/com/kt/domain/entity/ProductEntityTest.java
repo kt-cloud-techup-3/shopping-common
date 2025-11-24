@@ -12,18 +12,23 @@ class ProductEntityTest {
 
 	@Test
 	void 객체생성_성공(){
+		CategoryEntity testCategory = CategoryEntity.create(
+			"테스트카테고리",
+			null
+		);
+
 		ProductEntity comparisonProduct = ProductEntity.create(
 			"테스트상품명",
 			1000L,
 			5L,
-			ProductStatus.ACTIVATED
+			testCategory
 		);
 
 		ProductEntity subjectProduct = ProductEntity.create(
 			"테스트상품명",
 			1000L,
 			5L,
-			ProductStatus.ACTIVATED
+			testCategory
 		);
 
 		assertThat(subjectProduct).isNotNull();
