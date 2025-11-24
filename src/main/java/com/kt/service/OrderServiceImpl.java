@@ -93,7 +93,7 @@ public class OrderServiceImpl implements OrderService {
 			throw new BaseException(ErrorCode.ORDER_ALREADY_SHIPPED);
 		}
 
-		List<OrderProductEntity> orderProducts = orderProductRepository.findAllByOrder_Id(orderId);
+		List<OrderProductEntity> orderProducts = orderProductRepository.findAllByOrderId(orderId);
 
 		for (OrderProductEntity orderproduct : orderProducts) {
 			ProductEntity product = orderproduct.getProduct();
@@ -117,7 +117,7 @@ public class OrderServiceImpl implements OrderService {
 			throw new BaseException(ErrorCode.ORDER_ALREADY_SHIPPED);
 		}
 
-		List<OrderProductEntity> existingOrderProducts = orderProductRepository.findAllByOrder_Id(orderId);
+		List<OrderProductEntity> existingOrderProducts = orderProductRepository.findAllByOrderId(orderId);
 
 		ReceiverVO newReceiverVO = ReceiverVO.create(
 			request.receiverName(),

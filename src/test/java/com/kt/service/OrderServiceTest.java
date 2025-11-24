@@ -31,6 +31,7 @@ import com.kt.repository.CategoryRepository;
 import com.kt.repository.OrderProductRepository;
 import com.kt.repository.OrderRepository;
 import com.kt.repository.ProductRepository;
+import com.kt.repository.ReviewRepository;
 import com.kt.repository.user.UserRepository;
 
 @Transactional
@@ -49,16 +50,20 @@ class OrderServiceTest {
 	@Autowired
 	private OrderProductRepository orderProductRepository;
 	@Autowired
+	private ReviewRepository reviewRepository;
+	@Autowired
 	private CategoryRepository categoryRepository;
 
 	private CategoryEntity defaultCategory;
 
 	@BeforeEach
 	void setup() {
+		reviewRepository.deleteAll();
 		orderProductRepository.deleteAll();
 		orderRepository.deleteAll();
 		productRepository.deleteAll();
 		userRepository.deleteAll();
+		categoryRepository.deleteAll();
 
 		CategoryEntity category = CategoryEntity.create("테스트 기본 카테고리", null);
 		defaultCategory = categoryRepository.save(category);
@@ -308,8 +313,7 @@ class OrderServiceTest {
 			"서울특별시",
 			"강동구",
 			"김김대로",
-			"2층",
-			List.of(new OrderRequest.Item(product.getId(), 2L))
+			"2층"
 		);
 
 		UUID orderId = order.getId();
@@ -345,7 +349,7 @@ class OrderServiceTest {
 		UUID orderId = order.getId();
 
 		OrderRequest.Update updateRequest = new OrderRequest.Update(
-			"박수정", "01099998888", "부산시", "해운대구", "센텀대로", "2층", List.of()
+			"박수정", "01099998888", "부산시", "해운대구", "센텀대로", "2층"
 		);
 
 		// when, then
