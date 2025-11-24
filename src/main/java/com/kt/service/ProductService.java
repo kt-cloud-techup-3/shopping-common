@@ -21,7 +21,7 @@ public interface ProductService {
 
 	void inActivate(UUID productId);
 
-	void soldOut(List<UUID> productIds);
+	void soldOutProducts(List<UUID> productIds);
 
 	void toggleActive(UUID productId);
 

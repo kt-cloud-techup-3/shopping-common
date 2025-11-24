@@ -328,7 +328,7 @@ class ProductServiceTest {
 		productRepository.saveAll(products);
 
 		// when
-		productService.soldOut(
+		productService.soldOutProducts(
 			products.stream().map(ProductEntity::getId).toList()
 		);
 

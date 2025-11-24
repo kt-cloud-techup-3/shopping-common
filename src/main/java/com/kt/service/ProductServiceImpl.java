@@ -75,7 +75,7 @@ public class ProductServiceImpl implements ProductService {
 	}
 
 	@Override
-	public void soldOut(List<UUID> productIds) {
+	public void soldOutProducts(List<UUID> productIds) {
 		productRepository.findAllById(productIds).forEach(ProductEntity::inActivate);
 	}
 
