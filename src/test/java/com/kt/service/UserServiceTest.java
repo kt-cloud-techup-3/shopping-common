@@ -342,11 +342,11 @@ class UserServiceTest {
 		);
 
 		// when
-		userService.adminCreate(request);
+		userService.signupMember(request);
 
 		// then
 		UserEntity admin = userRepository.findByEmail("admin@test.com")
-			.orElseThrow();
+			.orElse(null);
 
 		assertThat(admin.getName()).isEqualTo("어드민생성");
 		assertThat(admin.getEmail()).isEqualTo("admin@test.com");

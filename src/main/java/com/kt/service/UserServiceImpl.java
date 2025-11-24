@@ -100,7 +100,7 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public void adminCreate(SignupRequest.SignupMember request) {
+	public void signupMember(SignupRequest.SignupMember request) {
 		UserEntity admin = UserEntity.create(
 			request.name(),
 			request.email(),
