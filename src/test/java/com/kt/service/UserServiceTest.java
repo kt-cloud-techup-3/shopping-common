@@ -18,17 +18,18 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.kt.constant.Gender;
 import com.kt.constant.OrderProductStatus;
-import com.kt.constant.ProductStatus;
 import com.kt.constant.UserRole;
 import com.kt.constant.UserStatus;
 import com.kt.domain.dto.response.OrderProductResponse;
 import com.kt.domain.dto.response.UserResponse;
+import com.kt.domain.entity.CategoryEntity;
 import com.kt.domain.entity.OrderEntity;
 import com.kt.domain.entity.OrderProductEntity;
 import com.kt.domain.entity.ProductEntity;
 import com.kt.domain.entity.ReceiverVO;
 import com.kt.domain.entity.ReviewEntity;
 import com.kt.domain.entity.UserEntity;
+import com.kt.repository.CategoryRepository;
 import com.kt.repository.OrderProductRepository;
 import com.kt.repository.OrderRepository;
 import com.kt.repository.ProductRepository;
@@ -52,6 +53,8 @@ class UserServiceTest {
 	ReviewRepository reviewRepository;
 	@Autowired
 	ProductRepository productRepository;
+	@Autowired
+	CategoryRepository categoryRepository;
 	UserEntity testUser;
 	UserEntity testUser2;
 	UserEntity testAdmin;
@@ -119,11 +122,14 @@ class UserServiceTest {
 		);
 		orderRepository.save(testOrder);
 
+		CategoryEntity category = CategoryEntity.create("카테고리", null);
+		categoryRepository.save(category);
+
 		testProduct = ProductEntity.create(
 			"테스트상품명",
 			1000L,
 			5L,
-			ProductStatus.ACTIVATED
+			category
 		);
 		productRepository.save(testProduct);
 	}
@@ -143,11 +149,15 @@ class UserServiceTest {
 		UserEntity savedUser = userRepository.save(user);
 
 		userId = savedUser.getId();
+
+		CategoryEntity category = CategoryEntity.create("카테고리", null);
+		categoryRepository.save(category);
+
 		ProductEntity product = ProductEntity.create(
 			"테스트물건",
 			3L,
 			3L,
-			ProductStatus.ACTIVATED
+			category
 		);
 
 		ProductEntity savedProduct = productRepository.save(product);

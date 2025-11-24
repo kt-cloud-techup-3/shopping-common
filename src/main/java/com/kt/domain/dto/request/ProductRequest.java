@@ -1,5 +1,7 @@
 package com.kt.domain.dto.request;
 
+import java.util.UUID;
+
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -26,7 +28,9 @@ public class ProductRequest {
 		Long price,
 		@NotNull(message = "상품 재고는 필수 항목입니다.")
 		@Positive(message = "상품 재고는 0보다 작을 수 없습니다.")
-		Long stock
+		Long stock,
+		@NotNull(message = "카테고리 ID는 필수 항목입니다.")
+		UUID categoryId
 	) {
 	}
 }

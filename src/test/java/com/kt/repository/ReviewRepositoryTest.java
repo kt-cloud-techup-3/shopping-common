@@ -11,8 +11,8 @@ import org.springframework.test.context.ActiveProfiles;
 
 import com.kt.constant.Gender;
 import com.kt.constant.OrderProductStatus;
-import com.kt.constant.ProductStatus;
 import com.kt.constant.UserRole;
+import com.kt.domain.entity.CategoryEntity;
 import com.kt.domain.entity.OrderEntity;
 import com.kt.domain.entity.OrderProductEntity;
 import com.kt.domain.entity.ProductEntity;
@@ -36,6 +36,8 @@ class ReviewRepositoryTest {
 	UserRepository userRepository;
 	@Autowired
 	OrderRepository orderRepository;
+	@Autowired
+	CategoryRepository categoryRepository;
 
 	OrderProductEntity testOrderProduct;
 
@@ -73,11 +75,14 @@ class ReviewRepositoryTest {
 		);
 		orderRepository.save(order);
 
+		CategoryEntity category = CategoryEntity.create("카테고리", null);
+		categoryRepository.save(category);
+
 		ProductEntity product = ProductEntity.create(
 			"테스트상품명",
 			1000L,
 			5L,
-			ProductStatus.ACTIVATED
+			category
 		);
 		productRepository.save(product);
 
