@@ -300,17 +300,16 @@ class UserServiceTest {
 	}
 
 	@Test
-	void 내_정보_수정_성공_필드2개(){
+	void 내_정보_수정_성공(){
 		UserRequest.UpdateDetails updateDetails =  new UserRequest.UpdateDetails(
 			"삼정수",
-			null,
-			LocalDate.of(1996, 1, 1),
-			null
+			"010-7123-4569",
+			LocalDate.of(1992, 1, 1),
+			Gender.FEMALE
 		);
 		userService.updateUserDetails(testUser.getId(), updateDetails);
 
 		Assertions.assertEquals("삼정수", testUser.getName());
-		Assertions.assertNotNull(testUser.getMobile());
-		Assertions.assertNotNull(testUser.getGender());
+		Assertions.assertEquals(Gender.FEMALE, testUser.getGender());
 	}
 }

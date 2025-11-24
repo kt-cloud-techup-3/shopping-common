@@ -87,10 +87,10 @@ public class UserServiceImpl implements UserService {
 	public void updateUserDetails(UUID userId, UserRequest.UpdateDetails details) {
 		UserEntity user = userRepository.findByUserIdOrThrow(userId);
 		user.updateDetails(
-			( Strings.isBlank(details.name()) )? user.getName() : details.name(),
-			( Strings.isBlank(details.mobile()) )? user.getMobile() : details.mobile(),
-			( details.birth() == null )? user.getBirth() : details.birth(),
-			( details.gender() == null )? user.getGender() : details.gender()
+			details.name(),
+			details.mobile(),
+			details.birth(),
+			details.gender()
 		);
 	}
 }
