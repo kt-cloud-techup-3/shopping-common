@@ -1,15 +1,19 @@
 package com.kt.service;
 
 import com.kt.constant.UserRole;
+import com.kt.constant.mail.MailTemplate;
 import com.kt.constant.message.ErrorCode;
+import com.kt.constant.redis.RedisKey;
 import com.kt.domain.dto.request.LoginRequest;
-import com.kt.domain.dto.request.MemberRequest;
 
+import com.kt.domain.dto.request.SignupRequest;
 import com.kt.domain.entity.AbstractAccountEntity;
 import com.kt.domain.entity.UserEntity;
 
 import com.kt.exception.AuthException;
 import com.kt.exception.DuplicatedException;
+import com.kt.infra.mail.EmailClient;
+import com.kt.infra.redis.RedisCache;
 import com.kt.repository.AccountRepository;
 import com.kt.repository.UserRepository;
 
@@ -22,6 +26,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Random;
+
 @Service
 @RequiredArgsConstructor
 public class AuthServiceImpl implements AuthService {
@@ -31,11 +37,21 @@ public class AuthServiceImpl implements AuthService {
 	private final AccountRepository accountRepository;
 
 	private final PasswordEncoder passwordEncoder;
+
 	private final JwtService jwtService;
+
+	private final RedisCache redisCache;
+	private final EmailClient emailClient;
 
 	@Override
 	@Transactional
-	public void memberSignup(MemberRequest.SignupMember request) {
+	public void memberSignup(SignupRequest.SignupMember request) {
+		Boolean isVerify = redisCache.get(
+			RedisKey.SIGNUP_VERIFIED.key(request.email()),
+			Boolean.class
+		);
+		if (isVerify == null || !isVerify)
+			throw new IllegalArgumentException("인증되지 않은 이메일입니다.");
 		isDuplicatedEmail(request.email());
 		UserEntity member = UserEntity.create(
 			request.name(),
@@ -75,6 +91,41 @@ public class AuthServiceImpl implements AuthService {
 		return Pair.of(accessToken, refreshToken);
 	}
 
+	@Override
+	public void sendAuthCode(SignupRequest.SignupEmail request) {
+		String authCode = getAuthenticationCode();
+		String email = request.email();
+		redisCache.set(RedisKey.SIGNUP_CODE, email, authCode);
+		emailClient.sendMail(
+			email,
+			MailTemplate.VERIFY_EMAIL,
+			authCode
+		);
+	}
+
+	@Override
+	public void verifySignupCode(SignupRequest.VerifySignupCode request) {
+		String email = request.email();
+		if (redisCache.hasKey(RedisKey.SIGNUP_CODE.key(email))) {
+			String redisAuthCode = redisCache.get(
+				RedisKey.SIGNUP_CODE.key(email),
+				String.class
+			);
+
+			if (!redisAuthCode.equals(request.authCode()))
+				throw new IllegalArgumentException("인증 코드가 일치하지 않습니다.");
+
+			redisCache.set(
+				RedisKey.SIGNUP_VERIFIED,
+				email,
+				true
+			);
+		}
+		throw new IllegalArgumentException(
+			"인증 시간이 만료되었거나, 해당 이메일로 전송된 인증 코드가 없습니다."
+		);
+	}
+
 	private void validAccount(AbstractAccountEntity account, String rawPassword) {
 		if (!passwordEncoder.matches(rawPassword, account.getPassword()))
 			throw new AuthException(ErrorCode.AUTH_FAILED_LOGIN);
@@ -89,6 +140,11 @@ public class AuthServiceImpl implements AuthService {
 	private void isDuplicatedEmail(String email) {
 		if (userRepository.findByEmail(email).isPresent())
 			throw new DuplicatedException(ErrorCode.DUPLICATED_EMAIL);
+	}
+
+	private String getAuthenticationCode() {
+		int code = new Random().nextInt(900000) + 100000;
+		return String.valueOf(code);
 	}
 
 }
