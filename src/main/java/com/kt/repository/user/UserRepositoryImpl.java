@@ -60,17 +60,11 @@ public class UserRepositoryImpl implements UserRepositoryCustom {
 	}
 
 	private BooleanExpression containsName(String keyword) {
-		if (keyword == null || keyword.isBlank()) {
-			return null;
-		}
-		return user.name.contains(keyword);
+		return (keyword == null || keyword.isBlank()) ? null : user.name.contains(keyword);
 	}
 
 	private BooleanExpression equalRole(UserRole role) {
-		if (role == null) {
-			return null;
-		}
-		return user.role.eq(role);
+		return (role == null) ? null : user.role.eq(role);
 	}
 
 	private BooleanExpression isEnabled() {
