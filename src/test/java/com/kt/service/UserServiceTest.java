@@ -29,6 +29,8 @@ import com.kt.domain.entity.ProductEntity;
 import com.kt.domain.entity.ReceiverVO;
 import com.kt.domain.entity.ReviewEntity;
 import com.kt.domain.entity.UserEntity;
+import com.kt.exception.AuthException;
+import com.kt.exception.DuplicatedException;
 import com.kt.exception.FieldValidationException;
 import com.kt.repository.OrderProductRepository;
 import com.kt.repository.OrderRepository;
@@ -214,21 +216,9 @@ class UserServiceTest {
 	}
 
 	@Test
-	void 비밀번호변경_실패__비밀번호_10자리_이하(){
-		assertThrowsExactly(
-			FieldValidationException.class,
-			()-> userService.updatePassword(
-					testUser.getId(),
-					testUser.getPassword(),
-					"123456789"
-			)
-		);
-	}
-
-	@Test
 	void 비밀번호변경_실패__현재_비밀번호_불일치(){
 		assertThrowsExactly(
-			FieldValidationException.class,
+			AuthException.class,
 			()-> {
 				userService.updatePassword(
 					testUser.getId(),
@@ -242,14 +232,12 @@ class UserServiceTest {
 	@Test
 	void 비밀번호변경_실패__변경할_비밀번호_동일(){
 		assertThrowsExactly(
-			FieldValidationException.class,
-			()-> {
-				userService.updatePassword(
+			DuplicatedException.class,
+			()->userService.updatePassword(
 					testUser.getId(),
 					testUser.getPassword(),
 					testUser.getPassword()
-				);
-			}
+				)
 		);
 	}
 

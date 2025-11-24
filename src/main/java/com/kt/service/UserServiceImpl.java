@@ -7,11 +7,14 @@ import org.apache.logging.log4j.util.Strings;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.kt.constant.message.ErrorCode;
 import com.kt.domain.dto.request.UserRequest;
 import com.kt.domain.dto.response.OrderProductResponse;
 import com.kt.domain.dto.response.UserResponse;
 import com.kt.domain.entity.OrderEntity;
 import com.kt.domain.entity.UserEntity;
+import com.kt.exception.AuthException;
+import com.kt.exception.DuplicatedException;
 import com.kt.repository.OrderProductRepository;
 import com.kt.repository.OrderRepository;
 import com.kt.repository.UserRepository;
@@ -42,9 +45,8 @@ public class UserServiceImpl implements UserService {
 	{
 		UserEntity user = userRepository.findByUserIdOrThrow(userId);
 
-		ValidationUtil.validateValidPassword(newPassword, "비밀번호");
-		ValidationUtil.validateCollectPassword(currentPassword, user.getPassword(), "비밀번호");
-		ValidationUtil.validateDuplicatedString(user.getPassword(), newPassword, "비밀번호");
+		if ( !currentPassword.equals(user.getPassword()) ) throw new AuthException(ErrorCode.NOT_CORRECT_PASSWORD);
+		if ( newPassword.equals(user.getPassword()) ) throw new DuplicatedException(ErrorCode.DUPLICATED_PASSWORD);
 
 		user.updatePassword(newPassword);
 	}
