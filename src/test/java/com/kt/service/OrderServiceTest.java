@@ -113,6 +113,13 @@ class OrderServiceTest {
 				.toList();
 
 		assertThat(orderProducts).hasSize(2);
+
+		ProductEntity finalProduct1 = productRepository.findById(product1.getId()).get();
+		ProductEntity finalProduct2 = productRepository.findById(product2.getId()).get();
+
+		assertThat(finalProduct1.getStock()).isEqualTo(10000L - 2L);
+		assertThat(finalProduct2.getStock()).isEqualTo(20000L - 1L);
+
 		assertThat(orderProducts.get(0).getQuantity()).isGreaterThan(0);
 		assertThat(orderProducts.get(1).getQuantity()).isGreaterThan(0);
 	}
@@ -226,15 +233,35 @@ class OrderServiceTest {
 		long orderQuantity = 3L;
 
 		UserEntity user = userRepository.save(
-			UserEntity.create("유저5", "cancel_test@example.com", "111", UserRole.MEMBER, Gender.MALE, LocalDate.now(), "0101010")
+			UserEntity.create(
+				"유저5",
+				"cancel_test@example.com",
+				"111",
+				UserRole.MEMBER,
+				Gender.MALE,
+				LocalDate.now(),
+				"0101010")
 		);
 
 		ProductEntity product = productRepository.save(
-			ProductEntity.create("취소상품", 10000L, initialStock, ProductStatus.ACTIVATED, defaultCategory)
+			ProductEntity.create(
+				"취소상품",
+				10000L,
+				initialStock,
+				ProductStatus.ACTIVATED,
+				defaultCategory)
 		);
 
 		OrderEntity order = orderRepository.save(
-			OrderEntity.create(ReceiverVO.create("이름", "번호", "도시", "시군구", "도로명", "상세"), user, OrderStatus.CREATED)
+			OrderEntity.create(ReceiverVO.create(
+				"이름",
+				"번호",
+				"도시",
+				"시군구",
+				"도로명",
+				"상세"
+				),
+				user, OrderStatus.CREATED)
 		);
 
 		product.decreaseStock(orderQuantity);
@@ -242,7 +269,11 @@ class OrderServiceTest {
 
 		OrderProductEntity orderProduct = orderProductRepository.save(
 			OrderProductEntity.create(
-				orderQuantity, 10000L, OrderProductStatus.CREATED, order, product
+				orderQuantity,
+				10000L,
+				OrderProductStatus.CREATED,
+				order,
+				product
 			)
 		);
 
@@ -267,12 +298,25 @@ class OrderServiceTest {
 		// given
 
 		UserEntity user = userRepository.save(
-			UserEntity.create("유저", "cancel_fail@example.com", "111", UserRole.MEMBER, Gender.MALE, LocalDate.now(), "0101010")
+			UserEntity.create(
+				"유저",
+				"cancel_fail@example.com",
+				"111",
+				UserRole.MEMBER,
+				Gender.MALE,
+				LocalDate.now(),
+				"0101010")
 		);
 
 		OrderEntity order = orderRepository.save(
 			OrderEntity.create(
-				ReceiverVO.create("이름", "번호", "도시", "시군구", "도로명", "상세"),
+				ReceiverVO.create(
+					"이름",
+					"번호",
+					"도시",
+					"시군구",
+					"도로명",
+					"상세"),
 				user,
 				OrderStatus.PURCHASE_CONFIRMED
 			)
@@ -291,20 +335,45 @@ class OrderServiceTest {
 		long initialStock = 10000L;
 
 		UserEntity user = userRepository.save(
-			UserEntity.create("유저", "update_test@example.com", "111", UserRole.MEMBER, Gender.MALE, LocalDate.now(), "0101010")
+			UserEntity.create(
+				"유저",
+				"update_test@example.com",
+				"111",
+				UserRole.MEMBER,
+				Gender.MALE,
+				LocalDate.now(),
+				"0101010")
 		);
 
 		ProductEntity product = productRepository.save(
-			ProductEntity.create("기존 상품", 10000L, initialStock, ProductStatus.ACTIVATED, defaultCategory)
+			ProductEntity.create(
+				"기존 상품",
+				10000L,
+				initialStock,
+				ProductStatus.ACTIVATED,
+				defaultCategory)
 		);
 
 		OrderEntity order = orderRepository.save(
-			OrderEntity.create(ReceiverVO.create("김기존", "01011112222", "서울시", "강남구", "역삼로", "1층"), user, OrderStatus.CREATED)
+			OrderEntity.create(ReceiverVO.create(
+				"김기존",
+				"01011112222",
+				"서울시",
+				"강남구",
+				"역삼로",
+				"1층"
+				),
+				user, OrderStatus.CREATED)
 		);
 		product.decreaseStock(2L);
 		productRepository.save(product);
 		orderProductRepository.save(
-			OrderProductEntity.create(2L, 10000L, OrderProductStatus.CREATED, order, product)
+			OrderProductEntity.create(
+				2L,
+				10000L,
+				OrderProductStatus.CREATED,
+				order,
+				product)
 		);
 
 		OrderRequest.Update updateRequest = new OrderRequest.Update(
@@ -335,12 +404,25 @@ class OrderServiceTest {
 	void 주문_수정_실패__이미_처리됨() {
 		// given
 		UserEntity user = userRepository.save(
-			UserEntity.create("유저", "update_fail@example.com", "111", UserRole.MEMBER, Gender.MALE, LocalDate.now(), "0101010")
+			UserEntity.create(
+				"유저",
+				"update_fail@example.com",
+				"111",
+				UserRole.MEMBER,
+				Gender.MALE,
+				LocalDate.now(),
+				"0101010")
 		);
 
 		OrderEntity order = orderRepository.save(
 			OrderEntity.create(
-				ReceiverVO.create("이름", "번호", "도시", "시군구", "도로명", "상세"),
+				ReceiverVO.create(
+					"이름",
+					"번호",
+					"도시",
+					"시군구",
+					"도로명",
+					"상세"),
 				user,
 				OrderStatus.PURCHASE_CONFIRMED
 			)
@@ -349,7 +431,12 @@ class OrderServiceTest {
 		UUID orderId = order.getId();
 
 		OrderRequest.Update updateRequest = new OrderRequest.Update(
-			"박수정", "01099998888", "부산시", "해운대구", "센텀대로", "2층"
+			"박수정",
+			"01099998888",
+			"부산시",
+			"해운대구",
+			"센텀대로",
+			"2층"
 		);
 
 		// when, then
