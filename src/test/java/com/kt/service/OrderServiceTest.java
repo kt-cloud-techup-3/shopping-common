@@ -326,7 +326,7 @@ class OrderServiceTest {
 		// when, then
 		assertThatThrownBy(() -> orderService.cancelOrder(orderId))
 			.isInstanceOf(BaseException.class)
-			.hasMessageContaining("ORDER_ALREADY_SHIPPED");
+			.hasMessageContaining("ORDER_ALREADY_CONFIRMED");
 	}
 
 	@Test
