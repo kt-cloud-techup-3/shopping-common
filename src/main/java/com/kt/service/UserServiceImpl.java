@@ -123,7 +123,7 @@ public class UserServiceImpl implements UserService {
 		UUID userId,
 		String currentPassword,
 		String newPassword
-	) {
+	){
 		UserEntity user = userRepository.findByIdOrThrow(userId);
 
 		if (!passwordEncoder.matches(currentPassword,user.getPassword()))
