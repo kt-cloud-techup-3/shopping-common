@@ -22,6 +22,7 @@ import com.kt.exception.BaseException;
 import com.kt.repository.OrderProductRepository;
 import com.kt.repository.OrderRepository;
 import com.kt.repository.ProductRepository;
+import com.kt.repository.ShippingDetailRepository;
 import com.kt.repository.user.UserRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -35,6 +36,7 @@ public class OrderServiceImpl implements OrderService {
 	private final ProductRepository productRepository;
 	private final OrderRepository orderRepository;
 	private final OrderProductRepository orderProductRepository;
+	private final ShippingDetailRepository shippingDetailRepository;
 
 	@Override
 	public OrderResponse.OrderProducts getOrderProducts(UUID orderId) {
@@ -111,12 +113,22 @@ public class OrderServiceImpl implements OrderService {
 		OrderEntity order = orderRepository.findById(orderId)
 			.orElseThrow(() -> new BaseException(ErrorCode.ORDER_NOT_FOUND));
 
-		if (order.getStatus() != OrderStatus.PURCHASE_CONFIRMED) {
+		if (order.getStatus() == OrderStatus.PURCHASE_CONFIRMED) {
 			throw new BaseException(ErrorCode.ORDER_ALREADY_CONFIRMED);
 		}
 
 		List<OrderProductEntity> orderProducts =
 			orderProductRepository.findAllByOrderId(orderId);
+
+		List<ShippingDetailEntity> shippingDetails =
+			shippingDetailRepository.findAllByOrderProductIn(orderProducts);
+
+		boolean shippingStarted = shippingDetails.stream()
+			.anyMatch(sd -> sd.getShippingType() != ShippingType.READY);
+
+		if (shippingStarted) {
+			throw new BaseException(ErrorCode.ORDER_ALREADY_SHIPPED);
+		}
 
 		ReceiverVO newReceiverVO = ReceiverVO.create(
 			request.receiverName(),
@@ -126,8 +138,6 @@ public class OrderServiceImpl implements OrderService {
 			request.roadAddress(),
 			request.detail()
 		);
-
-		// TODO: 배송지 변경 제한 로직 추가
 
 		order.updateReceiverVO(newReceiverVO);
 		orderRepository.save(order);
