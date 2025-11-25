@@ -69,4 +69,21 @@ public class UserEntity extends AbstractAccountEntity {
 		);
 	}
 
+	public void updatePassword(String password){
+		this.password = password;
+	}
+
+	public void delete(){ this.status = UserStatus.DELETED; }
+
+	public void updateDetails(
+		String name,
+		String mobile,
+		LocalDate birth,
+		Gender gender
+	){
+		this.name = name;
+		this.mobile = mobile;
+		this.birth = birth;
+		this.gender = gender;
+	}
 }

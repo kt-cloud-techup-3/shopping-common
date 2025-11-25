@@ -7,6 +7,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 import com.kt.constant.UserRole;
+import com.kt.domain.dto.request.UserRequest;
 import com.kt.domain.dto.request.SignupRequest;
 import com.kt.domain.dto.response.OrderProductResponse;
 import com.kt.domain.dto.response.UserResponse;
@@ -31,4 +32,10 @@ public interface UserService {
 	void retireUser(UUID id);
 
 	void createAdmin(SignupRequest.SignupMember request);
+
+	void updatePassword(UUID userId, String currentPassword, String newPassword);
+
+	void delete(UUID userId);
+
+	void updateUserDetails(UUID userId, UserRequest.UpdateDetails details);
 }

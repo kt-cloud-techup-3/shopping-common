@@ -10,11 +10,15 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.kt.constant.UserRole;
+import com.kt.constant.message.ErrorCode;
+import com.kt.domain.dto.request.UserRequest;
 import com.kt.domain.dto.request.SignupRequest;
 import com.kt.domain.dto.response.OrderProductResponse;
 import com.kt.domain.dto.response.UserResponse;
 import com.kt.domain.entity.OrderEntity;
 import com.kt.domain.entity.UserEntity;
+import com.kt.exception.AuthException;
+import com.kt.exception.DuplicatedException;
 import com.kt.repository.OrderProductRepository;
 import com.kt.repository.OrderRepository;
 import com.kt.repository.user.UserRepository;
@@ -113,4 +117,39 @@ public class UserServiceImpl implements UserService {
 		userRepository.save(admin);
 	}
 
+
+	@Override
+	public void updatePassword(
+		UUID userId,
+		String currentPassword,
+		String newPassword
+	){
+		UserEntity user = userRepository.findByIdOrThrow(userId);
+
+		if (!passwordEncoder.matches(currentPassword,user.getPassword()))
+			throw new AuthException(ErrorCode.INVALID_PASSWORD);
+
+		if (passwordEncoder.matches(newPassword,user.getPassword()))
+			throw new AuthException(ErrorCode.PASSWORD_UNCHANGED);
+
+		String hashedPassword = passwordEncoder.encode(newPassword);
+		user.updatePassword(hashedPassword);
+	}
+
+	@Override
+	public void delete(UUID userId) {
+		UserEntity user = userRepository.findByIdOrThrow(userId);
+		user.delete();
+	}
+
+	@Override
+	public void updateUserDetails(UUID userId, UserRequest.UpdateDetails details) {
+		UserEntity user = userRepository.findByIdOrThrow(userId);
+		user.updateDetails(
+			details.name(),
+			details.mobile(),
+			details.birth(),
+			details.gender()
+		);
+	}
 }
