@@ -5,10 +5,12 @@ import java.util.UUID;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.kt.constant.UserRole;
+import com.kt.domain.dto.request.SignupRequest;
 import com.kt.domain.dto.response.OrderProductResponse;
 import com.kt.domain.dto.response.UserResponse;
 import com.kt.domain.entity.OrderEntity;
@@ -27,6 +29,7 @@ public class UserServiceImpl implements UserService {
 	private final OrderProductRepository orderProductRepository;
 	private final OrderRepository orderRepository;
 	private final UserRepository userRepository;
+	private final PasswordEncoder passwordEncoder;
 
 	@Override
 	public UserResponse.Orders getOrdersByUserId(UUID id) {
@@ -95,5 +98,19 @@ public class UserServiceImpl implements UserService {
 		UserEntity user = userRepository.findByIdOrThrow(id);
 		user.retired();
 	}
-	
+
+	@Override
+	public void createAdmin(SignupRequest.SignupMember request) {
+		UserEntity admin = UserEntity.create(
+			request.name(),
+			request.email(),
+			passwordEncoder.encode(request.password()),
+			UserRole.ADMIN,
+			request.gender(),
+			request.birth(),
+			request.mobile()
+		);
+		userRepository.save(admin);
+	}
+
 }

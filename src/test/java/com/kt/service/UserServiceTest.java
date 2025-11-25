@@ -20,6 +20,7 @@ import com.kt.constant.Gender;
 import com.kt.constant.OrderProductStatus;
 import com.kt.constant.UserRole;
 import com.kt.constant.UserStatus;
+import com.kt.domain.dto.request.SignupRequest;
 import com.kt.domain.dto.response.OrderProductResponse;
 import com.kt.domain.dto.response.UserResponse;
 import com.kt.domain.entity.CategoryEntity;
@@ -326,6 +327,31 @@ class UserServiceTest {
 		assertThat(foundedUser).isNotNull();
 		assertThat(foundedUser.getStatus()).isEqualTo(UserStatus.DELETED);
 
+	}
+
+	@Test
+	void 어드민_유저_생성() {
+		// given
+		SignupRequest.SignupMember request = new SignupRequest.SignupMember(
+			"어드민생성",
+			"admin@test.com",
+			"1234",
+			Gender.MALE,
+			LocalDate.of(1995, 5, 5),
+			"010-5555-5555"
+		);
+
+		// when
+		userService.createAdmin(request);
+
+		// then
+		UserEntity admin = userRepository.findByEmail("admin@test.com")
+			.orElse(null);
+
+		assertThat(admin.getName()).isEqualTo("어드민생성");
+		assertThat(admin.getEmail()).isEqualTo("admin@test.com");
+		assertThat(admin.getRole()).isEqualTo(UserRole.ADMIN);
+		assertThat(admin.getPassword()).isNotEqualTo("1234");
 	}
 
 }
