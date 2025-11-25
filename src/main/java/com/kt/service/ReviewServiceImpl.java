@@ -3,14 +3,17 @@ package com.kt.service;
 import java.util.List;
 import java.util.UUID;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.kt.constant.searchtype.ProductSearchType;
 import com.kt.domain.dto.response.ReviewResponse;
 import com.kt.domain.entity.OrderProductEntity;
 import com.kt.domain.entity.ReviewEntity;
 import com.kt.repository.OrderProductRepository;
-import com.kt.repository.ReviewRepository;
+import com.kt.repository.review.ReviewRepository;
 
 import lombok.RequiredArgsConstructor;
 
@@ -62,5 +65,10 @@ public class ReviewServiceImpl implements ReviewService {
 				reviewEntity.getContent()
 			);
 		}).toList();
+	}
+
+	@Override
+	public Page<ReviewResponse.Search> getReviewsByAdmin(Pageable pageable, String keyword, ProductSearchType type){
+		return reviewRepository.searchReviews(pageable,keyword,type);
 	}
 }
