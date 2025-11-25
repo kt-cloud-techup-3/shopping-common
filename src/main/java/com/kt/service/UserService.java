@@ -30,5 +30,5 @@ public interface UserService {
 
 	void retireUser(UUID id);
 
-	void signupMember(SignupRequest.SignupMember request);
+	void createAdmin(SignupRequest.SignupMember request);
 }

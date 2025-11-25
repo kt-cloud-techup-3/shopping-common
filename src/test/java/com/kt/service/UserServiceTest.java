@@ -342,7 +342,7 @@ class UserServiceTest {
 		);
 
 		// when
-		userService.signupMember(request);
+		userService.createAdmin(request);
 
 		// then
 		UserEntity admin = userRepository.findByEmail("admin@test.com")
