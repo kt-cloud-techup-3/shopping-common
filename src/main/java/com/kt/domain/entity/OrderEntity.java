@@ -2,12 +2,14 @@ package com.kt.domain.entity;
 
 import static lombok.AccessLevel.*;
 
+import com.kt.constant.OrderStatus;
 import com.kt.domain.entity.common.BaseEntity;
-import com.kt.util.ValidationUtil;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
@@ -28,12 +30,18 @@ public class OrderEntity extends BaseEntity {
 	@JoinColumn(name = "order_by", nullable = false)
 	private UserEntity orderBy;
 
+	@Column(nullable = false)
+	@Enumerated(EnumType.STRING)
+	private OrderStatus status;
+
 	protected OrderEntity(
 		ReceiverVO receiverVO,
-		UserEntity orderBy
+		UserEntity orderBy,
+		OrderStatus status
 	) {
 		this.receiverVO = receiverVO;
 		this.orderBy = orderBy;
+		this.status = status;
 	}
 
 	public static OrderEntity create(
@@ -42,7 +50,29 @@ public class OrderEntity extends BaseEntity {
 	) {
 		return new OrderEntity(
 			receiverVO,
-			orderBy
+			orderBy,
+			OrderStatus.CREATED
 		);
+	}
+
+	// 테스트 코드에서 사용
+	public static OrderEntity create(
+		final ReceiverVO receiverVO,
+		final UserEntity orderBy,
+		final OrderStatus status
+	) {
+		return new OrderEntity(
+			receiverVO,
+			orderBy,
+			status
+		);
+	}
+
+	public void cancel() {
+		this.status = OrderStatus.CANCELED;
+	}
+
+	public void updateReceiverVO(ReceiverVO receiverVO) {
+		this.receiverVO = receiverVO;
 	}
 }

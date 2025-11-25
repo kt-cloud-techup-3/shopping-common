@@ -20,6 +20,11 @@ class PaymentEntityTest {
 
 	@BeforeEach
 	void setUp() throws Exception {
+		CategoryEntity testCategory = CategoryEntity.create(
+			"테스트카테고리",
+			null
+		);
+
 		UserEntity user = UserEntity.create(
 			"주문자테스터1",
 			"wjd123@naver.com",
@@ -48,7 +53,7 @@ class PaymentEntityTest {
 			"테스트상품명",
 			1000L,
 			5L,
-			ProductStatus.ACTIVATED
+			testCategory
 		);
 
 		orderProductEntity = new OrderProductEntity(
