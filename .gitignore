@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 # Compiled class file
 *.class
 
@@ -61,4 +60,19 @@ out/
 
 ### VS Code ###
 .vscode/
->>>>>>> e383349 (init)
+
+### Application configuration files ###
+application.yml
+application.yaml
+application.properties
+application-*.yml
+application-*.yaml
+application-*.properties
+
+# Environment files
+.env
+.env.local
+.env.*.local
+.env.development
+.env.production
+.env.test
