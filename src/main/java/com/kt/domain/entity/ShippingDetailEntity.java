@@ -39,7 +39,7 @@ public class ShippingDetailEntity extends BaseEntity {
 		CourierEntity courier,
 		OrderProductEntity orderProduct
 	) {
-		this.shippingType = ShippingType.DELIVERING;
+		this.shippingType = ShippingType.READY;
 		this.courier = courier;
 		this.orderProduct = orderProduct;
 	}
@@ -50,4 +50,13 @@ public class ShippingDetailEntity extends BaseEntity {
 	) {
 		return new ShippingDetailEntity(courier, orderProduct);
 	}
+
+	public void startShipping() {
+		this.shippingType = ShippingType.DELIVERING;
+	}
+
+	public void returnShipping() {
+		this.shippingType = ShippingType.RETURNING;
+	}
+
 }
