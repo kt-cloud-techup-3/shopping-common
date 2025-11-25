@@ -14,7 +14,7 @@ import com.kt.exception.BaseException;
 import com.kt.exception.DuplicatedException;
 import com.kt.infra.redis.RedisCache;
 import com.kt.repository.AccountRepository;
-import com.kt.repository.CourierRepository;
+import com.kt.repository.courier.CourierRepository;
 import com.kt.repository.user.UserRepository;
 
 import com.mysema.commons.lang.Pair;
