@@ -1,4 +1,4 @@
-package com.kt.config.properties;
+package com.kt.config.properties.redis;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 

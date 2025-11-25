@@ -3,7 +3,7 @@ package com.kt.config;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import com.kt.config.properties.RedisProperties;
+import com.kt.config.properties.redis.RedisProperties;
 
 import lombok.RequiredArgsConstructor;
 

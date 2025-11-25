@@ -1,5 +1,7 @@
 package com.kt.service;
 
+import com.kt.config.jwt.JwtTokenProvider;
+import com.kt.constant.TokenType;
 import com.kt.constant.UserRole;
 import com.kt.constant.mail.MailTemplate;
 import com.kt.constant.message.ErrorCode;
@@ -21,7 +23,6 @@ import com.kt.repository.AccountRepository;
 import com.kt.repository.courier.CourierRepository;
 import com.kt.repository.user.UserRepository;
 
-import com.kt.security.JwtService;
 import com.mysema.commons.lang.Pair;
 
 import lombok.RequiredArgsConstructor;
@@ -43,7 +44,7 @@ public class AuthServiceImpl implements AuthService {
 
 	private final PasswordEncoder passwordEncoder;
 
-	private final JwtService jwtService;
+	private final JwtTokenProvider jwtTokenProvider;
 
 	private final RedisCache redisCache;
 	private final EmailClient emailClient;
@@ -91,18 +92,18 @@ public class AuthServiceImpl implements AuthService {
 
 		validAccount(account, request.password());
 
-		String accessToken = jwtService.issue(
+		String accessToken = jwtTokenProvider.create(
 			account.getId(),
 			account.getEmail(),
 			account.getRole(),
-			jwtService.getAccessExpiration()
+			TokenType.ACCESS
 		);
 
-		String refreshToken = jwtService.issue(
+		String refreshToken = jwtTokenProvider.create(
 			account.getId(),
 			account.getEmail(),
 			account.getRole(),
-			jwtService.getRefreshExpiration()
+			TokenType.REFRESH
 		);
 
 		return Pair.of(accessToken, refreshToken);
