@@ -103,7 +103,6 @@ public class UserServiceImpl implements UserService {
 		user.retired();
 	}
 
-
 	@Override
 	public void createAdmin(SignupRequest.SignupMember request) {
 		UserEntity admin = UserEntity.create(
@@ -118,19 +117,25 @@ public class UserServiceImpl implements UserService {
 		userRepository.save(admin);
 	}
 
+	@Override
+	public void deleteUserPermanently(UUID id) {
+		UserEntity user = userRepository.findByIdOrThrow(id);
+		orderRepository.clearUser(user.getId());
+		userRepository.delete(user);
+	}
 
 	@Override
 	public void updatePassword(
 		UUID userId,
 		String currentPassword,
 		String newPassword
-	){
+	) {
 		UserEntity user = userRepository.findByIdOrThrow(userId);
 
-		if (!passwordEncoder.matches(currentPassword,user.getPassword()))
+		if (!passwordEncoder.matches(currentPassword, user.getPassword()))
 			throw new AuthException(ErrorCode.INVALID_PASSWORD);
 
-		if (passwordEncoder.matches(newPassword,user.getPassword()))
+		if (passwordEncoder.matches(newPassword, user.getPassword()))
 			throw new AuthException(ErrorCode.PASSWORD_UNCHANGED);
 
 		String hashedPassword = passwordEncoder.encode(newPassword);
@@ -138,8 +143,8 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public void delete(UUID userId) {
-		UserEntity user = userRepository.findByIdOrThrow(userId);
+	public void deleteAdmin(UUID adminId) {
+		UserEntity user = userRepository.findByIdOrThrow(adminId);
 		user.delete();
 	}
 
