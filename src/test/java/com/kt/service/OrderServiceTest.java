@@ -15,6 +15,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.kt.constant.Gender;
 import com.kt.constant.OrderProductStatus;
+import com.kt.constant.OrderStatus;
+import com.kt.constant.ProductStatus;
 import com.kt.constant.UserRole;
 import com.kt.domain.dto.request.OrderRequest;
 import com.kt.domain.dto.response.OrderResponse;
@@ -29,6 +31,7 @@ import com.kt.repository.CategoryRepository;
 import com.kt.repository.OrderProductRepository;
 import com.kt.repository.OrderRepository;
 import com.kt.repository.ProductRepository;
+import com.kt.repository.ReviewRepository;
 import com.kt.repository.user.UserRepository;
 
 @Transactional
@@ -47,15 +50,23 @@ class OrderServiceTest {
 	@Autowired
 	private OrderProductRepository orderProductRepository;
 	@Autowired
+	private ReviewRepository reviewRepository;
+	@Autowired
 	private CategoryRepository categoryRepository;
+
+	private CategoryEntity defaultCategory;
 
 	@BeforeEach
 	void setup() {
+		reviewRepository.deleteAll();
 		orderProductRepository.deleteAll();
 		orderRepository.deleteAll();
 		productRepository.deleteAll();
 		userRepository.deleteAll();
+		categoryRepository.deleteAll();
 
+		CategoryEntity category = CategoryEntity.create("테스트 기본 카테고리", null);
+		defaultCategory = categoryRepository.save(category);
 	}
 
 	@Test
@@ -75,13 +86,10 @@ class OrderServiceTest {
 			)
 		);
 
-		CategoryEntity category = CategoryEntity.create("카테고리", null);
-		categoryRepository.save(category);
-
-		ProductEntity product1 = ProductEntity.create("상품1", 10L, 10000L, category);
+		ProductEntity product1 = ProductEntity.create("상품1", 10L, 10000L, defaultCategory);
 		productRepository.save(product1);
 
-		ProductEntity product2 = ProductEntity.create("상품2", 5L, 20000L, category);
+		ProductEntity product2 = ProductEntity.create("상품2", 5L, 20000L, defaultCategory);
 		productRepository.save(product2);
 
 		OrderRequest.Item item1 = new OrderRequest.Item(product1.getId(), 2L);
@@ -105,6 +113,13 @@ class OrderServiceTest {
 				.toList();
 
 		assertThat(orderProducts).hasSize(2);
+
+		ProductEntity finalProduct1 = productRepository.findById(product1.getId()).get();
+		ProductEntity finalProduct2 = productRepository.findById(product2.getId()).get();
+
+		assertThat(finalProduct1.getStock()).isEqualTo(10000L - 2L);
+		assertThat(finalProduct2.getStock()).isEqualTo(20000L - 1L);
+
 		assertThat(orderProducts.get(0).getQuantity()).isGreaterThan(0);
 		assertThat(orderProducts.get(1).getQuantity()).isGreaterThan(0);
 	}
@@ -152,11 +167,8 @@ class OrderServiceTest {
 			"0101010"
 		);
 
-		CategoryEntity category = CategoryEntity.create("카테고리", null);
-		categoryRepository.save(category);
-
 		ProductEntity product = productRepository.save(
-			ProductEntity.create("상품1", 3L, 1L, category)
+			ProductEntity.create("상품1", 3L, 1L, defaultCategory)
 		);
 
 		UserEntity savedUser = userRepository.save(user);
@@ -187,10 +199,7 @@ class OrderServiceTest {
 		);
 		UserEntity savedUser = userRepository.save(user);
 
-		CategoryEntity category = CategoryEntity.create("카테고리", null);
-		categoryRepository.save(category);
-
-		ProductEntity product = ProductEntity.create("테스트 상품", 5L, 10000L, category);
+		ProductEntity product = ProductEntity.create("테스트 상품", 5L, 10000L, defaultCategory);
 		ProductEntity savedProduct = productRepository.save(product);
 
 		OrderEntity order = OrderEntity.create(
@@ -215,6 +224,230 @@ class OrderServiceTest {
 		assertThat(foundOrderProduct.orderId()).isEqualTo(savedOrder.getId());
 		assertThat(foundOrderProduct.orderProducts()).isNotEmpty();
 		assertThat(foundOrderProduct.orderProducts().size()).isEqualTo(1);
+	}
+
+	@Test
+	void 주문_취소_성공() {
+		// given
+		long initialStock = 10000L;
+		long orderQuantity = 3L;
+
+		UserEntity user = UserEntity.create(
+			"유저5",
+			"cancel_test@example.com",
+			"111",
+			UserRole.MEMBER,
+			Gender.MALE,
+			LocalDate.now(),
+			"0101010"
+		);
+		userRepository.save(user);
+
+		ProductEntity product = ProductEntity.create(
+			"취소상품",
+			10000L,
+			initialStock,
+			ProductStatus.ACTIVATED,
+			defaultCategory
+		);
+		productRepository.save(product);
+
+		OrderEntity order = OrderEntity.create(
+			ReceiverVO.create(
+				"이름",
+				"번호",
+				"도시",
+				"시군구",
+				"도로명",
+				"상세"
+			),
+			user,
+			OrderStatus.CREATED
+		);
+		orderRepository.save(order);
+
+		product.decreaseStock(orderQuantity);
+		productRepository.save(product);
+
+		OrderProductEntity orderProduct = OrderProductEntity.create(
+			orderQuantity,
+			10000L,
+			OrderProductStatus.CREATED,
+			order,
+			product
+		);
+		orderProductRepository.save(orderProduct);
+
+		UUID orderId = order.getId();
+
+		// when
+		orderService.cancelOrder(orderId);
+
+		// then
+		OrderProductEntity canceledOrderProduct = orderProductRepository.findById(orderProduct.getId())
+			.orElseThrow(() -> new IllegalStateException("취소된 주문 상품을 찾을 수 없습니다."));
+		assertThat(canceledOrderProduct.getStatus()).isEqualTo(OrderProductStatus.CANCELED);
+
+		ProductEntity finalProduct = productRepository.findById(product.getId())
+			.orElseThrow(() -> new IllegalStateException("상품을 찾을 수 없습니다."));
+		assertThat(finalProduct.getStock()).isEqualTo(initialStock);
+
+	}
+
+	@Test
+	void 주문_취소_실패__이미_처리됨() {
+		// given
+		UserEntity user = UserEntity.create(
+			"유저",
+			"cancel_fail@example.com",
+			"111",
+			UserRole.MEMBER,
+			Gender.MALE,
+			LocalDate.now(),
+			"0101010"
+		);
+		userRepository.save(user);
+
+		OrderEntity order = OrderEntity.create(
+			ReceiverVO.create(
+				"이름",
+				"번호",
+				"도시",
+				"시군구",
+				"도로명",
+				"상세"
+			),
+			user,
+			OrderStatus.PURCHASE_CONFIRMED
+		);
+		orderRepository.save(order);
+
+		UUID orderId = order.getId();
+
+		// when, then
+		assertThatThrownBy(() -> orderService.cancelOrder(orderId))
+			.isInstanceOf(BaseException.class)
+			.hasMessageContaining("ORDER_ALREADY_CONFIRMED");
+	}
+
+	@Test
+	void 주문_수정_성공__배송정보_변경() {
+		// given
+		long initialStock = 10000L;
+
+		UserEntity user = UserEntity.create(
+			"유저",
+			"update_test@example.com",
+			"111",
+			UserRole.MEMBER,
+			Gender.MALE,
+			LocalDate.now(),
+			"0101010"
+		);
+		userRepository.save(user);
+
+		ProductEntity product = ProductEntity.create(
+			"기존 상품",
+			10000L,
+			initialStock,
+			ProductStatus.ACTIVATED,
+			defaultCategory
+		);
+		productRepository.save(product);
+
+		OrderEntity order = OrderEntity.create(
+			ReceiverVO.create(
+				"김기존",
+				"01011112222",
+				"서울시",
+				"강남구",
+				"역삼로",
+				"1층"
+			),
+			user,
+			OrderStatus.CREATED
+		);
+		orderRepository.save(order);
+
+		product.decreaseStock(2L);
+		productRepository.save(product);
+
+		OrderProductEntity orderProduct = OrderProductEntity.create(
+			2L,
+			10000L,
+			OrderProductStatus.CREATED,
+			order,
+			product
+		);
+		orderProductRepository.save(orderProduct);
+
+		OrderRequest.Update updateRequest = new OrderRequest.Update(
+			"박수정",
+			"01099998888",
+			"서울특별시",
+			"강동구",
+			"김김대로",
+			"2층"
+		);
+
+		UUID orderId = order.getId();
+
+		// when
+		orderService.updateOrder(orderId, updateRequest);
+
+		// then
+		OrderEntity updatedOrder = orderRepository.findById(orderId).get();
+
+		assertThat(updatedOrder.getReceiverVO().getName()).isEqualTo("박수정");
+		assertThat(updatedOrder.getReceiverVO().getMobile()).isEqualTo("01099998888");
+
+		ProductEntity finalProduct = productRepository.findById(product.getId()).get();
+		assertThat(finalProduct.getStock()).isEqualTo(initialStock - 2L);
+	}
+
+	@Test
+	void 주문_수정_실패__이미_처리됨() {
+		// given
+		UserEntity user = UserEntity.create(
+			"유저",
+			"update_fail@example.com",
+			"111",
+			UserRole.MEMBER,
+			Gender.MALE,
+			LocalDate.now(),
+			"0101010"
+		);
+		userRepository.save(user);
+
+		OrderEntity order = OrderEntity.create(
+			ReceiverVO.create(
+				"이름",
+				"번호",
+				"도시",
+				"시군구",
+				"도로명",
+				"상세"
+			),
+			user,
+			OrderStatus.PURCHASE_CONFIRMED
+		);
+		orderRepository.save(order);
+
+		UUID orderId = order.getId();
+
+		OrderRequest.Update updateRequest = new OrderRequest.Update(
+			"박수정",
+			"01099998888",
+			"부산시",
+			"해운대구",
+			"센텀대로",
+			"2층"
+		);
+
+		// when, then
+		assertThatThrownBy(() -> orderService.updateOrder(orderId, updateRequest))
+			.isInstanceOf(BaseException.class)
+			.hasMessageContaining("ORDER_ALREADY_CONFIRMED");
 	}
 
 }

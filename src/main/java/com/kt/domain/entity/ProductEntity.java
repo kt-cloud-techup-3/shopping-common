@@ -69,14 +69,15 @@ public class ProductEntity extends BaseEntity {
 		final String name,
 		final Long price,
 		final Long stock,
-		final ProductStatus status
+		final ProductStatus status,
+		final CategoryEntity category
 	) {
 		return new ProductEntity(
 			name,
 			price,
 			stock,
 			status,
-			null
+			category
 		);
 	}
 
@@ -110,4 +111,12 @@ public class ProductEntity extends BaseEntity {
 		}
 	}
 
+
+	public void addStock(Long quantity) {
+		this.stock += quantity;
+	}
+
+	public void decreaseStock(Long quantity) {
+		this.stock -= quantity;
+	}
 }

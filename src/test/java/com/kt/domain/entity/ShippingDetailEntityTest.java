@@ -45,11 +45,16 @@ class ShippingDetailEntityTest {
 			user
 		);
 
+		CategoryEntity tempCategory = CategoryEntity.create(
+			"테스트 카테고리",
+			null
+		);
+
 		ProductEntity product= ProductEntity.create(
 			"테스트상품명",
 			1000L,
 			5L,
-			ProductStatus.ACTIVATED
+			tempCategory
 		);
 
 		testOrderProduct = new OrderProductEntity(

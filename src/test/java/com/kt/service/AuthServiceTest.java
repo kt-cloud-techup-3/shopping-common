@@ -14,7 +14,7 @@ import com.kt.exception.BaseException;
 import com.kt.exception.DuplicatedException;
 import com.kt.infra.redis.RedisCache;
 import com.kt.repository.AccountRepository;
-import com.kt.repository.CourierRepository;
+import com.kt.repository.courier.CourierRepository;
 import com.kt.repository.user.UserRepository;
 
 import com.mysema.commons.lang.Pair;
@@ -68,6 +68,7 @@ public class AuthServiceTest {
 	UserEntity user;
 	String rawPassword = "1231231!";
 	String email = "bjwnstkdbj@naver.com";
+
 	@BeforeEach
 	void setUp(TestInfo testInfo) {
 		userRepository.deleteAll();
@@ -392,7 +393,7 @@ public class AuthServiceTest {
 	@DisplayName(FAIL_RESET_PASSWORD_NOT_FOUND_EMAIL)
 	void 유저_비밀번호_초기화_성공() {
 		ResetPasswordRequest resetRequest = new ResetPasswordRequest(
-				user.getEmail()
+			user.getEmail()
 		);
 
 		authService.resetPassword(resetRequest);

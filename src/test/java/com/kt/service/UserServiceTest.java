@@ -1,6 +1,7 @@
 package com.kt.service;
 
 import static org.assertj.core.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -13,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,6 +23,7 @@ import com.kt.constant.OrderProductStatus;
 import com.kt.constant.UserRole;
 import com.kt.constant.UserStatus;
 import com.kt.domain.dto.request.SignupRequest;
+import com.kt.domain.dto.request.UserRequest;
 import com.kt.domain.dto.response.OrderProductResponse;
 import com.kt.domain.dto.response.UserResponse;
 import com.kt.domain.entity.CategoryEntity;
@@ -30,6 +33,8 @@ import com.kt.domain.entity.ProductEntity;
 import com.kt.domain.entity.ReceiverVO;
 import com.kt.domain.entity.ReviewEntity;
 import com.kt.domain.entity.UserEntity;
+import com.kt.exception.AuthException;
+import com.kt.exception.DuplicatedException;
 import com.kt.repository.CategoryRepository;
 import com.kt.repository.OrderProductRepository;
 import com.kt.repository.OrderRepository;
@@ -56,13 +61,16 @@ class UserServiceTest {
 	ProductRepository productRepository;
 	@Autowired
 	CategoryRepository categoryRepository;
+	@Autowired
+	PasswordEncoder passwordEncoder;
 	UserEntity testUser;
 	UserEntity testUser2;
 	UserEntity testAdmin;
 	OrderEntity testOrder;
 	ProductEntity testProduct;
-	private UUID userId;
-	private UUID AdminId;
+	UUID userId;
+	UUID AdminId;
+	static final String TEST_PASSWORD = "1234567891011";
 
 	@BeforeEach
 	void setUp() throws Exception {
@@ -352,6 +360,102 @@ class UserServiceTest {
 		assertThat(admin.getEmail()).isEqualTo("admin@test.com");
 		assertThat(admin.getRole()).isEqualTo(UserRole.ADMIN);
 		assertThat(admin.getPassword()).isNotEqualTo("1234");
+	}
+
+	@Test
+	void 비밀번호변경_성공(){
+		UserEntity user = UserEntity.create(
+			"주문자테스터2",
+			"wjd123@naver.com",
+			passwordEncoder.encode(TEST_PASSWORD),
+			UserRole.MEMBER,
+			Gender.MALE,
+			LocalDate.of(1990, 1, 1),
+			"010-1234-5678"
+		);
+		userRepository.save(user);
+
+		userService.updatePassword(
+			user.getId(),
+			TEST_PASSWORD,
+			"12345678910"
+		);
+
+		boolean validResult = passwordEncoder.matches(
+			"12345678910",
+			user.getPassword()
+		);
+
+		Assertions.assertTrue(validResult);
+	}
+
+	@Test
+	void 비밀번호변경_실패__현재_비밀번호_불일치(){
+		UserEntity user = UserEntity.create(
+			"주문자테스터1",
+			"wjd123@naver.com",
+			passwordEncoder.encode(TEST_PASSWORD),
+			UserRole.MEMBER,
+			Gender.MALE,
+			LocalDate.of(1990, 1, 1),
+			"010-1234-5678"
+		);
+		userRepository.save(user);
+
+		assertThrowsExactly(
+			AuthException.class,
+			()-> {
+				userService.updatePassword(
+					user.getId(),
+					"틀린비밀번호입니다.......",
+					"22222222222222"
+				);
+			}
+		);
+	}
+
+	@Test
+	void 비밀번호변경_실패__변경할_비밀번호_동일(){
+		UserEntity user = UserEntity.create(
+			"주문자테스터2",
+			"wjd123@naver.com",
+			passwordEncoder.encode(TEST_PASSWORD),
+			UserRole.MEMBER,
+			Gender.MALE,
+			LocalDate.of(1990, 1, 1),
+			"010-1234-5678"
+		);
+		userRepository.save(user);
+
+		assertThrowsExactly(
+			AuthException.class,
+			()->userService.updatePassword(
+				user.getId(),
+				TEST_PASSWORD,
+				TEST_PASSWORD
+			)
+		);
+	}
+
+	@Test
+	void 유저삭제_성공(){
+		userService.delete(testUser.getId());
+
+		Assertions.assertEquals(UserStatus.DELETED, testUser.getStatus());
+	}
+
+	@Test
+	void 내_정보_수정_성공(){
+		UserRequest.UpdateDetails updateDetails =  new UserRequest.UpdateDetails(
+			"삼정수",
+			"010-7123-4569",
+			LocalDate.of(1992, 1, 1),
+			Gender.FEMALE
+		);
+		userService.updateUserDetails(testUser.getId(), updateDetails);
+
+		Assertions.assertEquals("삼정수", testUser.getName());
+		Assertions.assertEquals(Gender.FEMALE, testUser.getGender());
 	}
 
 }
