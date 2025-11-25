@@ -8,6 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.kt.constant.OrderProductStatus;
 import com.kt.constant.OrderStatus;
+import com.kt.constant.ShippingType;
 import com.kt.constant.message.ErrorCode;
 import com.kt.domain.dto.request.OrderRequest;
 import com.kt.domain.dto.response.OrderResponse;
@@ -15,6 +16,7 @@ import com.kt.domain.entity.OrderEntity;
 import com.kt.domain.entity.OrderProductEntity;
 import com.kt.domain.entity.ProductEntity;
 import com.kt.domain.entity.ReceiverVO;
+import com.kt.domain.entity.ShippingDetailEntity;
 import com.kt.domain.entity.UserEntity;
 import com.kt.exception.BaseException;
 import com.kt.repository.OrderProductRepository;
@@ -109,9 +111,12 @@ public class OrderServiceImpl implements OrderService {
 		OrderEntity order = orderRepository.findById(orderId)
 			.orElseThrow(() -> new BaseException(ErrorCode.ORDER_NOT_FOUND));
 
-		if (order.getStatus() != OrderStatus.CREATED) {
-			throw new BaseException(ErrorCode.ORDER_ALREADY_SHIPPED);
+		if (order.getStatus() != OrderStatus.PURCHASE_CONFIRMED) {
+			throw new BaseException(ErrorCode.ORDER_ALREADY_CONFIRMED);
 		}
+
+		List<OrderProductEntity> orderProducts =
+			orderProductRepository.findAllByOrderId(orderId);
 
 		ReceiverVO newReceiverVO = ReceiverVO.create(
 			request.receiverName(),
@@ -121,6 +126,8 @@ public class OrderServiceImpl implements OrderService {
 			request.roadAddress(),
 			request.detail()
 		);
+
+		// TODO: 배송지 변경 제한 로직 추가
 
 		order.updateReceiverVO(newReceiverVO);
 		orderRepository.save(order);
