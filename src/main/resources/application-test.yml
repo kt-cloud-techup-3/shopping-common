@@ -1,6 +1,0 @@
-spring:
-  datasource:
-    url: ${SPRING_DATASOURCE_URL}
-    driver-class-name: com.mysql.cj.jdbc.Driver
-    username: root
-    password: ${SPRING_DATASOURCE_PASSWORD}
