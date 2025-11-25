@@ -1,9 +1,16 @@
 package com.kt.config;
 
+import com.kt.config.jwt.JwtAccessDeniedHandler;
+
+import com.kt.config.jwt.JwtAuthenticationEntryPoint;
+
+import com.kt.config.jwt.JwtAuthenticationFilter;
+
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -14,8 +21,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-import com.kt.security.JwtFilter;
-import com.kt.security.JwtProperties;
+import com.kt.config.properties.jwt.JwtProperties;
 import com.kt.security.SecurityPath;
 
 import lombok.RequiredArgsConstructor;
@@ -26,7 +32,9 @@ import lombok.RequiredArgsConstructor;
 @EnableConfigurationProperties(JwtProperties.class)
 public class SecurityConfig {
 
-	private final JwtFilter jwtFilter;
+	private final JwtAuthenticationFilter jwtAuthenticationFilter;
+	private final JwtAuthenticationEntryPoint entryPoint;
+	private final JwtAccessDeniedHandler accessDeniedHandler;
 
 	@Bean
 	public PasswordEncoder passwordEncoder() {
@@ -40,24 +48,23 @@ public class SecurityConfig {
 
 	@Bean
 	public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-		http
-			.csrf(AbstractHttpConfigurer::disable)
-			.sessionManagement(session -> session
-				.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-			)
-
-			// TODO: 인증 실패시 커스텀 예외 처리 핸들러 등록
-
-			.authorizeHttpRequests(auth -> {
-				auth.requestMatchers(SecurityPath.PUBLIC).permitAll();
-				auth.requestMatchers(SecurityPath.AUTHENTICATED).authenticated();
-
-				SecurityPath.ROLE_PATHS.forEach((role, paths) ->
-					auth.requestMatchers(paths).hasAnyAuthority(role)
-				);
-				auth.anyRequest().authenticated();
-			})
-			.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
+		http.csrf(AbstractHttpConfigurer::disable)
+			.cors(Customizer.withDefaults())
+			.sessionManagement(session ->
+				session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+			).exceptionHandling(
+				exceptions -> exceptions
+					.authenticationEntryPoint(entryPoint)
+					.accessDeniedHandler(accessDeniedHandler)
+			).authorizeHttpRequests(
+				auth -> auth
+					.requestMatchers(SecurityPath.PUBLIC).permitAll()
+					.requestMatchers(SecurityPath.ADMIN).hasRole("ADMIN")
+					.anyRequest().authenticated()
+			).addFilterBefore(
+				jwtAuthenticationFilter,
+				UsernamePasswordAuthenticationFilter.class
+			);
 
 		return http.build();
 	}

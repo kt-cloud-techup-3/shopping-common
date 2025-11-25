@@ -13,6 +13,10 @@ public enum ErrorCode {
 	INVALID_DOMAIN_FIELD(HttpStatus.BAD_REQUEST, "도메인 필드 오류 : {0}"),
 	BODY_FIELD_ERROR(HttpStatus.BAD_REQUEST, "바디 필드 오류 : {0}"),
 	ACCOUNT_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 계정입니다"),
+	AUTH_EXPIRED(HttpStatus.UNAUTHORIZED, "엑세스 토큰이 만료되었습니다."),
+	AUTH_INVALID(HttpStatus.UNAUTHORIZED, "올바르지 않은 인증 정보입니다."),
+	AUTH_PERMISSION_DENIED(HttpStatus.FORBIDDEN, "접근 권한이 없습니다."),
+
 	AUTH_FAILED_LOGIN(HttpStatus.UNAUTHORIZED, "이메일 혹은 비밀번호가 일치하지 않습니다."),
 	AUTH_ACCOUNT_DELETED(HttpStatus.FORBIDDEN, "해당 계정은 삭제된 계정입니다"),
 	AUTH_ACCOUNT_DISABLED(HttpStatus.FORBIDDEN, "해당 계정은 비활성화된 계정입니다."),
