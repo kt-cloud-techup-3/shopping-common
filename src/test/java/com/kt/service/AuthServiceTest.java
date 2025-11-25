@@ -10,6 +10,7 @@ import com.kt.domain.dto.request.SignupRequest;
 import com.kt.domain.entity.CourierEntity;
 import com.kt.domain.entity.UserEntity;
 import com.kt.exception.AuthException;
+import com.kt.exception.BaseException;
 import com.kt.exception.DuplicatedException;
 import com.kt.infra.redis.RedisCache;
 import com.kt.repository.AccountRepository;
@@ -407,7 +408,7 @@ public class AuthServiceTest {
 			notExistsEmail
 		);
 		assertThrowsExactly(
-			IllegalArgumentException.class, () ->
+			BaseException.class, () ->
 				authService.resetPassword(resetRequest)
 		);
 	}

@@ -87,9 +87,8 @@ public class AuthServiceImpl implements AuthService {
 	@Override
 	public Pair<String, String> login(LoginRequest request) {
 
-		AbstractAccountEntity account = accountRepository.findByEmail(request.email()).orElseThrow(
-			() -> new AuthException(ErrorCode.AUTH_FAILED_LOGIN)
-		);
+		AbstractAccountEntity account = accountRepository
+			.findByEmailOrThrow(request.email());
 
 		validAccount(account, request.password());
 
@@ -150,10 +149,8 @@ public class AuthServiceImpl implements AuthService {
 	@Transactional
 	public void resetPassword(ResetPasswordRequest request) {
 		String email = request.email();
-		AbstractAccountEntity account = accountRepository.findByEmail(email)
-			.orElseThrow(() ->
-				new IllegalArgumentException("해당 이메일로 가입된 계정이 존재하지 않습니다.")
-			);
+		AbstractAccountEntity account = accountRepository
+			.findByEmailOrThrow(email);
 		String reset = getRandomPassword();
 
 		account.resetPassword(passwordEncoder.encode(reset));

@@ -1,6 +1,9 @@
 package com.kt.repository;
 
+import com.kt.constant.message.ErrorCode;
 import com.kt.domain.entity.AbstractAccountEntity;
+
+import com.kt.exception.BaseException;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
@@ -10,6 +13,12 @@ import java.util.UUID;
 
 @Repository
 public interface AccountRepository extends JpaRepository<AbstractAccountEntity, UUID> {
+
+	default AbstractAccountEntity findByEmailOrThrow(String email) {
+		return findByEmail(email).orElseThrow(
+			() -> new BaseException(ErrorCode.ACCOUNT_NOT_FOUND)
+		);
+	}
 
 	Optional<AbstractAccountEntity> findByEmail(String email);
 }
