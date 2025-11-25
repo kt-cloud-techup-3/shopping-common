@@ -428,7 +428,7 @@ class UserServiceTest {
 		userRepository.save(user);
 
 		assertThrowsExactly(
-			DuplicatedException.class,
+			AuthException.class,
 			()->userService.updatePassword(
 				user.getId(),
 				TEST_PASSWORD,
