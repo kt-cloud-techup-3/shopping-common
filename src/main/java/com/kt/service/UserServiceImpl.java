@@ -103,6 +103,7 @@ public class UserServiceImpl implements UserService {
 		user.retired();
 	}
 
+
 	@Override
 	public void createAdmin(SignupRequest.SignupMember request) {
 		UserEntity admin = UserEntity.create(

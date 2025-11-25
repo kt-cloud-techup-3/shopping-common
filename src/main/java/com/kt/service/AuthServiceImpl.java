@@ -16,8 +16,9 @@ import com.kt.exception.AuthException;
 import com.kt.exception.DuplicatedException;
 import com.kt.infra.mail.EmailClient;
 import com.kt.infra.redis.RedisCache;
+
 import com.kt.repository.AccountRepository;
-import com.kt.repository.CourierRepository;
+import com.kt.repository.courier.CourierRepository;
 import com.kt.repository.user.UserRepository;
 
 import com.kt.security.JwtService;
@@ -65,8 +66,6 @@ public class AuthServiceImpl implements AuthService {
 
 		userRepository.save(member);
 	}
-
-
 
 	@Override
 	public void signupCourier(SignupRequest.SignupCourier request) {
