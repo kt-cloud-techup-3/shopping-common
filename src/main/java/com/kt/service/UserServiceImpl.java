@@ -121,16 +121,16 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public void updatePassword(
 		UUID userId,
-		String currentPassword ,
-		String newPassword)
-	{
+		String currentPassword,
+		String newPassword
+	) {
 		UserEntity user = userRepository.findByIdOrThrow(userId);
 
-		if ( newPassword.equals(currentPassword) )
-			throw new DuplicatedException(ErrorCode.DUPLICATED_PASSWORD);
+		if (!passwordEncoder.matches(currentPassword,user.getPassword()))
+			throw new AuthException(ErrorCode.INVALID_PASSWORD);
 
-		if ( !passwordEncoder.matches(currentPassword,user.getPassword()) )
-			throw new AuthException(ErrorCode.NOT_CORRECT_PASSWORD);
+		if (passwordEncoder.matches(newPassword,user.getPassword()))
+			throw new AuthException(ErrorCode.PASSWORD_UNCHANGED);
 
 		String hashedPassword = passwordEncoder.encode(newPassword);
 		user.updatePassword(hashedPassword);

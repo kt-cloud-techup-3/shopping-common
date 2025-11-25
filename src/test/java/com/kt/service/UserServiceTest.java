@@ -68,9 +68,9 @@ class UserServiceTest {
 	UserEntity testAdmin;
 	OrderEntity testOrder;
 	ProductEntity testProduct;
-	private UUID userId;
-	private UUID AdminId;
-	private static final String TEST_PASSWORD = "1234567891011";
+	UUID userId;
+	UUID AdminId;
+	static final String TEST_PASSWORD = "1234567891011";
 
 	@BeforeEach
 	void setUp() throws Exception {

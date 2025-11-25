@@ -26,8 +26,8 @@ public enum ErrorCode {
 	CATEGORY_NOT_FOUND(HttpStatus.NOT_FOUND, "카테고리가 존재하지 않습니다."),
 	CHILD_CATEGORY_EXISTS(HttpStatus.BAD_REQUEST, "자식 카테고리가 존재합니다."),
 	STOCK_NOT_ENOUGH(HttpStatus.BAD_REQUEST, "상품 재고가 없습니다."),
-	DUPLICATED_PASSWORD(HttpStatus.CONFLICT, "기존 패스워드와 변경할 패스워드가 동일합니다."),
-	NOT_CORRECT_PASSWORD(HttpStatus.FORBIDDEN, "기존 비밀번호와 일치하지 않습니다."),
+	PASSWORD_UNCHANGED(HttpStatus.CONFLICT, "기존 패스워드와 변경할 패스워드가 동일합니다."),
+	INVALID_PASSWORD(HttpStatus.FORBIDDEN, "기존 비밀번호와 일치하지 않습니다."),
 	USER_NOT_FOUND(HttpStatus.NOT_FOUND, "유저가 존재하지 않습니다.");
 
 	private final HttpStatus status;

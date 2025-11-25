@@ -33,7 +33,7 @@ public interface UserService {
 
 	void createAdmin(SignupRequest.SignupMember request);
 
-	void updatePassword(UUID userId, String currentPassword , String newPassword);
+	void updatePassword(UUID userId, String currentPassword, String newPassword);
 
 	void delete(UUID userId);
 
