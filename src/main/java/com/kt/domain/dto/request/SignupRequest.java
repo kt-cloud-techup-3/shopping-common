@@ -53,4 +53,21 @@ public class SignupRequest {
 		String mobile
 	) {
 	}
+
+	public record SignupCourier(
+		@NotBlank(message = "이름은 필수 항목입니다.")
+		String name,
+
+		@Email(message = "올바른 이메일 형식이 아닙니다.")
+		@NotBlank(message = "이메일은 필수 항목입니다.")
+		String email,
+
+		@NotBlank(message = "비밀번호는 필수 항목입니다.")
+		String password,
+
+		@NotNull(message = "성별은 필수 항목입니다.")
+		Gender gender
+	) {
+
+	}
 }

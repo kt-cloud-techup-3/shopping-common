@@ -7,7 +7,9 @@ import com.mysema.commons.lang.Pair;
 
 public interface AuthService {
 
-	void memberSignup(SignupRequest.SignupMember request);
+	void signupMember(SignupRequest.SignupMember request);
+
+	void signupCourier(SignupRequest.SignupCourier request);
 
 	Pair<String, String> login(LoginRequest request);
 
