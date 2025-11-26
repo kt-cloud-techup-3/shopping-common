@@ -23,4 +23,6 @@ public interface AccountService {
 		String currentPassword,
 		String newPassword
 	);
+
+	void deleteAccount(UUID accountId);
 }
