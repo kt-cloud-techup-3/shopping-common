@@ -28,4 +28,15 @@ public class ApiResult<T> {
 				)
 			);
 	}
+
+	public static ResponseEntity<ApiResult<Void>> ok(){
+		return ResponseEntity.status(HttpStatus.OK)
+			.body(
+				new ApiResult<>(
+					ResultCode.SUCCESS.getCode(),
+					ResultCode.SUCCESS.getMessage(),
+					null
+				)
+			);
+	}
 }

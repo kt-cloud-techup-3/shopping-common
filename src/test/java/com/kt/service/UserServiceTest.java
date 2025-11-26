@@ -47,7 +47,6 @@ import com.kt.repository.user.UserRepository;
 @ActiveProfiles("test")
 class UserServiceTest {
 
-	static final String TEST_PASSWORD = "1234567891011";
 	@Autowired
 	UserService userService;
 	@Autowired

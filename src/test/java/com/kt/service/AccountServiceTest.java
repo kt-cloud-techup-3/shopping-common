@@ -3,7 +3,6 @@ package com.kt.service;
 import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertThrowsExactly;
-import static org.junit.jupiter.api.Assertions.*;
 
 import java.time.LocalDate;
 
@@ -38,18 +37,14 @@ class AccountServiceTest {
 
 	@Autowired
 	AccountService accountService;
-
 	@Autowired
 	UserRepository userRepository;
-
 	@Autowired
 	AccountRepository accountRepository;
-
 	@Autowired
 	CourierRepository courierRepository;
 	@Autowired
 	PasswordEncoder passwordEncoder;
-
 	static final String TEST_PASSWORD = "1234567891011";
 
 	UserEntity member1;
@@ -137,7 +132,6 @@ class AccountServiceTest {
 
 	@Test
 	void 배송기사_조회_성공() {
-
 		// when
 		Page<?> foundCouriers = accountService.searchAccounts(
 			Pageable.ofSize(10),
