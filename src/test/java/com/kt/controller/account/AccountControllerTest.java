@@ -156,4 +156,40 @@ class AccountControllerTest {
 		Assertions.assertEquals(responsedAccountSearch.accoundId(), testMember.getId());
 		Assertions.assertEquals(responsedAccountSearch.email(), testMember.getEmail());
 	}
+
+	@Test
+	void 내정보수정_성공() throws Exception {
+		UserEntity testMember = UserEntity.create(
+			"멤버테스터",
+			"wjd123@naver.com",
+			passwordEncoder.encode(TEST_PASSWORD),
+			UserRole.MEMBER,
+			Gender.MALE,
+			LocalDate.of(1990, 1, 1),
+			"010-1234-5678"
+		);
+		userRepository.save(testMember);
+
+		AccountRequest.UpdateDetails updateDetails = new AccountRequest.UpdateDetails(
+			"변경된테스터",
+			"wjdtn@naver.com",
+			Gender.FEMALE
+		);
+		String json = objectMapper.writeValueAsString(updateDetails);
+
+		DefaultCurrentUser userDetails = new DefaultCurrentUser(
+			testMember.getId(),
+			testMember.getEmail(),
+			testMember.getRole()
+		);
+
+		mockMvc.perform(put("/api/accounts")
+				.with(SecurityMockMvcRequestPostProcessors.user(userDetails))
+				.contentType(MediaType.APPLICATION_JSON)
+				.content(json))
+			.andExpect(status().isOk());
+
+		Assertions.assertEquals(updateDetails.name(), testMember.getName());
+		Assertions.assertEquals(updateDetails.email(), testMember.getEmail());
+	}
 }
