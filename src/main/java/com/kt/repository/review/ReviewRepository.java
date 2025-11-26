@@ -1,4 +1,4 @@
-package com.kt.repository;
+package com.kt.repository.review;
 
 import java.util.Optional;
 import java.util.UUID;
@@ -11,7 +11,7 @@ import com.kt.domain.entity.ReviewEntity;
 import com.kt.exception.BaseException;
 
 @Repository
-public interface ReviewRepository extends JpaRepository<ReviewEntity, UUID> {
+public interface ReviewRepository extends JpaRepository<ReviewEntity, UUID>, ReviewRepositoryCustom{
 	default ReviewEntity findByIdOrThrow(UUID reviewId) {
 		return findById(reviewId).orElseThrow(() -> new BaseException(ErrorCode.REVIEW_NOT_FOUND));
 	}

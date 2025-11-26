@@ -7,6 +7,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,10 +27,10 @@ import com.kt.domain.entity.ReviewEntity;
 import com.kt.domain.entity.UserEntity;
 import com.kt.exception.BaseException;
 import com.kt.repository.CategoryRepository;
-import com.kt.repository.OrderProductRepository;
+import com.kt.repository.orderproduct.OrderProductRepository;
 import com.kt.repository.OrderRepository;
-import com.kt.repository.ProductRepository;
-import com.kt.repository.ReviewRepository;
+import com.kt.repository.product.ProductRepository;
+import com.kt.repository.review.ReviewRepository;
 import com.kt.repository.user.UserRepository;
 
 @Transactional
@@ -163,5 +165,23 @@ class ReviewServiceTest {
 
 		Assertions.assertEquals(1, reviews.size());
 		Assertions.assertEquals(review.getId(), reviews.get(0).reviewId());
+	}
+
+	@Test
+	void 어드민_상품리뷰조회_성공(){
+		ReviewEntity review = ReviewEntity.create("테스트리뷰내용");
+		review.mapToOrderProduct(testOrderProduct);
+		reviewRepository.save(review);
+
+		PageRequest pageRequest = PageRequest.of(0, 10);
+		Page<ReviewResponse.Search> foundedPage = reviewService.getReviewsByAdmin(pageRequest, null, null);
+
+		ReviewResponse.Search foundedReviewResponse = foundedPage
+			.stream()
+			.findFirst()
+			.orElse(null);
+
+		Assertions.assertNotNull(foundedReviewResponse);
+		Assertions.assertEquals(review.getId(), foundedReviewResponse.reviewId());
 	}
 }

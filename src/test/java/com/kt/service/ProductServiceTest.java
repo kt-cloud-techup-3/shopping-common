@@ -20,7 +20,7 @@ import com.kt.domain.dto.response.ProductResponse;
 import com.kt.domain.entity.CategoryEntity;
 import com.kt.domain.entity.ProductEntity;
 import com.kt.repository.CategoryRepository;
-import com.kt.repository.ProductRepository;
+import com.kt.repository.product.ProductRepository;
 
 @ActiveProfiles("test")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)

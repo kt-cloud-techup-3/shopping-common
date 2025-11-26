@@ -11,7 +11,7 @@ import com.kt.domain.dto.response.AdminOrderResponse;
 import com.kt.domain.entity.OrderEntity;
 import com.kt.domain.entity.OrderProductEntity;
 import com.kt.exception.BaseException;
-import com.kt.repository.OrderProductRepository;
+import com.kt.repository.orderproduct.OrderProductRepository;
 import com.kt.repository.OrderRepository;
 
 import org.springframework.transaction.annotation.Transactional;

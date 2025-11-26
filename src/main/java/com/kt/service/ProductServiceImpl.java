@@ -15,7 +15,7 @@ import com.kt.domain.entity.CategoryEntity;
 import com.kt.domain.entity.ProductEntity;
 import com.kt.exception.BaseException;
 import com.kt.repository.CategoryRepository;
-import com.kt.repository.ProductRepository;
+import com.kt.repository.product.ProductRepository;
 
 import lombok.RequiredArgsConstructor;
 
