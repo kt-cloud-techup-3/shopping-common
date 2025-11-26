@@ -2,9 +2,12 @@ package com.kt.service;
 
 import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertThrowsExactly;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.time.LocalDate;
 
+import org.junit.jupiter.api.Assertions;
 import lombok.extern.slf4j.Slf4j;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -19,8 +22,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.kt.constant.Gender;
 import com.kt.constant.UserRole;
+import com.kt.domain.entity.AbstractAccountEntity;
 import com.kt.domain.entity.CourierEntity;
 import com.kt.domain.entity.UserEntity;
+import com.kt.exception.CustomException;
 import com.kt.repository.AccountRepository;
 import com.kt.repository.courier.CourierRepository;
 import com.kt.repository.user.UserRepository;
@@ -42,9 +47,10 @@ class AccountServiceTest {
 
 	@Autowired
 	CourierRepository courierRepository;
-
 	@Autowired
 	PasswordEncoder passwordEncoder;
+
+	static final String TEST_PASSWORD = "1234567891011";
 
 	UserEntity member1;
 	UserEntity admin1;
@@ -145,6 +151,102 @@ class AccountServiceTest {
 		assertThat(foundCouriers.getContent()).hasSize(2);
 	}
 
+
+	@Test
+	void 회원_비밀번호변경_성공() {
+		UserEntity user = UserEntity.create(
+			"회원테스터",
+			"wjd123@naver.com",
+			passwordEncoder.encode(TEST_PASSWORD),
+			UserRole.MEMBER,
+			Gender.MALE,
+			LocalDate.of(1990, 1, 1),
+			"010-1234-5678"
+		);
+		userRepository.save(user);
+
+		accountService.updatePassword(
+			user.getId(),
+			TEST_PASSWORD,
+			"12345678910"
+		);
+
+		boolean validResult = passwordEncoder.matches(
+			"12345678910",
+			user.getPassword()
+		);
+
+		Assertions.assertTrue(validResult);
+	}
+
+	@Test
+	void 배송기사_비밀번호변경_성공() {
+		CourierEntity courier = CourierEntity.create(
+			"배송기사테스터",
+			"wjd123@naver.com",
+			passwordEncoder.encode(TEST_PASSWORD),
+			Gender.MALE
+		);
+		courierRepository.save(courier);
+
+		accountService.updatePassword(
+			courier.getId(),
+			TEST_PASSWORD,
+			"12345678910"
+		);
+
+		boolean validResult = passwordEncoder.matches(
+			"12345678910",
+			courier.getPassword()
+		);
+
+		Assertions.assertTrue(validResult);
+	}
+
+	@Test
+	void 비밀번호변경_실패__현재_비밀번호_불일치() {
+		UserEntity user = UserEntity.create(
+			"주문자테스터1",
+			"wjd123@naver.com",
+			passwordEncoder.encode(TEST_PASSWORD),
+			UserRole.MEMBER,
+			Gender.MALE,
+			LocalDate.of(1990, 1, 1),
+			"010-1234-5678"
+		);
+		userRepository.save(user);
+
+		assertThrowsExactly(
+			CustomException.class,
+			() -> {
+				accountService.updatePassword(
+					user.getId(),
+					"틀린비밀번호입니다.......",
+					"22222222222222"
+				);
+			}
+		);
+	}
+
+	@Test
+	void 비밀번호변경_실패__변경할_비밀번호_동일() {
+		CourierEntity courier = CourierEntity.create(
+			"주문자테스터2",
+			"wjd123@naver.com",
+			passwordEncoder.encode(TEST_PASSWORD),
+			Gender.MALE
+		);
+		courierRepository.save(courier);
+
+		assertThrowsExactly(
+			CustomException.class,
+			() -> accountService.updatePassword(
+				courier.getId(),
+				TEST_PASSWORD,
+				TEST_PASSWORD
+			)
+		);
+	}
 	@Test
 	void 관리자_다른_계정_비밀번호_초기화_성공() {
 		String originPassword = "1234";

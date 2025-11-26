@@ -14,6 +14,12 @@ import java.util.UUID;
 @Repository
 public interface AccountRepository extends JpaRepository<AbstractAccountEntity, UUID> {
 
+	default AbstractAccountEntity findByIdOrThrow(UUID accountId) {
+		return findById(accountId).orElseThrow(
+			() -> new CustomException(ErrorCode.ACCOUNT_NOT_FOUND)
+		);
+	}
+
 	default AbstractAccountEntity findByEmailOrThrow(String email) {
 		return findByEmail(email).orElseThrow(
 			() -> new CustomException(ErrorCode.ACCOUNT_NOT_FOUND)
