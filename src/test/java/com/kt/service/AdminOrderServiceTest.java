@@ -27,7 +27,7 @@ import com.kt.repository.CategoryRepository;
 import com.kt.repository.OrderProductRepository;
 import com.kt.repository.OrderRepository;
 import com.kt.repository.ProductRepository;
-import com.kt.repository.ReviewRepository;
+import com.kt.repository.review.ReviewRepository;
 import com.kt.repository.user.UserRepository;
 
 @SpringBootTest
