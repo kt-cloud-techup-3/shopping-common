@@ -1,5 +1,6 @@
 package com.kt.service;
 
+import com.kt.config.jwt.JwtTokenProvider;
 import com.kt.constant.Gender;
 import com.kt.constant.UserRole;
 import com.kt.constant.UserStatus;
@@ -7,10 +8,12 @@ import com.kt.constant.redis.RedisKey;
 import com.kt.domain.dto.request.LoginRequest;
 import com.kt.domain.dto.request.ResetPasswordRequest;
 import com.kt.domain.dto.request.SignupRequest;
+import com.kt.domain.dto.request.TokenReissueRequest;
 import com.kt.domain.entity.CourierEntity;
 import com.kt.domain.entity.UserEntity;
 import com.kt.exception.AuthException;
 import com.kt.exception.BaseException;
+import com.kt.exception.CustomException;
 import com.kt.exception.DuplicatedException;
 import com.kt.infra.redis.RedisCache;
 import com.kt.repository.AccountRepository;
@@ -44,12 +47,16 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @SpringBootTest
 public class AuthServiceTest {
 
-	final static String SUCCESS_USER_LOGIN = "유저 로그인 성공";
-	final static String FAIL_USER_LOGIN_INVALID_PASSWORD = "유저 로그인 실패 비밀번호 틀림";
-	final static String FAIL_USER_LOGIN_STATUS_DISABLED = "유저 로그인 실패 비활성화 상태";
-	final static String FAIL_USER_LOGIN_STATUS_DELETED = "유저 로그인 실패 삭제 상태";
-	final static String FAIL_USER_LOGIN_STATUS_RETIRED = "유저 로그인 실패 탈퇴 상태";
-	final static String FAIL_RESET_PASSWORD_NOT_FOUND_EMAIL = "계정 비밀 번호 초기화 실패 이메일 미존재";
+	final static String SUCCESS_USER_LOGIN = "유저_로그인_성공";
+	final static String FAIL_USER_LOGIN_INVALID_PASSWORD = "유저_로그인_실패_비밀번호_틀림";
+	final static String FAIL_USER_LOGIN_STATUS_DISABLED = "유저_로그인_실패_비활성화_상태";
+	final static String FAIL_USER_LOGIN_STATUS_DELETED = "유저_로그인_실패_삭제_상태";
+	final static String FAIL_USER_LOGIN_STATUS_RETIRED = "유저_로그인_실패_탈퇴_상태";
+	final static String FAIL_RESET_PASSWORD_NOT_FOUND_EMAIL = "계정_비밀_번호_초기화_실패_이메일_미존재";
+	final static String SUCCESS_REISSUE_TOKEN = "토큰_재발급_성공";
+	final static String FAIL_REISSUE_TOKEN_EXPIRED = "토큰_재발급_실패_시간_만료";
+	final static String FAIL_REISSUE_TOKEN_INVALID_AUTH = "토큰_재발급_실패_인증정보_틀림";
+
 
 	@Autowired
 	AuthServiceImpl authService;
@@ -65,6 +72,10 @@ public class AuthServiceTest {
 	RedisCache redisCache;
 	@Autowired
 	RedisTemplate redisTemplate;
+
+	@Autowired
+	JwtTokenProvider jwtTokenProvider;
+
 	UserEntity user;
 	String rawPassword = "1231231!";
 	String email = "bjwnstkdbj@naver.com";
@@ -81,7 +92,10 @@ public class AuthServiceTest {
 					 FAIL_USER_LOGIN_STATUS_DISABLED,
 					 FAIL_USER_LOGIN_STATUS_DELETED,
 					 FAIL_USER_LOGIN_STATUS_RETIRED,
-					 FAIL_RESET_PASSWORD_NOT_FOUND_EMAIL -> saveMember();
+					 FAIL_RESET_PASSWORD_NOT_FOUND_EMAIL,
+					 SUCCESS_REISSUE_TOKEN,
+					 FAIL_REISSUE_TOKEN_EXPIRED,
+					 FAIL_REISSUE_TOKEN_INVALID_AUTH-> saveMember();
 		}
 
 	}
@@ -223,6 +237,15 @@ public class AuthServiceTest {
 
 		assertNotNull(result.getFirst());
 		assertNotNull(result.getSecond());
+		UserEntity savedUser = userRepository.findByEmailOrThrow(user.getEmail());
+
+		String redisRefreshToken = redisCache.get(
+			RedisKey.REFRESH_TOKEN.key(savedUser.getId()),
+			String.class
+		);
+
+		assertEquals(result.getSecond(), redisRefreshToken);
+
 		log.info("access token : {}", result.getFirst());
 		log.info("refresh token : {}", result.getSecond());
 
@@ -485,5 +508,84 @@ public class AuthServiceTest {
 				authService.signupCourier(secondSignup)
 		);
 	}
+
+	@Test
+	@DisplayName(SUCCESS_REISSUE_TOKEN)
+	void 토큰_재발급_성공() throws InterruptedException {
+
+		LoginRequest login = new LoginRequest(
+			user.getEmail(),
+			rawPassword
+		);
+
+		Pair<String, String> loginResult = authService.login(login);
+
+		Thread.sleep(3000);
+
+		TokenReissueRequest tokenReissueRequest =
+			new TokenReissueRequest(loginResult.getSecond());
+
+		Pair<String, String> reissued =
+			authService.reissueToken(tokenReissueRequest);
+
+		String savedRefreshToken = redisCache.get(
+			RedisKey.REFRESH_TOKEN.key(user.getId()),
+			String.class
+		);
+		assertNotEquals(loginResult.getSecond(), reissued.getSecond());
+		assertEquals(reissued.getSecond(), savedRefreshToken);
+		log.info("Before reissued refreshToken :: {}", loginResult.getSecond());
+		log.info("After reissued refreshToken :: {}", reissued.getSecond());
+		log.info("Save In Redis redisRefreshToken :: {}", savedRefreshToken);
+
+	}
+
+	@Test
+	@DisplayName(FAIL_REISSUE_TOKEN_EXPIRED)
+	void 토큰_재발급_실패_Refresh_token_시간_만료() throws InterruptedException{
+		LoginRequest login = new LoginRequest(
+			user.getEmail(),
+			rawPassword
+		);
+
+		Pair<String, String> loginResult = authService.login(login);
+
+		Thread.sleep(5000);
+
+		TokenReissueRequest tokenReissueRequest =
+			new TokenReissueRequest(loginResult.getSecond());
+
+		CustomException exception = assertThrowsExactly(
+			CustomException.class,
+			() -> authService.reissueToken(tokenReissueRequest)
+		);
+
+		log.info("exception getMessage :: {}", exception.getMessage());
+		assertEquals("AUTH_REFRESH_EXPIRED", exception.getMessage());
+	}
+
+	@Test
+	@DisplayName(FAIL_REISSUE_TOKEN_INVALID_AUTH)
+	void 토큰_재발급_실패_Refresh_token_인증정보_틀림() {
+		LoginRequest login = new LoginRequest(
+			user.getEmail(),
+			rawPassword
+		);
+
+		Pair<String, String> loginResult = authService.login(login);
+		String differentRefreshToken = loginResult.getSecond().replaceAll("e", "f");
+
+		TokenReissueRequest tokenReissueRequest =
+			new TokenReissueRequest(differentRefreshToken);
+
+		CustomException exception = assertThrowsExactly(
+			CustomException.class,
+			() -> authService.reissueToken(tokenReissueRequest)
+		);
+
+		log.info("exception getMessage :: {}", exception.getMessage());
+		assertEquals("AUTH_INVALID", exception.getMessage());
+	}
+
 
 }
