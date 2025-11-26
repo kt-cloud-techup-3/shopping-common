@@ -27,7 +27,7 @@ public class OrderEntity extends BaseEntity {
 	private ReceiverVO receiverVO;
 
 	@ManyToOne
-	@JoinColumn(name = "order_by", nullable = false)
+	@JoinColumn(name = "order_by")
 	private UserEntity orderBy;
 
 	@Column(nullable = false)

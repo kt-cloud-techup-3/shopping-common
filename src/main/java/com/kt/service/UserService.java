@@ -29,13 +29,15 @@ public interface UserService {
 
 	void deleteUser(UUID id);
 
+	void deleteUserPermanently(UUID id);
+
 	void retireUser(UUID id);
 
 	void createAdmin(SignupRequest.SignupMember request);
 
 	void updatePassword(UUID userId, String currentPassword, String newPassword);
 
-	void delete(UUID userId);
+	void deleteAdmin(UUID adminId);
 
 	void updateUserDetails(UUID userId, UserRequest.UpdateDetails details);
 }
