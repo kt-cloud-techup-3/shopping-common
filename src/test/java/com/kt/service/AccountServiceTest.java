@@ -21,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.kt.constant.Gender;
 import com.kt.constant.UserRole;
+import com.kt.constant.UserStatus;
 import com.kt.domain.entity.AbstractAccountEntity;
 import com.kt.domain.entity.CourierEntity;
 import com.kt.domain.entity.UserEntity;
@@ -147,7 +148,7 @@ class AccountServiceTest {
 
 
 	@Test
-	void 회원_비밀번호변경_성공() {
+	void 회원계정_비밀번호변경_성공() {
 		UserEntity user = UserEntity.create(
 			"회원테스터",
 			"wjd123@naver.com",
@@ -174,7 +175,7 @@ class AccountServiceTest {
 	}
 
 	@Test
-	void 배송기사_비밀번호변경_성공() {
+	void 배송기사계정_비밀번호변경_성공() {
 		CourierEntity courier = CourierEntity.create(
 			"배송기사테스터",
 			"wjd123@naver.com",
@@ -198,7 +199,7 @@ class AccountServiceTest {
 	}
 
 	@Test
-	void 비밀번호변경_실패__현재_비밀번호_불일치() {
+	void 계정비밀번호변경_실패__현재_비밀번호_불일치() {
 		UserEntity user = UserEntity.create(
 			"주문자테스터1",
 			"wjd123@naver.com",
@@ -223,7 +224,7 @@ class AccountServiceTest {
 	}
 
 	@Test
-	void 비밀번호변경_실패__변경할_비밀번호_동일() {
+	void 계정비밀번호변경_실패__변경할_비밀번호_동일() {
 		CourierEntity courier = CourierEntity.create(
 			"주문자테스터2",
 			"wjd123@naver.com",
@@ -241,6 +242,23 @@ class AccountServiceTest {
 			)
 		);
 	}
+
+	@Test
+	void 계정삭제_성공(){
+		CourierEntity courier = CourierEntity.create(
+			"주문자테스터2",
+			"wjd123@naver.com",
+			passwordEncoder.encode(TEST_PASSWORD),
+			Gender.MALE
+		);
+		courierRepository.save(courier);
+
+		accountService.deleteAccount(courier.getId());
+		AbstractAccountEntity foundedAccount = accountRepository.findByIdOrThrow(courier.getId());
+
+		Assertions.assertEquals(UserStatus.DELETED, foundedAccount.getStatus());
+	}
+
 	@Test
 	void 관리자_다른_계정_비밀번호_초기화_성공() {
 		String originPassword = "1234";
