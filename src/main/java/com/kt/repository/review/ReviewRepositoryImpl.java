@@ -2,6 +2,7 @@ package com.kt.repository.review;
 
 import java.util.List;
 
+import org.apache.logging.log4j.util.Strings;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -59,18 +60,10 @@ public class ReviewRepositoryImpl implements ReviewRepositoryCustom {
 	}
 
 	private BooleanExpression containsKeyword(String keyword, ProductSearchType type) {
-		if (keyword == null || keyword.isEmpty() || type == null) {
-			return null;
-		}
-
-		if (type == ProductSearchType.NAME) {
-			return product.name.containsIgnoreCase(keyword);
-		}
-
-		if (type == ProductSearchType.CATEGORY) {
-			return category.name.containsIgnoreCase(keyword);
-		}
-
-		return null;
+		if (type == null) return null;
+		if (Strings.isBlank(keyword)) return null;
+		return (type == ProductSearchType.CATEGORY)?
+			category.name.containsIgnoreCase(keyword):
+			product.name.containsIgnoreCase(keyword);
 	}
 }
