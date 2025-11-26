@@ -3,6 +3,8 @@ package com.kt.service;
 import java.util.List;
 import java.util.UUID;
 
+import com.kt.exception.CustomException;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -13,7 +15,7 @@ import com.kt.constant.searchtype.ProductSearchType;
 import com.kt.domain.dto.response.ProductResponse;
 import com.kt.domain.entity.CategoryEntity;
 import com.kt.domain.entity.ProductEntity;
-import com.kt.exception.BaseException;
+
 import com.kt.repository.CategoryRepository;
 import com.kt.repository.product.ProductRepository;
 
@@ -35,7 +37,7 @@ public class ProductServiceImpl implements ProductService {
 		UUID categoryId
 	) {
 		CategoryEntity category = categoryRepository.findById(categoryId).orElseThrow(
-			() -> new BaseException(ErrorCode.CATEGORY_NOT_FOUND)
+			() -> new CustomException(ErrorCode.CATEGORY_NOT_FOUND)
 		);
 		ProductEntity product = ProductEntity.create(name, price, stock, category);
 		productRepository.save(product);
@@ -50,7 +52,7 @@ public class ProductServiceImpl implements ProductService {
 		UUID categoryId
 	) {
 		CategoryEntity category = categoryRepository.findById(categoryId).orElseThrow(
-			() -> new BaseException(ErrorCode.CATEGORY_NOT_FOUND)
+			() -> new CustomException(ErrorCode.CATEGORY_NOT_FOUND)
 		);
 		ProductEntity product = productRepository.findByIdOrThrow(productId);
 		product.update(name, price, stock, category);

@@ -6,6 +6,9 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 
+import com.kt.constant.message.ErrorCode;
+import com.kt.exception.CustomException;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,7 +29,6 @@ import com.kt.domain.entity.OrderProductEntity;
 import com.kt.domain.entity.ProductEntity;
 import com.kt.domain.entity.ReceiverVO;
 import com.kt.domain.entity.UserEntity;
-import com.kt.exception.BaseException;
 import com.kt.repository.CategoryRepository;
 import com.kt.repository.orderproduct.OrderProductRepository;
 import com.kt.repository.OrderRepository;
@@ -149,7 +151,7 @@ class OrderServiceTest {
 
 		// when, then
 		assertThatThrownBy(() -> orderService.createOrder(email, items))
-			.isInstanceOf(BaseException.class)
+			.isInstanceOf(CustomException.class)
 			.hasMessageContaining("PRODUCT_NOT_FOUND");
 	}
 
@@ -181,7 +183,7 @@ class OrderServiceTest {
 
 		// then
 		assertThatThrownBy(() -> orderService.createOrder(savedUser.getEmail(), items))
-			.isInstanceOf(BaseException.class)
+			.isInstanceOf(CustomException.class)
 			.hasMessageContaining("STOCK_NOT_ENOUGH");
 	}
 
@@ -285,11 +287,11 @@ class OrderServiceTest {
 
 		// then
 		OrderProductEntity canceledOrderProduct = orderProductRepository.findById(orderProduct.getId())
-			.orElseThrow(() -> new IllegalStateException("취소된 주문 상품을 찾을 수 없습니다."));
+			.orElseThrow(() -> new CustomException(ErrorCode.ORDER_PRODUCT_NOT_FOUND));
 		assertThat(canceledOrderProduct.getStatus()).isEqualTo(OrderProductStatus.CANCELED);
 
 		ProductEntity finalProduct = productRepository.findById(product.getId())
-			.orElseThrow(() -> new IllegalStateException("상품을 찾을 수 없습니다."));
+			.orElseThrow(() -> new CustomException(ErrorCode.PRODUCT_NOT_FOUND));
 		assertThat(finalProduct.getStock()).isEqualTo(initialStock);
 
 	}
@@ -326,7 +328,7 @@ class OrderServiceTest {
 
 		// when, then
 		assertThatThrownBy(() -> orderService.cancelOrder(orderId))
-			.isInstanceOf(BaseException.class)
+			.isInstanceOf(CustomException.class)
 			.hasMessageContaining("ORDER_ALREADY_CONFIRMED");
 	}
 
@@ -446,7 +448,7 @@ class OrderServiceTest {
 
 		// when, then
 		assertThatThrownBy(() -> orderService.updateOrder(orderId, updateRequest))
-			.isInstanceOf(BaseException.class)
+			.isInstanceOf(CustomException.class)
 			.hasMessageContaining("ORDER_ALREADY_CONFIRMED");
 	}
 

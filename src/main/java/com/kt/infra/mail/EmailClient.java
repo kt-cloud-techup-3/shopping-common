@@ -2,6 +2,9 @@ package com.kt.infra.mail;
 
 import com.kt.constant.mail.MailTemplate;
 
+import com.kt.constant.message.ErrorCode;
+import com.kt.exception.CustomException;
+
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
@@ -54,7 +57,7 @@ public class EmailClient {
 			helper.setText(content, true);
 			mailSender.send(message);
 		} catch(MessagingException exception) {
-			throw new IllegalArgumentException("이메일 전송이 실패하였습니다.");
+			throw new CustomException(ErrorCode.EMAIL_SEND_FAILED);
 		}
 
 	}

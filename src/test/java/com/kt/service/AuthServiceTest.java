@@ -9,9 +9,8 @@ import com.kt.domain.dto.request.ResetPasswordRequest;
 import com.kt.domain.dto.request.SignupRequest;
 import com.kt.domain.entity.CourierEntity;
 import com.kt.domain.entity.UserEntity;
-import com.kt.exception.AuthException;
-import com.kt.exception.BaseException;
-import com.kt.exception.DuplicatedException;
+
+import com.kt.exception.CustomException;
 import com.kt.infra.redis.RedisCache;
 import com.kt.repository.AccountRepository;
 import com.kt.repository.courier.CourierRepository;
@@ -147,7 +146,7 @@ public class AuthServiceTest {
 		);
 
 		assertThrowsExactly(
-			IllegalArgumentException.class, () ->
+			CustomException.class, () ->
 				authService.signupMember(signup)
 		);
 	}
@@ -172,7 +171,7 @@ public class AuthServiceTest {
 		);
 
 		assertThrowsExactly(
-			IllegalArgumentException.class, () ->
+			CustomException.class, () ->
 				authService.signupMember(signup)
 		);
 	}
@@ -205,7 +204,7 @@ public class AuthServiceTest {
 		authService.signupMember(firstSignup);
 
 		assertThrowsExactly(
-			DuplicatedException.class, () ->
+			CustomException.class, () ->
 				authService.signupMember(secondSignup)
 		);
 
@@ -237,7 +236,7 @@ public class AuthServiceTest {
 		);
 
 		assertThrowsExactly(
-			AuthException.class,
+			CustomException.class,
 			() -> authService.login(login)
 		);
 	}
@@ -254,7 +253,7 @@ public class AuthServiceTest {
 		);
 
 		assertThrowsExactly(
-			AuthException.class,
+			CustomException.class,
 			() -> authService.login(login)
 		);
 	}
@@ -271,7 +270,7 @@ public class AuthServiceTest {
 		);
 
 		assertThrowsExactly(
-			AuthException.class,
+			CustomException.class,
 			() -> authService.login(login)
 		);
 	}
@@ -288,7 +287,7 @@ public class AuthServiceTest {
 		);
 
 		assertThrowsExactly(
-			AuthException.class,
+			CustomException.class,
 			() -> authService.login(login)
 		);
 	}
@@ -362,7 +361,7 @@ public class AuthServiceTest {
 			);
 
 		assertThrowsExactly(
-			IllegalArgumentException.class, () ->
+			CustomException.class, () ->
 				authService.verifySignupCode(verifyRequest)
 		);
 	}
@@ -383,7 +382,7 @@ public class AuthServiceTest {
 			);
 
 		assertThrowsExactly(
-			IllegalArgumentException.class, () ->
+			CustomException.class, () ->
 				authService.verifySignupCode(verifyRequest)
 		);
 	}
@@ -409,7 +408,7 @@ public class AuthServiceTest {
 			notExistsEmail
 		);
 		assertThrowsExactly(
-			BaseException.class, () ->
+			CustomException.class, () ->
 				authService.resetPassword(resetRequest)
 		);
 	}
@@ -454,7 +453,7 @@ public class AuthServiceTest {
 		);
 
 		assertThrowsExactly(
-			IllegalArgumentException.class, () ->
+			CustomException.class, () ->
 				authService.signupCourier(signup)
 		);
 	}
@@ -481,7 +480,7 @@ public class AuthServiceTest {
 		authService.signupCourier(firstSignup);
 
 		assertThrowsExactly(
-			DuplicatedException.class, () ->
+			CustomException.class, () ->
 				authService.signupCourier(secondSignup)
 		);
 	}

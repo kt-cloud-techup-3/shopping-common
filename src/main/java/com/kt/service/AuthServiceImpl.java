@@ -14,8 +14,7 @@ import com.kt.domain.entity.AbstractAccountEntity;
 import com.kt.domain.entity.CourierEntity;
 import com.kt.domain.entity.UserEntity;
 
-import com.kt.exception.AuthException;
-import com.kt.exception.DuplicatedException;
+import com.kt.exception.CustomException;
 import com.kt.infra.mail.EmailClient;
 import com.kt.infra.redis.RedisCache;
 
@@ -125,9 +124,7 @@ public class AuthServiceImpl implements AuthService {
 	public void verifySignupCode(SignupRequest.VerifySignupCode request) {
 		String email = request.email();
 		if (!redisCache.hasKey(RedisKey.SIGNUP_CODE.key(email))) {
-			throw new IllegalArgumentException(
-				"인증 시간이 만료되었거나, 해당 이메일로 전송된 인증 코드가 없습니다."
-			);
+			throw new CustomException(ErrorCode.AUTH_CODE_UNAVAILABLE);
 		}
 
 		String redisAuthCode = redisCache.get(
@@ -136,7 +133,7 @@ public class AuthServiceImpl implements AuthService {
 		);
 
 		if (!redisAuthCode.equals(request.authCode()))
-			throw new IllegalArgumentException("인증 코드가 일치하지 않습니다.");
+			throw new CustomException(ErrorCode.AUTH_CODE_INVALID);
 
 		redisCache.set(
 			RedisKey.SIGNUP_VERIFIED,
@@ -168,18 +165,18 @@ public class AuthServiceImpl implements AuthService {
 
 	private void validAccount(AbstractAccountEntity account, String rawPassword) {
 		if (!passwordEncoder.matches(rawPassword, account.getPassword()))
-			throw new AuthException(ErrorCode.AUTH_FAILED_LOGIN);
+			throw new CustomException(ErrorCode.AUTH_FAILED_LOGIN);
 
 		switch (account.getStatus()) {
-			case DELETED -> throw new AuthException(ErrorCode.AUTH_ACCOUNT_DELETED);
-			case DISABLED -> throw new AuthException(ErrorCode.AUTH_ACCOUNT_DISABLED);
-			case RETIRED -> throw new AuthException(ErrorCode.AUTH_ACCOUNT_RETIRED);
+			case DELETED -> throw new CustomException(ErrorCode.AUTH_ACCOUNT_DELETED);
+			case DISABLED -> throw new CustomException(ErrorCode.AUTH_ACCOUNT_DISABLED);
+			case RETIRED -> throw new CustomException(ErrorCode.AUTH_ACCOUNT_RETIRED);
 		}
 	}
 
 	private void requireDuplicatedEmail(String email) {
 		if (accountRepository.findByEmail(email).isPresent())
-			throw new DuplicatedException(ErrorCode.DUPLICATED_EMAIL);
+			throw new CustomException(ErrorCode.DUPLICATED_EMAIL);
 	}
 
 	private void requireVerifiedEmail(String email) {
@@ -188,7 +185,7 @@ public class AuthServiceImpl implements AuthService {
 			Boolean.class
 		);
 		if (!Boolean.TRUE.equals(result))
-			throw new IllegalArgumentException("인증되지 않은 이메일입니다.");
+			throw new CustomException(ErrorCode.AUTH_EMAIL_UNVERIFIED);
 	}
 
 	private String getAuthenticationCode() {

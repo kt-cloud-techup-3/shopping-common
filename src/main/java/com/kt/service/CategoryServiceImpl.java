@@ -3,13 +3,15 @@ package com.kt.service;
 import java.util.List;
 import java.util.UUID;
 
+import com.kt.exception.CustomException;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.kt.constant.message.ErrorCode;
 import com.kt.domain.dto.response.CategoryResponse;
 import com.kt.domain.entity.CategoryEntity;
-import com.kt.exception.BaseException;
+
 import com.kt.repository.CategoryRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -24,7 +26,7 @@ public class CategoryServiceImpl implements CategoryService {
 	public void create(String name, UUID parentId) {
 		isDuplicatedCategory(name);
 		CategoryEntity parentCategory = (parentId != null) ?
-			categoryRepository.findById(parentId).orElseThrow(() -> new BaseException(
+			categoryRepository.findById(parentId).orElseThrow(() -> new CustomException(
 				ErrorCode.CATEGORY_NOT_FOUND)) : null;
 
 		CategoryEntity category = CategoryEntity.create(name, parentCategory);
@@ -36,9 +38,9 @@ public class CategoryServiceImpl implements CategoryService {
 	@Override
 	public void update(UUID id, String name) {
 		isDuplicatedCategory(name);
-		CategoryEntity category = categoryRepository.findById(id).orElseThrow(() -> new BaseException(
-			ErrorCode.CATEGORY_NOT_FOUND
-		));
+		CategoryEntity category = categoryRepository.findById(id).orElseThrow(
+			() -> new CustomException(ErrorCode.CATEGORY_NOT_FOUND)
+		);
 
 		category.updateName(name);
 	}
@@ -60,17 +62,17 @@ public class CategoryServiceImpl implements CategoryService {
 	@Override
 	public void delete(UUID id) {
 		CategoryEntity category = categoryRepository.findById(id)
-			.orElseThrow(() -> new BaseException(ErrorCode.CATEGORY_NOT_FOUND));
+			.orElseThrow(() -> new CustomException(ErrorCode.CATEGORY_NOT_FOUND));
 
 		if (!category.getChildren().isEmpty())
-			throw new BaseException(ErrorCode.CHILD_CATEGORY_EXISTS);
+			throw new CustomException(ErrorCode.CHILD_CATEGORY_EXISTS);
 
 		categoryRepository.delete(category);
 	}
 
 	private void isDuplicatedCategory(String name) {
 		if (categoryRepository.findByName(name).isPresent()) {
-			throw new IllegalArgumentException("중복된 카테고리명입니다.");
+			throw new CustomException(ErrorCode.DUPLICATED_CATEGORY);
 		}
 	}
 

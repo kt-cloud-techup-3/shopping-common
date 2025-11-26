@@ -3,6 +3,8 @@ package com.kt.service;
 import java.util.List;
 import java.util.UUID;
 
+import com.kt.exception.CustomException;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -17,7 +19,6 @@ import com.kt.domain.dto.response.OrderProductResponse;
 import com.kt.domain.dto.response.UserResponse;
 import com.kt.domain.entity.OrderEntity;
 import com.kt.domain.entity.UserEntity;
-import com.kt.exception.AuthException;
 import com.kt.repository.orderproduct.OrderProductRepository;
 import com.kt.repository.OrderRepository;
 import com.kt.repository.user.UserRepository;
@@ -132,10 +133,10 @@ public class UserServiceImpl implements UserService {
 		UserEntity user = userRepository.findByIdOrThrow(userId);
 
 		if (!passwordEncoder.matches(currentPassword, user.getPassword()))
-			throw new AuthException(ErrorCode.INVALID_PASSWORD);
+			throw new CustomException(ErrorCode.INVALID_PASSWORD);
 
 		if (passwordEncoder.matches(newPassword, user.getPassword()))
-			throw new AuthException(ErrorCode.PASSWORD_UNCHANGED);
+			throw new CustomException(ErrorCode.PASSWORD_UNCHANGED);
 
 		String hashedPassword = passwordEncoder.encode(newPassword);
 		user.updatePassword(hashedPassword);
