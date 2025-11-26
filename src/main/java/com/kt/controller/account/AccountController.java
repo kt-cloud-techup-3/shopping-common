@@ -29,13 +29,13 @@ public class AccountController {
 
 	private final AccountService accountService;
 
-	@PatchMapping("/{accountId}/password")
+	@PatchMapping("/password")
 	public ResponseEntity<ApiResult<Void>> updatePassword(
-		@PathVariable UUID accountId,
+		@AuthenticationPrincipal DefaultCurrentUser defaultCurrentUser,
 		@RequestBody @Valid AccountRequest.UpdatePassword request
 	){
 		accountService.updatePassword(
-			accountId,
+			defaultCurrentUser.getId(),
 			request.currentPassword(),
 			request.newPassword()
 		);

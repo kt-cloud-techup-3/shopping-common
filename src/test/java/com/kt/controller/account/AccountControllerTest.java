@@ -85,14 +85,20 @@ class AccountControllerTest {
 
 	@Test
 	void 비밀번호변경_테스트_성공() throws Exception {
+		DefaultCurrentUser userDetails = new DefaultCurrentUser(
+			testUser.getId(),
+			testUser.getEmail(),
+			testUser.getRole()
+		);
+
 		AccountRequest.UpdatePassword accountRequest = new AccountRequest.UpdatePassword(
 			TEST_PASSWORD,
 			"123456789101112"
 		);
 		String json = objectMapper.writeValueAsString(accountRequest);
 
-		mockMvc.perform(patch("/api/accounts/{accountId}/password", testUser.getId())
-			.with(SecurityMockMvcRequestPostProcessors.user("wjd123@naver.com"))
+		mockMvc.perform(patch("/api/accounts/password", testUser.getId())
+			.with(SecurityMockMvcRequestPostProcessors.user(userDetails))
 			.contentType(MediaType.APPLICATION_JSON)
 			.content(json)
 		).andExpect(status().isOk());
