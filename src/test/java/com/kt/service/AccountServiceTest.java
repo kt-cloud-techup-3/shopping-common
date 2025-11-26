@@ -1,7 +1,6 @@
 package com.kt.service;
 
 import static org.assertj.core.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.*;
 
 import java.time.LocalDate;
 
@@ -23,7 +22,7 @@ import com.kt.repository.courier.CourierRepository;
 import com.kt.repository.user.UserRepository;
 
 @Transactional
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@SpringBootTest
 @ActiveProfiles("test")
 class AccountServiceTest {
 
