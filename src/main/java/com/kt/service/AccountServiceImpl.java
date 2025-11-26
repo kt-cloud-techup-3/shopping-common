@@ -16,6 +16,8 @@ import org.springframework.stereotype.Service;
 import com.kt.constant.CourierWorkStatus;
 import com.kt.constant.UserRole;
 import com.kt.constant.message.ErrorCode;
+import com.kt.domain.dto.response.AccountResponse;
+import com.kt.domain.entity.AbstractAccountEntity;
 import com.kt.exception.CustomException;
 import com.kt.repository.courier.CourierRepository;
 import com.kt.repository.user.UserRepository;
@@ -71,6 +73,18 @@ public class AccountServiceImpl implements AccountService {
 	public void deleteAccount(UUID accountId) {
 		AbstractAccountEntity account = accountRepository.findByIdOrThrow(accountId);
 		account.delete();
+	}
+
+	@Override
+	public AccountResponse.search getAccount(UUID accoundId){
+		AbstractAccountEntity account = accountRepository.findByIdOrThrow(accoundId);
+		return new AccountResponse.search(
+			account.getId(),
+			account.getName(),
+			account.getEmail(),
+			account.getRole(),
+			account.getGender()
+		);
 	}
 
 	@Override
