@@ -68,4 +68,14 @@ public abstract class AbstractAccountEntity extends BaseEntity {
 	public void updatePassword(String password){
 		this.password = password;
 	}
+
+	public void updateDetails(
+		String name,
+		String email,
+		Gender gender
+	){
+		this.name = name;
+		this.email = email;
+		this.gender = gender;
+	}
 }

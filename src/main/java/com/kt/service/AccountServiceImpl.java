@@ -16,8 +16,10 @@ import org.springframework.stereotype.Service;
 import com.kt.constant.CourierWorkStatus;
 import com.kt.constant.UserRole;
 import com.kt.constant.message.ErrorCode;
+import com.kt.domain.dto.request.AccountRequest;
 import com.kt.domain.dto.response.AccountResponse;
 import com.kt.domain.entity.AbstractAccountEntity;
+import com.kt.domain.entity.UserEntity;
 import com.kt.exception.CustomException;
 import com.kt.repository.courier.CourierRepository;
 import com.kt.repository.user.UserRepository;
@@ -103,5 +105,16 @@ public class AccountServiceImpl implements AccountService {
 	private String getRandomPassword() {
 		int code = new Random().nextInt(900000) + 100000;
 		return String.valueOf(code);
+	}
+
+	@Override
+	public void updateAccountDetailsByMember(UUID userId, UserRole userRole, AccountRequest.UpdateDetails details) {
+		if (userRole != UserRole.MEMBER) throw new CustomException(ErrorCode.USERROLE_NOT_MEMBER);
+		UserEntity user = userRepository.findByIdOrThrow(userId);
+		user.updateDetails(
+			details.name(),
+			details.email(),
+			details.gender()
+		);
 	}
 }
