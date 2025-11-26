@@ -35,6 +35,8 @@ public interface UserService {
 
 	void createAdmin(SignupRequest.SignupMember request);
 
+	void updatePassword(UUID userId, String currentPassword, String newPassword);
+
 	void deleteAdmin(UUID adminId);
 
 	void updateUserDetails(UUID userId, UserRequest.UpdateDetails details);

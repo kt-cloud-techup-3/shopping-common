@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -35,6 +36,7 @@ import com.kt.domain.entity.ReceiverVO;
 import com.kt.domain.entity.ReviewEntity;
 import com.kt.domain.entity.UserEntity;
 
+import com.kt.exception.CustomException;
 import com.kt.repository.CategoryRepository;
 import com.kt.repository.orderproduct.OrderProductRepository;
 import com.kt.repository.OrderRepository;
@@ -47,6 +49,7 @@ import com.kt.repository.user.UserRepository;
 @ActiveProfiles("test")
 class UserServiceTest {
 
+	static final String TEST_PASSWORD = "1234567891011";
 	@Autowired
 	UserService userService;
 	@Autowired
@@ -61,6 +64,8 @@ class UserServiceTest {
 	ProductRepository productRepository;
 	@Autowired
 	CategoryRepository categoryRepository;
+	@Autowired
+	PasswordEncoder passwordEncoder;
 
 	UserEntity testUser;
 	UserEntity testUser2;
@@ -358,6 +363,81 @@ class UserServiceTest {
 		assertThat(admin.getEmail()).isEqualTo("admin@test.com");
 		assertThat(admin.getRole()).isEqualTo(UserRole.ADMIN);
 		assertThat(admin.getPassword()).isNotEqualTo("1234");
+	}
+
+	@Test
+	void 비밀번호변경_성공() {
+		UserEntity user = UserEntity.create(
+			"주문자테스터2",
+			"wjd123@naver.com",
+			passwordEncoder.encode(TEST_PASSWORD),
+			UserRole.MEMBER,
+			Gender.MALE,
+			LocalDate.of(1990, 1, 1),
+			"010-1234-5678"
+		);
+		userRepository.save(user);
+
+		userService.updatePassword(
+			user.getId(),
+			TEST_PASSWORD,
+			"12345678910"
+		);
+
+		boolean validResult = passwordEncoder.matches(
+			"12345678910",
+			user.getPassword()
+		);
+
+		Assertions.assertTrue(validResult);
+	}
+
+	@Test
+	void 비밀번호변경_실패__현재_비밀번호_불일치() {
+		UserEntity user = UserEntity.create(
+			"주문자테스터1",
+			"wjd123@naver.com",
+			passwordEncoder.encode(TEST_PASSWORD),
+			UserRole.MEMBER,
+			Gender.MALE,
+			LocalDate.of(1990, 1, 1),
+			"010-1234-5678"
+		);
+		userRepository.save(user);
+
+		assertThrowsExactly(
+			CustomException.class,
+			() -> {
+				userService.updatePassword(
+					user.getId(),
+					"틀린비밀번호입니다.......",
+					"22222222222222"
+				);
+			}
+		);
+	}
+
+	@Test
+	void 비밀번호변경_실패__변경할_비밀번호_동일() {
+		UserEntity user = UserEntity.create(
+			"주문자테스터2",
+			"wjd123@naver.com",
+			passwordEncoder.encode(TEST_PASSWORD),
+			UserRole.MEMBER,
+			Gender.MALE,
+			LocalDate.of(1990, 1, 1),
+			"010-1234-5678"
+		);
+		userRepository.save(user);
+
+		assertThrowsExactly(
+			CustomException.class,
+			() -> userService.updatePassword(
+				user.getId(),
+				TEST_PASSWORD,
+				TEST_PASSWORD
+			)
+		);
 	}
 
 	@Test
