@@ -76,7 +76,8 @@ public class AccountServiceImpl implements AccountService {
 	}
 
 	@Override
-	public AccountResponse.search getAccount(UUID accoundId){
+	public AccountResponse.search getAccountByMember(UUID accoundId, UserRole userRole) {
+		if (userRole != UserRole.MEMBER) throw new CustomException(ErrorCode.USERROLE_NOT_MEMBER);
 		AbstractAccountEntity account = accountRepository.findByIdOrThrow(accoundId);
 		return new AccountResponse.search(
 			account.getId(),

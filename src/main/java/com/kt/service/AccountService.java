@@ -27,5 +27,5 @@ public interface AccountService {
 
 	void deleteAccount(UUID accountId);
 
-	AccountResponse.search getAccount(UUID accoundId);
+	AccountResponse.search getAccountByMember(UUID accoundId, UserRole userRole);
 }
