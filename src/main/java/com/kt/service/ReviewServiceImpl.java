@@ -12,7 +12,7 @@ import com.kt.constant.searchtype.ProductSearchType;
 import com.kt.domain.dto.response.ReviewResponse;
 import com.kt.domain.entity.OrderProductEntity;
 import com.kt.domain.entity.ReviewEntity;
-import com.kt.repository.OrderProductRepository;
+import com.kt.repository.orderproduct.OrderProductRepository;
 import com.kt.repository.review.ReviewRepository;
 
 import lombok.RequiredArgsConstructor;
