@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -42,7 +43,7 @@ public class AccountController {
 	}
 
 	@DeleteMapping("/retire")
-	public ResponseEntity<ApiResult<Void>> deleteAccount(
+	public ResponseEntity<ApiResult<Void>> delete(
 		@AuthenticationPrincipal DefaultCurrentUser defaultCurrentUser
 	){
 		UUID accountId = defaultCurrentUser.getId();
@@ -54,10 +55,23 @@ public class AccountController {
 	public ResponseEntity<?> getAccountByMember(
 		@AuthenticationPrincipal DefaultCurrentUser defaultCurrentUser
 	){
-		AccountResponse.search account = accountService.getAccountByMember(
+		AccountResponse.search accountResponse = accountService.getAccountByMember(
 			defaultCurrentUser.getId(),
 			defaultCurrentUser.getRole()
 		);
-		return ApiResult.ok(account);
+		return ApiResult.ok(accountResponse);
+	}
+
+	@PutMapping
+	public ResponseEntity<ApiResult<Void>> updateDetailsByMember(
+		@AuthenticationPrincipal DefaultCurrentUser defaultCurrentUser,
+		@RequestBody @Valid AccountRequest.UpdateDetails request
+	){
+		accountService.updateAccountDetailsByMember(
+			defaultCurrentUser.getId(),
+			defaultCurrentUser.getRole(),
+			request
+		);
+		return ApiResult.ok(null);
 	}
 }
