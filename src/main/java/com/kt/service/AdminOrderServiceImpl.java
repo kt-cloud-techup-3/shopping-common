@@ -3,6 +3,8 @@ package com.kt.service;
 import java.util.List;
 import java.util.UUID;
 
+import com.kt.exception.CustomException;
+
 import org.springframework.stereotype.Service;
 
 import com.kt.constant.OrderStatus;
@@ -10,6 +12,7 @@ import com.kt.constant.message.ErrorCode;
 import com.kt.domain.dto.response.AdminOrderResponse;
 import com.kt.domain.entity.OrderEntity;
 import com.kt.domain.entity.OrderProductEntity;
+
 import com.kt.exception.BaseException;
 import com.kt.repository.orderproduct.OrderProductRepository;
 import com.kt.repository.OrderRepository;
@@ -34,8 +37,9 @@ public class AdminOrderServiceImpl implements AdminOrderService {
 
 	@Override
 	public AdminOrderResponse.Detail getOrder(UUID orderId) {
-		OrderEntity order = orderRepository.findById(orderId)
-			.orElseThrow(() -> new BaseException(ErrorCode.ORDER_NOT_FOUND));
+		OrderEntity order = orderRepository.findById(orderId).orElseThrow(
+			() -> new CustomException(ErrorCode.ORDER_NOT_FOUND)
+		);
 
 		List<OrderProductEntity> products =
 			orderProductRepository.findAllByOrderId(order.getId());
@@ -46,8 +50,9 @@ public class AdminOrderServiceImpl implements AdminOrderService {
 	@Override
 	@Transactional
 	public void changeStatus(UUID orderId, OrderStatus newStatus) {
-		OrderEntity order = orderRepository.findById(orderId)
-			.orElseThrow(() -> new BaseException(ErrorCode.ORDER_NOT_FOUND));
+		OrderEntity order = orderRepository.findById(orderId).orElseThrow(
+			() -> new CustomException(ErrorCode.ORDER_NOT_FOUND)
+		);
 
 		order.changeStatus(newStatus);
 	}
@@ -57,14 +62,14 @@ public class AdminOrderServiceImpl implements AdminOrderService {
 	public void cancelOrder(UUID orderId) {
 		
 		OrderEntity order = orderRepository.findById(orderId)
-			.orElseThrow(() -> new BaseException(ErrorCode.ORDER_NOT_FOUND));
+			.orElseThrow(() -> new CustomException(ErrorCode.ORDER_NOT_FOUND));
 		
 		List<OrderProductEntity> orderProducts =
 			orderProductRepository.findAllByOrderId(orderId);
 		
-		for (OrderProductEntity orderproduct : orderProducts) {
-			orderproduct.getProduct().addStock(orderproduct.getQuantity());
-			orderproduct.cancel();                               
+		for (OrderProductEntity orderProduct : orderProducts) {
+			orderProduct.getProduct().addStock(orderProduct.getQuantity());
+			orderProduct.cancel();
 		}
 		
 		order.cancel();

@@ -7,6 +7,8 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 
+import com.kt.exception.CustomException;
+
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -34,7 +36,7 @@ import com.kt.domain.entity.ProductEntity;
 import com.kt.domain.entity.ReceiverVO;
 import com.kt.domain.entity.ReviewEntity;
 import com.kt.domain.entity.UserEntity;
-import com.kt.exception.AuthException;
+
 import com.kt.repository.CategoryRepository;
 import com.kt.repository.orderproduct.OrderProductRepository;
 import com.kt.repository.OrderRepository;
@@ -404,7 +406,7 @@ class UserServiceTest {
 		userRepository.save(user);
 
 		assertThrowsExactly(
-			AuthException.class,
+			CustomException.class,
 			() -> {
 				userService.updatePassword(
 					user.getId(),
@@ -429,7 +431,7 @@ class UserServiceTest {
 		userRepository.save(user);
 
 		assertThrowsExactly(
-			AuthException.class,
+			CustomException.class,
 			() -> userService.updatePassword(
 				user.getId(),
 				TEST_PASSWORD,

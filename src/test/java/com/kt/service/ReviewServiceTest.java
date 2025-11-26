@@ -2,6 +2,8 @@ package com.kt.service;
 
 import java.time.LocalDate;
 
+import com.kt.exception.CustomException;
+
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -25,7 +27,7 @@ import com.kt.domain.entity.ProductEntity;
 import com.kt.domain.entity.ReceiverVO;
 import com.kt.domain.entity.ReviewEntity;
 import com.kt.domain.entity.UserEntity;
-import com.kt.exception.BaseException;
+
 import com.kt.repository.CategoryRepository;
 import com.kt.repository.orderproduct.OrderProductRepository;
 import com.kt.repository.OrderRepository;
@@ -119,7 +121,7 @@ class ReviewServiceTest {
 			.findAll()
 			.stream()
 			.findFirst()
-			.orElseThrow(() -> new BaseException(ErrorCode.REVIEW_NOT_FOUND));
+			.orElseThrow(() -> new CustomException(ErrorCode.REVIEW_NOT_FOUND));
 
 		Assertions.assertEquals(testOrderProduct.getId(), savedReview.getOrderProduct().getId());
 	}

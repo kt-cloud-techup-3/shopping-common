@@ -3,6 +3,8 @@ package com.kt.service;
 import java.util.List;
 import java.util.UUID;
 
+import com.kt.exception.CustomException;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,7 +20,7 @@ import com.kt.domain.entity.ProductEntity;
 import com.kt.domain.entity.ReceiverVO;
 import com.kt.domain.entity.ShippingDetailEntity;
 import com.kt.domain.entity.UserEntity;
-import com.kt.exception.BaseException;
+
 import com.kt.repository.orderproduct.OrderProductRepository;
 import com.kt.repository.OrderRepository;
 import com.kt.repository.product.ProductRepository;
@@ -48,7 +50,7 @@ public class OrderServiceImpl implements OrderService {
 	public void createOrder(String email, List<OrderRequest.Item> items) {
 
 		UserEntity user = userRepository.findByEmail(email)
-			.orElseThrow(() -> new BaseException(ErrorCode.USER_NOT_FOUND));
+			.orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
 
 		// TODO: 컨트롤러 구현
 		ReceiverVO receiverVO = ReceiverVO.create(
@@ -71,7 +73,7 @@ public class OrderServiceImpl implements OrderService {
 			ProductEntity product = productRepository.findByIdOrThrow(productId);
 
 			if (product.getStock() < quantity) {
-				throw new BaseException(ErrorCode.STOCK_NOT_ENOUGH);
+				throw new CustomException(ErrorCode.STOCK_NOT_ENOUGH);
 			}
 
 			product.decreaseStock(quantity);
@@ -91,10 +93,10 @@ public class OrderServiceImpl implements OrderService {
 	@Override
 	public void cancelOrder(UUID orderId) {
 		OrderEntity order = orderRepository.findById(orderId)
-			.orElseThrow(() -> new BaseException(ErrorCode.ORDER_NOT_FOUND));
+			.orElseThrow(() -> new CustomException(ErrorCode.ORDER_NOT_FOUND));
 
 		if (order.getStatus() == OrderStatus.PURCHASE_CONFIRMED) {
-			throw new BaseException(ErrorCode.ORDER_ALREADY_CONFIRMED);
+			throw new CustomException(ErrorCode.ORDER_ALREADY_CONFIRMED);
 		}
 
 
@@ -111,10 +113,10 @@ public class OrderServiceImpl implements OrderService {
 	@Override
 	public void updateOrder(UUID orderId, OrderRequest.Update request) {
 		OrderEntity order = orderRepository.findById(orderId)
-			.orElseThrow(() -> new BaseException(ErrorCode.ORDER_NOT_FOUND));
+			.orElseThrow(() -> new CustomException(ErrorCode.ORDER_NOT_FOUND));
 
 		if (order.getStatus() == OrderStatus.PURCHASE_CONFIRMED) {
-			throw new BaseException(ErrorCode.ORDER_ALREADY_CONFIRMED);
+			throw new CustomException(ErrorCode.ORDER_ALREADY_CONFIRMED);
 		}
 
 		List<OrderProductEntity> orderProducts =
@@ -127,7 +129,7 @@ public class OrderServiceImpl implements OrderService {
 			.anyMatch(sd -> sd.getShippingType() != ShippingType.READY);
 
 		if (shippingStarted) {
-			throw new BaseException(ErrorCode.ORDER_ALREADY_SHIPPED);
+			throw new CustomException(ErrorCode.ORDER_ALREADY_SHIPPED);
 		}
 
 		ReceiverVO newReceiverVO = ReceiverVO.create(

@@ -5,6 +5,8 @@ import static org.assertj.core.api.Assertions.*;
 import java.util.List;
 import java.util.UUID;
 
+import com.kt.exception.CustomException;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,8 +15,9 @@ import org.springframework.test.context.ActiveProfiles;
 
 import com.kt.domain.dto.response.CategoryResponse;
 import com.kt.domain.entity.CategoryEntity;
-import com.kt.exception.BaseException;
+
 import com.kt.repository.CategoryRepository;
+
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("test")
@@ -60,7 +63,6 @@ class CategoryServiceTest {
 		UUID id = categoryRepository.findByName("자식카데고리명")
 			.map(CategoryEntity::getId)
 			.orElseThrow();
-
 		CategoryEntity foundedCategory = categoryRepository.findById(id).orElseThrow();
 		// then
 		assertThat(foundedCategory).isNotNull();
@@ -120,7 +122,7 @@ class CategoryServiceTest {
 		CategoryEntity category = categoryRepository.findByName("자식있는부모").orElse(null);
 
 		assertThatThrownBy(() -> categoryService.delete(category.getId()))
-			.isInstanceOf(BaseException.class);
+			.isInstanceOf(CustomException.class);
 	}
 
 }
