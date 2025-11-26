@@ -1,9 +1,12 @@
 package com.kt.controller.account;
 
+import static org.assertj.core.api.AssertionsForClassTypes.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 
 import org.junit.jupiter.api.Assertions;
@@ -13,17 +16,21 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.kt.common.api.ApiResult;
 import com.kt.constant.Gender;
 import com.kt.constant.UserRole;
 import com.kt.constant.UserStatus;
 import com.kt.domain.dto.request.AccountRequest;
+import com.kt.domain.dto.response.AccountResponse;
 import com.kt.domain.entity.AbstractAccountEntity;
 import com.kt.domain.entity.CourierEntity;
 import com.kt.domain.entity.UserEntity;
@@ -92,7 +99,6 @@ class AccountControllerTest {
 
 		AbstractAccountEntity foundedAccount = accountRepository.findByIdOrThrow(testUser.getId());
 
-		Assertions.assertNotNull(foundedAccount);
 		boolean result = passwordEncoder.matches("123456789101112", foundedAccount.getPassword());
 		Assertions.assertTrue(result);
 	}
@@ -113,5 +119,41 @@ class AccountControllerTest {
 		Assertions.assertEquals(UserStatus.DELETED,foundedAccount.getStatus());
 	}
 
+	@Test
+	void 내정보조회_성공() throws Exception {
+		UserEntity testMember = UserEntity.create(
+			"멤버테스터",
+			"wjd123@naver.com",
+			passwordEncoder.encode(TEST_PASSWORD),
+			UserRole.MEMBER,
+			Gender.MALE,
+			LocalDate.of(1990, 1, 1),
+			"010-1234-5678"
+		);
+		userRepository.save(testMember);
+		DefaultCurrentUser userDetails = new DefaultCurrentUser(
+			testMember.getId(),
+			testMember.getEmail(),
+			testMember.getRole()
+		);
 
+		MockHttpServletResponse response = mockMvc
+			.perform(get("/api/accounts")
+			.with(SecurityMockMvcRequestPostProcessors.user(userDetails)))
+			.andExpect(status().isOk())
+			.andDo(print())
+			.andReturn()
+			.getResponse();
+
+		String json = response.getContentAsString();
+
+		ApiResult<AccountResponse.search> accountResponse = objectMapper.readValue(
+			json,
+			new TypeReference<ApiResult<AccountResponse.search>>() {}
+		);
+		AccountResponse.search responsedAccountSearch = accountResponse.getData();
+
+		Assertions.assertEquals(responsedAccountSearch.accoundId(), testMember.getId());
+		Assertions.assertEquals(responsedAccountSearch.email(), testMember.getEmail());
+	}
 }
