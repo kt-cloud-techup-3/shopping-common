@@ -55,6 +55,9 @@ class AccountControllerTest {
 	UserEntity testUser;
 	CourierEntity testCourier;
 
+	DefaultCurrentUser userDetails;
+	DefaultCurrentUser courierDetails;
+
 	@BeforeEach
 	void setUp() throws Exception {
 		testUser = UserEntity.create(
@@ -75,16 +78,22 @@ class AccountControllerTest {
 			Gender.MALE
 		);
 		courierRepository.save(testCourier);
+
+		userDetails = new DefaultCurrentUser(
+			testUser.getId(),
+			testUser.getEmail(),
+			testUser.getRole()
+		);
+
+		courierDetails = new DefaultCurrentUser(
+			testCourier.getId(),
+			testCourier.getEmail(),
+			testCourier.getRole()
+		);
 	}
 
 	@Test
 	void 비밀번호변경_테스트_성공() throws Exception {
-		 DefaultCurrentUser userDetails = new DefaultCurrentUser(
-		 	testUser.getId(),
-		 	testUser.getEmail(),
-		 	testUser.getRole()
-		 );
-
 		AccountRequest.UpdatePassword accountRequest = new AccountRequest.UpdatePassword(
 			TEST_PASSWORD,
 			"123456789101112"
@@ -97,26 +106,19 @@ class AccountControllerTest {
 			.content(json)
 		).andExpect(status().isOk());
 
-		AbstractAccountEntity foundedAccount = accountRepository.findByIdOrThrow(testUser.getId());
+		AbstractAccountEntity savedAccount = accountRepository.findByIdOrThrow(testUser.getId());
 
-		boolean result = passwordEncoder.matches("123456789101112", foundedAccount.getPassword());
+		boolean result = passwordEncoder.matches("123456789101112", savedAccount.getPassword());
 		Assertions.assertTrue(result);
 	}
 
 	@Test
 	void 배송기사탈퇴_테스트_성공() throws Exception {
-		DefaultCurrentUser userDetails = new DefaultCurrentUser(
-			testCourier.getId(),
-			testCourier.getEmail(),
-			testCourier.getRole()
-		);
-
 		mockMvc.perform(delete("/api/accounts/retire")
-			.with(SecurityMockMvcRequestPostProcessors.user(userDetails))
+			.with(SecurityMockMvcRequestPostProcessors.user(courierDetails))
 		).andExpect(status().isOk());
 
-		AbstractAccountEntity foundedAccount = accountRepository.findByIdOrThrow(testCourier.getId());
-		Assertions.assertEquals(UserStatus.DELETED,foundedAccount.getStatus());
+		AbstractAccountEntity savedAccount = accountRepository.findByIdOrThrow(testCourier.getId());
+		Assertions.assertEquals(UserStatus.DELETED,savedAccount.getStatus());
 	}
-
 }

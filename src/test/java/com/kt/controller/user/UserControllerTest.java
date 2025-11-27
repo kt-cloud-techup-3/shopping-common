@@ -1,5 +1,6 @@
 package com.kt.controller.user;
 
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -48,6 +49,7 @@ class UserControllerTest {
 
 	static final String TEST_PASSWORD = "1234567891011";
 	UserEntity testMember;
+	DefaultCurrentUser userDetails;
 
 	@BeforeEach
 	void setUp() throws Exception {
@@ -61,19 +63,18 @@ class UserControllerTest {
 			"010-1234-5678"
 		);
 		userRepository.save(testMember);
-	}
 
-	@Test
-	void 내정보조회_성공() throws Exception {
-		DefaultCurrentUser userDetails = new DefaultCurrentUser(
+		userDetails = new DefaultCurrentUser(
 			testMember.getId(),
 			testMember.getEmail(),
 			testMember.getRole()
 		);
+	}
 
-		MockHttpServletResponse response = mockMvc
-			.perform(get("/api/users")
-				.with(SecurityMockMvcRequestPostProcessors.user(userDetails)))
+	@Test
+	void 내정보조회_성공() throws Exception {
+		MockHttpServletResponse response = mockMvc.perform(get("/api/users")
+				.with(user(userDetails)))
 			.andExpect(status().isOk())
 			.andReturn()
 			.getResponse();
@@ -101,14 +102,8 @@ class UserControllerTest {
 		);
 		String json = objectMapper.writeValueAsString(updateDetails);
 
-		DefaultCurrentUser userDetails = new DefaultCurrentUser(
-			testMember.getId(),
-			testMember.getEmail(),
-			testMember.getRole()
-		);
-
 		mockMvc.perform(put("/api/users")
-				.with(SecurityMockMvcRequestPostProcessors.user(userDetails))
+				.with(user(userDetails))
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(json))
 			.andExpect(status().isOk());
