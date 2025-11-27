@@ -69,4 +69,11 @@ public class AuthController {
 		);
 	}
 
+	@PatchMapping("/init-password")
+	public ResponseEntity<ApiResult<Void>> resetPassword(
+		@RequestBody @Valid ResetPasswordRequest request
+	) {
+		authService.resetPassword(request);
+		return ApiResult.ok();
+	}
 }
