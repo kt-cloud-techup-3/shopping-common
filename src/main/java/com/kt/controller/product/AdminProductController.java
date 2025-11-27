@@ -24,6 +24,7 @@ import com.kt.domain.dto.response.ProductResponse;
 import com.kt.security.CurrentUser;
 import com.kt.service.ProductService;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -37,7 +38,7 @@ public class AdminProductController {
 
 	@PostMapping
 	public ResponseEntity<?> create(
-		@RequestBody AdminProductRequest.Create request
+		@RequestBody @Valid AdminProductRequest.Create request
 	) {
 		productService.create(
 			request.name(),
@@ -50,7 +51,7 @@ public class AdminProductController {
 
 	@PostMapping("/sold-out")
 	public ResponseEntity<?> soldOutProducts(
-		@RequestBody AdminProductRequest.SoldOut request
+		@RequestBody @Valid AdminProductRequest.SoldOut request
 	) {
 		productService.soldOutProducts(request.productIds());
 		return ApiResult.ok(null);
@@ -108,7 +109,7 @@ public class AdminProductController {
 	@PutMapping("/{productId}")
 	public ResponseEntity<?> update(
 		@PathVariable UUID productId,
-		@RequestBody AdminProductRequest.Update request
+		@RequestBody @Valid AdminProductRequest.Update request
 	) {
 		productService.update(
 			productId,
