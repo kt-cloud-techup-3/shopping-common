@@ -1,14 +1,19 @@
 package com.kt.controller.auth;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.kt.common.api.ApiResult;
+import com.kt.domain.dto.request.LoginRequest;
+import com.kt.domain.dto.request.ResetPasswordRequest;
 import com.kt.domain.dto.request.SignupRequest;
+import com.kt.domain.dto.response.TokenResponse;
 import com.kt.service.AuthService;
+import com.mysema.commons.lang.Pair;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -53,4 +58,15 @@ public class AuthController {
 		authService.signupCourier(request);
 		return ApiResult.ok();
 	}
+
+	@PostMapping("/login")
+	public ResponseEntity<ApiResult<TokenResponse>> login(
+		@RequestBody @Valid LoginRequest request
+	) {
+		Pair<String, String> tokens = authService.login(request);
+		return ApiResult.ok(
+			new TokenResponse(tokens.getFirst(), tokens.getSecond())
+		);
+	}
+
 }
