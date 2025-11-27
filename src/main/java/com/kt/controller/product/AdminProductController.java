@@ -31,7 +31,6 @@ public class AdminProductController {
 
 	private final ProductService productService;
 
-	// TODO: 상품 상세 조회
 	// TODO: 상품 품절 토글
 	// TODO: 상품 활성화
 	// TODO: 상품 비활성화
@@ -82,6 +81,14 @@ public class AdminProductController {
 	) {
 		ProductResponse.Detail detail = productService.detail(user.getRole(), productId);
 		return ApiResult.ok(detail);
+	}
+
+	@GetMapping("/{productId}/toggle-sold-out")
+	public ResponseEntity<?> toggleActive(
+		@PathVariable UUID productId
+	) {
+		productService.toggleActive(productId);
+		return ApiResult.ok(null);
 	}
 
 }
