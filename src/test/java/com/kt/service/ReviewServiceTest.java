@@ -176,14 +176,14 @@ class ReviewServiceTest {
 		reviewRepository.save(review);
 
 		PageRequest pageRequest = PageRequest.of(0, 10);
-		Page<ReviewResponse.Search> foundedPage = reviewService.getReviewsByAdmin(pageRequest, null, null);
+		Page<ReviewResponse.Search> savedPage = reviewService.getReviewsByAdmin(pageRequest, null, null);
 
-		ReviewResponse.Search foundedReviewResponse = foundedPage
+		ReviewResponse.Search savedReviewResponse = savedPage
 			.stream()
 			.findFirst()
 			.orElse(null);
 
-		Assertions.assertNotNull(foundedReviewResponse);
-		Assertions.assertEquals(review.getId(), foundedReviewResponse.reviewId());
+		Assertions.assertNotNull(savedReviewResponse);
+		Assertions.assertEquals(review.getId(), savedReviewResponse.reviewId());
 	}
 }

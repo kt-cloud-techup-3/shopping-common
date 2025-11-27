@@ -107,9 +107,9 @@ class ReviewRepositoryTest {
 		review.mapToOrderProduct(testOrderProduct);
 		reviewRepository.save(review);
 
-		ReviewEntity foundedReview = reviewRepository
+		ReviewEntity savedReview = reviewRepository
 			.findByOrderProductIdOrThrow(testOrderProduct.getId());
 
-		Assertions.assertEquals(review.getId(), foundedReview.getId());
+		Assertions.assertEquals(review.getId(), savedReview.getId());
 	}
 }

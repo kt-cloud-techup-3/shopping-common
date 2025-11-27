@@ -208,14 +208,14 @@ class UserServiceTest {
 		orderProductRepository.save(orderProduct);
 		PageRequest pageRequest = PageRequest.of(0, 10);
 
-		OrderProductResponse.SearchReviewable foundedOrderProductResponse = userService
+		OrderProductResponse.SearchReviewable savedOrderProductResponse = userService
 			.getReviewableOrderProducts(pageRequest, testUser.getId())
 			.stream()
 			.findFirst()
 			.orElse(null);
 
-		Assertions.assertNotNull(foundedOrderProductResponse);
-		Assertions.assertEquals(orderProduct.getId(), foundedOrderProductResponse.orderProductId());
+		Assertions.assertNotNull(savedOrderProductResponse);
+		Assertions.assertEquals(orderProduct.getId(), savedOrderProductResponse.orderProductId());
 	}
 
 	@Test
@@ -235,10 +235,10 @@ class UserServiceTest {
 		reviewRepository.save(review);
 		PageRequest pageRequest = PageRequest.of(0, 10);
 
-		Page<OrderProductResponse.SearchReviewable> foundedOrderProductResponses = userService
+		Page<OrderProductResponse.SearchReviewable> savedOrderProductResponses = userService
 			.getReviewableOrderProducts(pageRequest, testUser.getId());
 
-		Assertions.assertEquals(0, foundedOrderProductResponses.getContent().size());
+		Assertions.assertEquals(0, savedOrderProductResponses.getContent().size());
 	}
 
 	@Test
@@ -253,10 +253,10 @@ class UserServiceTest {
 		orderProductRepository.save(orderProduct);
 		PageRequest pageRequest = PageRequest.of(0, 10);
 
-		Page<OrderProductResponse.SearchReviewable> foundedOrderProductResponses = userService
+		Page<OrderProductResponse.SearchReviewable> savedOrderProductResponses = userService
 			.getReviewableOrderProducts(pageRequest, testUser.getId());
 
-		Assertions.assertEquals(0, foundedOrderProductResponses.getContent().size());
+		Assertions.assertEquals(0, savedOrderProductResponses.getContent().size());
 	}
 
 	@Test
@@ -420,9 +420,9 @@ class UserServiceTest {
 		reviewRepository.save(review);
 
 		PageRequest pageRequest = PageRequest.of(0, 10);
-		Page<ReviewResponse.Search> savededPage = userService.getReviewsByUserId(pageRequest, testUser.getId());
+		Page<ReviewResponse.Search> savedPage = userService.getReviewsByUserId(pageRequest, testUser.getId());
 
-		ReviewResponse.Search savedReviewResponse = savededPage
+		ReviewResponse.Search savedReviewResponse = savedPage
 			.stream()
 			.findFirst()
 			.orElse(null);
