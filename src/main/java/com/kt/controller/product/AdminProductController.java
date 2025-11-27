@@ -2,6 +2,7 @@ package com.kt.controller.product;
 
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -15,6 +16,7 @@ import com.kt.common.api.ApiResult;
 import com.kt.constant.searchtype.ProductSearchType;
 import com.kt.domain.dto.request.AdminProductRequest;
 import com.kt.domain.dto.response.ProductResponse;
+import com.kt.security.CurrentUser;
 import com.kt.service.ProductService;
 
 import lombok.RequiredArgsConstructor;
@@ -59,11 +61,17 @@ public class AdminProductController {
 
 	@GetMapping
 	public ResponseEntity<?> search(
+		@AuthenticationPrincipal CurrentUser user,
 		@ModelAttribute Paging paging,
 		@RequestParam(required = false) String keyword,
 		@RequestParam(required = false) ProductSearchType type
 	) {
-		Page<ProductResponse.Search> search = productService.search(paging.toPageable(), keyword, type);
+		Page<ProductResponse.Search> search = productService.search(
+			user.getRole(),
+			paging.toPageable(),
+			keyword,
+			type
+		);
 		return ApiResult.ok(search);
 	}
 
