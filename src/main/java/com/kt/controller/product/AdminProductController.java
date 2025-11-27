@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -31,9 +32,6 @@ public class AdminProductController {
 
 	private final ProductService productService;
 
-	// TODO: 상품 품절 토글
-	// TODO: 상품 활성화
-	// TODO: 상품 비활성화
 	// TODO: 상품 수정
 	// TODO: 상품 삭제
 
@@ -104,6 +102,21 @@ public class AdminProductController {
 		@PathVariable UUID productId
 	) {
 		productService.inActivate(productId);
+		return ApiResult.ok(null);
+	}
+
+	@PutMapping("/{productId}")
+	public ResponseEntity<?> update(
+		@PathVariable UUID productId,
+		@RequestBody AdminProductRequest.Update request
+	) {
+		productService.update(
+			productId,
+			request.name(),
+			request.price(),
+			request.stock(),
+			request.categoryId()
+		);
 		return ApiResult.ok(null);
 	}
 
