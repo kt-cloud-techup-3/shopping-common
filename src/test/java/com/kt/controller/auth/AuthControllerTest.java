@@ -84,6 +84,7 @@ class AuthControllerTest {
 		// given
 		String redisAuthCode = "123456";
 		redisCache.set(RedisKey.SIGNUP_CODE, TEST_EMAIL, redisAuthCode);
+		redisCache.set(RedisKey.SIGNUP_VERIFIED, TEST_EMAIL, true);
 
 		var request = new SignupRequest.VerifySignupCode(TEST_EMAIL, redisAuthCode);
 
@@ -108,6 +109,7 @@ class AuthControllerTest {
 		// given
 		String redisAuthCode = "123456";
 		redisCache.set(RedisKey.SIGNUP_CODE, TEST_EMAIL, redisAuthCode);
+		redisCache.set(RedisKey.SIGNUP_VERIFIED, TEST_EMAIL, true);
 
 		// then
 		SignupRequest.SignupMember verifiedEmailUser = new SignupRequest.SignupMember(
