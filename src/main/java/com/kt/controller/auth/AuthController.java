@@ -37,4 +37,20 @@ public class AuthController {
 		authService.verifySignupCode(request);
 		return ApiResult.ok();
 	}
+
+	@PostMapping("/signup/member")
+	public ResponseEntity<ApiResult<Void>> signupMember(
+		@RequestBody @Valid SignupRequest.SignupMember request
+	) {
+		authService.signupMember(request);
+		return ApiResult.ok();
+	}
+
+	@PostMapping("/signup/courier")
+	public ResponseEntity<ApiResult<Void>> signupCourier(
+		@RequestBody @Valid SignupRequest.SignupCourier request
+	) {
+		authService.signupCourier(request);
+		return ApiResult.ok();
+	}
 }
