@@ -27,7 +27,7 @@ public class AdminAccountController {
 	private final UserService userService;
 	private final AccountService accountService;
 
-	@GetMapping
+	@GetMapping("/accounts")
 	public ResponseEntity<?> searchAccounts(
 		@ModelAttribute Paging paging,
 		@RequestParam(required = false) String keyword,
@@ -45,28 +45,28 @@ public class AdminAccountController {
 		);
 	}
 
-	@GetMapping("/{accountId}")
-	public ResponseEntity<?> getAccountDetail(@PathVariable UUID accountId) {
+	@GetMapping("/users/{userId}")
+	public ResponseEntity<?> getAccountDetail(@PathVariable UUID userId) {
 		return ResponseEntity.ok(
-			userService.getUserDetail(accountId) // 일반 사용자, 기사도 포함?
+			userService.getUserDetail(userId)
 		);
 	}
 
-	@PostMapping("/{accountId}/enable")
-	public ResponseEntity<?> enableAccount(@PathVariable UUID accountId) {
-		userService.enableUser(accountId);
+	@PostMapping("/users/{userId}/enabled")
+	public ResponseEntity<?> enableAccount(@PathVariable UUID userId) {
+		userService.enableUser(userId);
 		return ResponseEntity.ok().build();
 	}
 
-	@PostMapping("/{accountId}/disable")
-	public ResponseEntity<?> disableAccount(@PathVariable UUID accountId) {
-		userService.enableUser(accountId);
+	@PostMapping("/users/{userId}/disabled")
+	public ResponseEntity<?> disableAccount(@PathVariable UUID userId) {
+		userService.disableUser(userId);
 		return ResponseEntity.ok().build();
 	}
 
-	@DeleteMapping("/{accountId}")
-	public ResponseEntity<?> deleteAccount(@PathVariable UUID accountId) {
-		userService.deleteUser(accountId);
+	@DeleteMapping("/users/{userId}/removed")
+	public ResponseEntity<?> deleteAccount(@PathVariable UUID userId) {
+		userService.deleteUser(userId);
 		return ResponseEntity.ok().build();
 	}
 
