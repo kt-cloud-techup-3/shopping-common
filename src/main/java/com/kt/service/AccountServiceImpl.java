@@ -79,7 +79,7 @@ public class AccountServiceImpl implements AccountService {
 
 	@Override
 	public AccountResponse.search getAccountByMember(UUID accoundId, UserRole userRole) {
-		if (userRole != UserRole.MEMBER) throw new CustomException(ErrorCode.USERROLE_NOT_MEMBER);
+		if (userRole != UserRole.MEMBER) throw new CustomException(ErrorCode.USERROLE_DENIED);
 		AbstractAccountEntity account = accountRepository.findByIdOrThrow(accoundId);
 		return new AccountResponse.search(
 			account.getId(),
@@ -109,7 +109,7 @@ public class AccountServiceImpl implements AccountService {
 
 	@Override
 	public void updateAccountDetailsByMember(UUID userId, UserRole userRole, AccountRequest.UpdateDetails details) {
-		if (userRole != UserRole.MEMBER) throw new CustomException(ErrorCode.USERROLE_NOT_MEMBER);
+		if (userRole != UserRole.MEMBER) throw new CustomException(ErrorCode.USERROLE_DENIED);
 		UserEntity user = userRepository.findByIdOrThrow(userId);
 		user.updateDetails(
 			details.name(),
