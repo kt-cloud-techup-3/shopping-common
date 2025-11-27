@@ -26,9 +26,6 @@ public class AuthController {
 	public ResponseEntity<ApiResult<Void>> sendAuthCode(
 		@RequestBody @Valid SignupRequest.SignupEmail request
 	) {
-		log.info("send");
-		System.out.println("asfdsadf");
-		
 		authService.sendAuthCode(request);
 		return ApiResult.ok();
 	}
