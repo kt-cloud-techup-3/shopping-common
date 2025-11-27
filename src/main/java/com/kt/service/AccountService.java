@@ -7,8 +7,6 @@ import org.springframework.data.domain.Pageable;
 
 import com.kt.constant.CourierWorkStatus;
 import com.kt.constant.UserRole;
-import com.kt.domain.dto.request.AccountRequest;
-import com.kt.domain.dto.response.AccountResponse;
 
 public interface AccountService {
 	Page<?> searchAccounts(
@@ -27,8 +25,4 @@ public interface AccountService {
 	);
 
 	void deleteAccount(UUID accountId);
-
-	AccountResponse.search getAccountByMember(UUID accoundId, UserRole userRole);
-
-	void updateAccountDetailsByMember(UUID userId, UserRole userRole, AccountRequest.UpdateDetails details);
 }
