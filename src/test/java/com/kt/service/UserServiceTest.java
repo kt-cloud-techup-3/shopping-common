@@ -6,6 +6,8 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 
+import com.kt.domain.dto.response.ReviewResponse;
+import com.kt.exception.CustomException;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -13,6 +15,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Propagation;
@@ -66,6 +69,7 @@ class UserServiceTest {
 	UserEntity testAdmin;
 	OrderEntity testOrder;
 	ProductEntity testProduct;
+	OrderProductEntity testOrderProduct;
 	UUID userId;
 	UUID AdminId;
 
@@ -138,6 +142,15 @@ class UserServiceTest {
 			category
 		);
 		productRepository.save(testProduct);
+
+		testOrderProduct = new OrderProductEntity(
+			5L,
+			5000L,
+			OrderProductStatus.CREATED,
+			testOrder,
+			testProduct
+		);
+		orderProductRepository.save(testOrderProduct);
 	}
 
 	@Test
@@ -395,6 +408,25 @@ class UserServiceTest {
 		OrderEntity foundOrder = orderRepository.findById(savedOrder.getId()).orElse(null);
 		assertThat(foundOrder).isNotNull();
 
+	}
+
+	@Test
+	void 내리뷰조회_성공(){
+		ReviewEntity review = ReviewEntity.create("테스트리뷰내용");
+		review.mapToOrderProduct(testOrderProduct);
+		reviewRepository.save(review);
+
+		PageRequest pageRequest = PageRequest.of(0, 10);
+		Page<ReviewResponse.Search> foundedPage = userService.getReviewsByUserId(pageRequest, testUser.getId());
+
+		ReviewResponse.Search foundedReviewResponse = foundedPage
+			.stream()
+			.findFirst()
+			.orElse(null);
+
+		Assertions.assertNotNull(foundedReviewResponse);
+		Assertions.assertEquals(review.getId(), foundedReviewResponse.reviewId());
+		Assertions.assertEquals(review.getContent(), foundedReviewResponse.content());
 	}
 
 	@Test
