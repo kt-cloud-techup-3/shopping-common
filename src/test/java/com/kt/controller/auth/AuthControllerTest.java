@@ -13,15 +13,24 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.kt.config.jwt.JwtTokenProvider;
 import com.kt.constant.Gender;
+import com.kt.constant.UserRole;
 import com.kt.constant.redis.RedisKey;
+import com.kt.domain.dto.request.LoginRequest;
+import com.kt.domain.dto.request.ResetPasswordRequest;
 import com.kt.domain.dto.request.SignupRequest;
+import com.kt.domain.entity.UserEntity;
 import com.kt.infra.redis.RedisCache;
 import com.kt.repository.AccountRepository;
+import com.kt.repository.user.UserRepository;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -42,11 +51,51 @@ class AuthControllerTest {
 
 	@Autowired
 	private AccountRepository accountRepository;
+	@Autowired
+	private UserRepository userRepository;
+	@Autowired
+	private JwtTokenProvider jwtTokenProvider;
+	@Autowired
+	private PasswordEncoder passwordEncoder;
 
 	@BeforeEach
 	void setUp() {
 		accountRepository.deleteAll();
 		redisCache.delete(RedisKey.SIGNUP_CODE.key(TEST_EMAIL));
+	}
+
+	@Test
+	void 비밀번호_초기화_성공() throws Exception {
+		String email = "dd@com";
+		String password = "123456";
+		// given
+
+		UserEntity user = UserEntity.create(
+			"김도현",
+			email,
+			passwordEncoder.encode(password),
+			UserRole.MEMBER,
+			Gender.MALE,
+			LocalDate.of(2000, 1, 1),
+			"010-3333-2222"
+		);
+		UserEntity savedUser = userRepository.save(user);
+		ResetPasswordRequest resetPasswordRequest = new ResetPasswordRequest(savedUser.getEmail());
+
+		// when
+		mockMvc.perform(patch("/api/auth/init-password")
+				.contentType(MediaType.APPLICATION_JSON)
+				.content(objectMapper.writeValueAsString(resetPasswordRequest)))
+			.andDo(print())
+			.andExpectAll(
+				status().isOk(),
+				jsonPath("$.code").value("ok"),
+				jsonPath("$.message").value("성공")
+			);
+
+		// then
+		UserEntity updatedUser = userRepository.findByIdOrThrow(savedUser.getId());
+		assertThat(passwordEncoder.matches(password, updatedUser.getPassword())).isFalse();
 	}
 
 	@Test
@@ -158,6 +207,48 @@ class AuthControllerTest {
 				jsonPath("$.code").value("ok"),
 				jsonPath("$.message").value("성공")
 			);
+	}
+
+	@Test
+	void 로그인_성공() throws Exception {
+
+		String email = "dd@com";
+		String password = "123456";
+		// given
+
+		UserEntity user = UserEntity.create(
+			"김도현",
+			email,
+			passwordEncoder.encode(password),
+			UserRole.MEMBER,
+			Gender.MALE,
+			LocalDate.of(2000, 1, 1),
+			"010-3333-2222"
+		);
+		userRepository.save(user);
+
+		LoginRequest loginInfo = new LoginRequest(email, password);
+
+		// when
+		MvcResult result = mockMvc.perform(post("/api/auth/login")
+				.contentType(MediaType.APPLICATION_JSON)
+				.content(objectMapper.writeValueAsString(loginInfo)))
+			.andDo(print())
+			.andExpectAll(
+				status().isOk(),
+				jsonPath("$.code").value("ok"),
+				jsonPath("$.message").value("성공")
+			).andReturn();
+
+		// then
+		String responseBody = result.getResponse().getContentAsString();
+		JsonNode json = objectMapper.readTree(responseBody);
+
+		String accessToken = json.get("data").get("accessToken").asText();
+		String refreshToken = json.get("data").get("refreshToken").asText();
+
+		assertThatCode(() -> jwtTokenProvider.validateToken(accessToken)).doesNotThrowAnyException();
+		assertThatCode(() -> jwtTokenProvider.validateToken(refreshToken)).doesNotThrowAnyException();
 	}
 
 }
