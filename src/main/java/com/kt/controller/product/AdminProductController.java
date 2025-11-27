@@ -5,6 +5,7 @@ import java.util.UUID;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -32,7 +33,6 @@ public class AdminProductController {
 
 	private final ProductService productService;
 
-	// TODO: 상품 수정
 	// TODO: 상품 삭제
 
 	@PostMapping
@@ -117,6 +117,14 @@ public class AdminProductController {
 			request.stock(),
 			request.categoryId()
 		);
+		return ApiResult.ok(null);
+	}
+
+	@DeleteMapping("/{productId}")
+	public ResponseEntity<?> delete(
+		@PathVariable UUID productId
+	) {
+		productService.delete(productId);
 		return ApiResult.ok(null);
 	}
 
