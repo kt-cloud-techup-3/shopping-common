@@ -91,7 +91,7 @@ class AccountControllerTest {
 		);
 		String json = objectMapper.writeValueAsString(accountRequest);
 
-		mockMvc.perform(patch("/api/accounts/password")
+		mockMvc.perform(patch("/api/accounts/{accountId}/password",testUser.getId())
 			.with(SecurityMockMvcRequestPostProcessors.user(userDetails))
 			.contentType(MediaType.APPLICATION_JSON)
 			.content(json)
