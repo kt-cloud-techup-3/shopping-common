@@ -16,7 +16,6 @@ import org.springframework.stereotype.Service;
 import com.kt.constant.CourierWorkStatus;
 import com.kt.constant.UserRole;
 import com.kt.constant.message.ErrorCode;
-import com.kt.domain.entity.AbstractAccountEntity;
 import com.kt.exception.CustomException;
 import com.kt.repository.courier.CourierRepository;
 import com.kt.repository.user.UserRepository;
@@ -75,19 +74,6 @@ public class AccountServiceImpl implements AccountService {
 	}
 
 	@Override
-	public AccountResponse.search getAccountByMember(UUID accoundId, UserRole userRole) {
-		if (userRole != UserRole.MEMBER) throw new CustomException(ErrorCode.USERROLE_DENIED);
-		AbstractAccountEntity account = accountRepository.findByIdOrThrow(accoundId);
-		return new AccountResponse.search(
-			account.getId(),
-			account.getName(),
-			account.getEmail(),
-			account.getRole(),
-			account.getGender()
-		);
-	}
-
-	@Override
 	public void adminResetAccountPassword(UUID accountId) {
 		AbstractAccountEntity account = accountRepository.findByIdOrThrow(accountId);
 		String resetPassword = getRandomPassword();
@@ -102,16 +88,5 @@ public class AccountServiceImpl implements AccountService {
 	private String getRandomPassword() {
 		int code = new Random().nextInt(900000) + 100000;
 		return String.valueOf(code);
-	}
-
-	@Override
-	public void updateAccountDetailsByMember(UUID userId, UserRole userRole, AccountRequest.UpdateDetails details) {
-		if (userRole != UserRole.MEMBER) throw new CustomException(ErrorCode.USERROLE_DENIED);
-		UserEntity user = userRepository.findByIdOrThrow(userId);
-		user.updateDetails(
-			details.name(),
-			details.email(),
-			details.gender()
-		);
 	}
 }

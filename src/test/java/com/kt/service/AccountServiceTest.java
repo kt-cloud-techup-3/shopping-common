@@ -22,7 +22,6 @@ import org.springframework.transaction.annotation.Transactional;
 import com.kt.constant.Gender;
 import com.kt.constant.UserRole;
 import com.kt.constant.UserStatus;
-import com.kt.domain.dto.request.AccountRequest;
 import com.kt.domain.entity.AbstractAccountEntity;
 import com.kt.domain.entity.CourierEntity;
 import com.kt.domain.entity.UserEntity;
@@ -258,101 +257,6 @@ class AccountServiceTest {
 		AbstractAccountEntity foundedAccount = accountRepository.findByIdOrThrow(courier.getId());
 
 		Assertions.assertEquals(UserStatus.DELETED, foundedAccount.getStatus());
-	}
-
-	@Test
-	void 내정보조회_성공(){
-		UserEntity user = UserEntity.create(
-			"주문자테스터1",
-			"wjd123@naver.com",
-			passwordEncoder.encode(TEST_PASSWORD),
-			UserRole.MEMBER,
-			Gender.MALE,
-			LocalDate.of(1990, 1, 1),
-			"010-1234-5678"
-		);
-		userRepository.save(user);
-
-		AccountResponse.search foundedResponse = accountService
-			.getAccountByMember(user.getId(),user.getRole());
-
-		Assertions.assertNotNull(foundedResponse);
-		Assertions.assertEquals(user.getId(),foundedResponse.accoundId());
-		Assertions.assertEquals(user.getEmail(),foundedResponse.email());
-	}
-
-	@Test
-	void 내정보조회_실패__역할_어드민(){
-		UserEntity user = UserEntity.create(
-			"주문자테스터1",
-			"wjd123@naver.com",
-			passwordEncoder.encode(TEST_PASSWORD),
-			UserRole.ADMIN,
-			Gender.MALE,
-			LocalDate.of(1990, 1, 1),
-			"010-1234-5678"
-		);
-		userRepository.save(user);
-
-		assertThrowsExactly(
-			CustomException.class,
-			()->accountService.getAccountByMember(user.getId(),user.getRole())
-		);
-	}
-
-	@Test
-	void 내정보수정_성공(){
-		UserEntity user = UserEntity.create(
-			"주문자테스터1",
-			"wjd123@naver.com",
-			passwordEncoder.encode(TEST_PASSWORD),
-			UserRole.MEMBER,
-			Gender.MALE,
-			LocalDate.of(1990, 1, 1),
-			"010-1234-5678"
-		);
-		userRepository.save(user);
-
-		AccountRequest.UpdateDetails updateDetails = new AccountRequest.UpdateDetails(
-			"변경된테스터",
-			"wjdtn@naver.com",
-			Gender.FEMALE
-		);
-
-		accountService.updateAccountDetailsByMember(
-			user.getId(),
-			user.getRole(),
-			updateDetails
-		);
-
-		Assertions.assertEquals(user.getName(), updateDetails.name());
-		Assertions.assertEquals(user.getEmail(), updateDetails.email());
-	}
-
-	@Test
-	void 내정보수정_실패__역할_배송기사() {
-		CourierEntity courier = CourierEntity.create(
-			"배송기사테스터",
-			"wjd123@naver.com",
-			passwordEncoder.encode(TEST_PASSWORD),
-			Gender.MALE
-		);
-		courierRepository.save(courier);
-
-		AccountRequest.UpdateDetails updateDetails = new AccountRequest.UpdateDetails(
-			"변경된테스터",
-			"wjdtn@naver.com",
-			Gender.FEMALE
-		);
-
-		assertThrowsExactly(
-			CustomException.class,
-			() -> accountService.updateAccountDetailsByMember(
-				courier.getId(),
-				courier.getRole(),
-				updateDetails
-			)
-		);
 	}
 
 	@Test
