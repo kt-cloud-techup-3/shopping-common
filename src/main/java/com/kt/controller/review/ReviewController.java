@@ -32,12 +32,4 @@ public class ReviewController {
 			List<ReviewResponse.Search> reviewDetail = reviewService.getReviewByProductId(productId);
 			return ApiResult.ok(reviewDetail);
 	}
-
-	@PostMapping
-	public ResponseEntity<ApiResult<Void>> create(
-		@RequestBody @Valid ReviewRequest.Create request
-	){
-		reviewService.create(request.orderProductId(), request.content());
-		return ApiResult.ok(null);
-	}
 }

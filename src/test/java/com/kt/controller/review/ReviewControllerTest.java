@@ -1,8 +1,8 @@
 package com.kt.controller.review;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 import java.time.LocalDate;
@@ -13,9 +13,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
-import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,7 +24,6 @@ import com.kt.common.api.ApiResult;
 import com.kt.constant.Gender;
 import com.kt.constant.OrderProductStatus;
 import com.kt.constant.UserRole;
-import com.kt.domain.dto.request.ReviewRequest;
 import com.kt.domain.dto.response.ReviewResponse;
 import com.kt.domain.entity.CategoryEntity;
 import com.kt.domain.entity.OrderEntity;
@@ -134,43 +131,22 @@ class ReviewControllerTest {
 		reviewRepository.save(review);
 
 		MockHttpServletResponse response = mockMvc.perform(get("/api/reviews")
-				.with(SecurityMockMvcRequestPostProcessors.user("wjd123@naver.com"))
-			.param("productId",testOrderProduct.getProduct().getId().toString())
-		).andExpect(status().isOk())
+				.with(user("wjd123@naver.com"))
+			.param("productId", testOrderProduct.getProduct().getId().toString())
+		)	.andExpect(status().isOk())
 			.andReturn()
 			.getResponse();
 
 		String json = response.getContentAsString();
 
-		ApiResult<List<ReviewResponse.Search>> reviewResponse = objectMapper
+		ApiResult<List<ReviewResponse.Search>> responsedResult = objectMapper
 			.readValue(
 			json,
 			new TypeReference<ApiResult<List<ReviewResponse.Search>>>(){}
 		);
-		ReviewResponse.Search search = reviewResponse.getData().getFirst();
+		ReviewResponse.Search savedReview = responsedResult.getData().getFirst();
 
-		Assertions.assertNotNull(search);
-		Assertions.assertEquals(search.content(),review.getContent());
-	}
-
-	@Test
-	void 상품리뷰작성_성공() throws Exception {
-		ReviewRequest.Create createDto = new ReviewRequest.Create(
-			testOrderProduct.getId(),
-			"생성한테스트리뷰내용"
-		);
-
-		String json = objectMapper.writeValueAsString(createDto);
-
-		mockMvc.perform(post("/api/reviews")
-			.with(SecurityMockMvcRequestPostProcessors.user("wjd123@naver.com"))
-			.contentType(MediaType.APPLICATION_JSON)
-			.content(json)
-		).andExpect(status().isOk());
-
-		ReviewEntity foundedReview = reviewRepository.findByOrderProductIdOrThrow(testOrderProduct.getId());
-
-		Assertions.assertNotNull(foundedReview);
-		Assertions.assertEquals(createDto.content(), foundedReview.getContent());
+		Assertions.assertNotNull(savedReview);
+		Assertions.assertEquals(savedReview.content(),review.getContent());
 	}
 }

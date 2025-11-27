@@ -420,16 +420,16 @@ class UserServiceTest {
 		reviewRepository.save(review);
 
 		PageRequest pageRequest = PageRequest.of(0, 10);
-		Page<ReviewResponse.Search> foundedPage = userService.getReviewsByUserId(pageRequest, testUser.getId());
+		Page<ReviewResponse.Search> savededPage = userService.getReviewsByUserId(pageRequest, testUser.getId());
 
-		ReviewResponse.Search foundedReviewResponse = foundedPage
+		ReviewResponse.Search savedReviewResponse = savededPage
 			.stream()
 			.findFirst()
 			.orElse(null);
 
-		Assertions.assertNotNull(foundedReviewResponse);
-		Assertions.assertEquals(review.getId(), foundedReviewResponse.reviewId());
-		Assertions.assertEquals(review.getContent(), foundedReviewResponse.content());
+		Assertions.assertNotNull(savedReviewResponse);
+		Assertions.assertEquals(review.getId(), savedReviewResponse.reviewId());
+		Assertions.assertEquals(review.getContent(), savedReviewResponse.content());
 	}
 
 	@Test
