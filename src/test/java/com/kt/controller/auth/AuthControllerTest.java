@@ -6,6 +6,8 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+import java.time.LocalDate;
+
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +18,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.kt.constant.Gender;
 import com.kt.constant.redis.RedisKey;
 import com.kt.domain.dto.request.SignupRequest;
 import com.kt.infra.mail.EmailClient;
@@ -89,6 +92,35 @@ class AuthControllerTest {
 				jsonPath("$.code").value("ok"),
 				jsonPath("$.message").value("성공")
 			);
-
 	}
+
+	@Test
+	void 멤버_회원가입_성공() throws Exception {
+
+		// given
+		String redisAuthCode = "123456";
+		redisCache.set(RedisKey.SIGNUP_CODE, TEST_EMAIL, redisAuthCode);
+
+		// then
+		SignupRequest.SignupMember verifiedEmailUser = new SignupRequest.SignupMember(
+			"테스트",
+			TEST_EMAIL,
+			"비밀번호",
+			Gender.MALE,
+			LocalDate.now(),
+			"010-1020-1200"
+		);
+
+		// then
+		mockMvc.perform(post("/api/auth/signup/member")
+				.contentType(MediaType.APPLICATION_JSON)
+				.content(objectMapper.writeValueAsString(verifiedEmailUser)))
+			.andDo(print())
+			.andExpectAll(
+				status().isOk(),
+				jsonPath("$.code").value("ok"),
+				jsonPath("$.message").value("성공")
+			);
+	}
+
 }
