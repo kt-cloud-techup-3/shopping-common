@@ -14,7 +14,7 @@ import com.kt.domain.dto.response.ReviewResponse;
 import com.kt.domain.dto.response.UserResponse;
 
 public interface UserService {
-	List<OrderProductResponse.SearchReviewable> getReviewableOrderProducts(UUID userId);
+	Page<OrderProductResponse.SearchReviewable> getReviewableOrderProducts(Pageable pageable, UUID userId);
 
 	UserResponse.Orders getOrdersByUserId(UUID id);
 

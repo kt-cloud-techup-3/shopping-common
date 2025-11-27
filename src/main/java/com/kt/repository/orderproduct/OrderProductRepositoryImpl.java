@@ -3,6 +3,9 @@ package com.kt.repository.orderproduct;
 import java.util.List;
 import java.util.UUID;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
 import com.kt.constant.OrderProductStatus;
@@ -29,13 +32,29 @@ public class OrderProductRepositoryImpl implements OrderProductRepositoryCustom 
 	private final QReviewEntity review = QReviewEntity.reviewEntity;
 
 	@Override
-	public List<OrderProductResponse.SearchReviewable> getReviewableOrderProductsByUserId(UUID userId) {
+	public Page<OrderProductResponse.SearchReviewable> getReviewableOrderProductsByUserId(Pageable pageable,UUID userId) {
 		BooleanExpression condition = review
 			.orderProduct
 			.isNull()
 			.and(orderProduct.status.eq(OrderProductStatus.PURCHASE_CONFIRMED));
 
-		return jpaQueryFactory
+		List<OrderProductResponse.SearchReviewable> content = jpaQueryFactory
+			.select(new QOrderProductResponse_SearchReviewable(
+				orderProduct.id,
+				orderProduct.quantity,
+				orderProduct.unitPrice,
+				orderProduct.status
+			))
+			.from(user)
+			.join(order).on(user.id.eq(order.orderBy.id))
+			.join(orderProduct).on(order.id.eq(orderProduct.order.id))
+			.leftJoin(review).on(orderProduct.id.eq(review.orderProduct.id))
+			.offset(pageable.getOffset())
+			.limit(pageable.getPageSize())
+			.where(condition)
+			.fetch();
+
+		int total = jpaQueryFactory
 			.select(new QOrderProductResponse_SearchReviewable(
 				orderProduct.id,
 				orderProduct.quantity,
@@ -47,6 +66,8 @@ public class OrderProductRepositoryImpl implements OrderProductRepositoryCustom 
 			.join(orderProduct).on(order.id.eq(orderProduct.order.id))
 			.leftJoin(review).on(orderProduct.id.eq(review.orderProduct.id))
 			.where(condition)
-			.fetch();
+			.fetch().size();
+
+		return new PageImpl<>(content, pageable, total);
 	}
 }

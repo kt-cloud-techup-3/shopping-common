@@ -45,8 +45,8 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public List<OrderProductResponse.SearchReviewable> getReviewableOrderProducts(UUID userId) {
-		return orderProductRepository.getReviewableOrderProductsByUserId(userId);
+	public Page<OrderProductResponse.SearchReviewable> getReviewableOrderProducts(Pageable pageable, UUID userId) {
+		return orderProductRepository.getReviewableOrderProductsByUserId(pageable, userId);
 	}
 
 	@Override

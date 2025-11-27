@@ -206,9 +206,10 @@ class UserServiceTest {
 			testProduct
 		);
 		orderProductRepository.save(orderProduct);
+		PageRequest pageRequest = PageRequest.of(0, 10);
 
 		OrderProductResponse.SearchReviewable foundedOrderProductResponse = userService
-			.getReviewableOrderProducts(testUser.getId())
+			.getReviewableOrderProducts(pageRequest, testUser.getId())
 			.stream()
 			.findFirst()
 			.orElse(null);
@@ -232,11 +233,12 @@ class UserServiceTest {
 		);
 		review.mapToOrderProduct(orderProduct);
 		reviewRepository.save(review);
+		PageRequest pageRequest = PageRequest.of(0, 10);
 
-		List<OrderProductResponse.SearchReviewable> foundedOrderProductResponses = userService
-			.getReviewableOrderProducts(testUser.getId());
+		Page<OrderProductResponse.SearchReviewable> foundedOrderProductResponses = userService
+			.getReviewableOrderProducts(pageRequest, testUser.getId());
 
-		Assertions.assertEquals(0, foundedOrderProductResponses.size());
+		Assertions.assertEquals(0, foundedOrderProductResponses.getContent().size());
 	}
 
 	@Test
@@ -249,11 +251,12 @@ class UserServiceTest {
 			testProduct
 		);
 		orderProductRepository.save(orderProduct);
+		PageRequest pageRequest = PageRequest.of(0, 10);
 
-		List<OrderProductResponse.SearchReviewable> foundedOrderProductResponses = userService
-			.getReviewableOrderProducts(testUser.getId());
+		Page<OrderProductResponse.SearchReviewable> foundedOrderProductResponses = userService
+			.getReviewableOrderProducts(pageRequest, testUser.getId());
 
-		Assertions.assertEquals(0, foundedOrderProductResponses.size());
+		Assertions.assertEquals(0, foundedOrderProductResponses.getContent().size());
 	}
 
 	@Test
