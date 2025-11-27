@@ -123,4 +123,31 @@ class AuthControllerTest {
 			);
 	}
 
+	@Test
+	void 배송기사_회원가입_성공() throws Exception {
+
+		// given
+		String redisAuthCode = "123456";
+		redisCache.set(RedisKey.SIGNUP_CODE, TEST_EMAIL, redisAuthCode);
+
+		// then
+		SignupRequest.SignupCourier verifiedEmailCourier = new SignupRequest.SignupCourier(
+			"테스트",
+			TEST_EMAIL,
+			"비밀번호",
+			Gender.MALE
+		);
+
+		// then
+		mockMvc.perform(post("/api/auth/signup/courier")
+				.contentType(MediaType.APPLICATION_JSON)
+				.content(objectMapper.writeValueAsString(verifiedEmailCourier)))
+			.andDo(print())
+			.andExpectAll(
+				status().isOk(),
+				jsonPath("$.code").value("ok"),
+				jsonPath("$.message").value("성공")
+			);
+	}
+
 }
