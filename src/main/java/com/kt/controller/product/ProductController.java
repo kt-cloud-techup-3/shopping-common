@@ -50,9 +50,10 @@ public class ProductController {
 
 	@GetMapping("/{productId}")
 	public ResponseEntity<?> detail(
+		@AuthenticationPrincipal CurrentUser user,
 		@PathVariable UUID productId
 	) {
-		ProductResponse.Detail detail = productService.detail(productId);
+		ProductResponse.Detail detail = productService.detail(user.getRole(), productId);
 		return ApiResult.ok(detail);
 	}
 

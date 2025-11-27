@@ -28,5 +28,5 @@ public interface ProductService {
 
 	Page<ProductResponse.Search> search(UserRole role, Pageable pageable, String keyword, ProductSearchType type);
 
-	ProductResponse.Detail detail(UUID productId);
+	ProductResponse.Detail detail(UserRole role, UUID productId);
 }

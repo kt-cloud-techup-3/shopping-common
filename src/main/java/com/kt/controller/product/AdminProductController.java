@@ -1,10 +1,13 @@
 package com.kt.controller.product;
 
+import java.util.UUID;
+
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -28,15 +31,12 @@ public class AdminProductController {
 
 	private final ProductService productService;
 
-	// TODO: 상품 목록 조회
 	// TODO: 상품 상세 조회
 	// TODO: 상품 품절 토글
 	// TODO: 상품 활성화
 	// TODO: 상품 비활성화
 	// TODO: 상품 수정
 	// TODO: 상품 삭제
-	// TODO: 상품 다중 품절
-	// TODO: 상품 생성
 
 	@PostMapping
 	public ResponseEntity<?> create(
@@ -73,6 +73,15 @@ public class AdminProductController {
 			type
 		);
 		return ApiResult.ok(search);
+	}
+
+	@GetMapping("/{productId}")
+	public ResponseEntity<?> detail(
+		@AuthenticationPrincipal CurrentUser user,
+		@PathVariable UUID productId
+	) {
+		ProductResponse.Detail detail = productService.detail(user.getRole(), productId);
+		return ApiResult.ok(detail);
 	}
 
 }
