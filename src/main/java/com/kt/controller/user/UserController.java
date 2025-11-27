@@ -24,24 +24,22 @@ public class UserController {
 	private final UserService userService;
 
 	@GetMapping
-	public ResponseEntity<ApiResult<UserResponse.Detail>> getMemberBySelf(
+	public ResponseEntity<ApiResult<UserResponse.UserDetail>> getUserBySelf(
 		@AuthenticationPrincipal DefaultCurrentUser defaultCurrentUser
 	){
-		UserResponse.Detail memberResponse = userService.getMemberDetail(
-			defaultCurrentUser.getId(),
-			defaultCurrentUser.getRole()
+		UserResponse.UserDetail userResponse = userService.getUserDetail(
+			defaultCurrentUser.getId()
 		);
-		return ApiResult.ok(memberResponse);
+		return ApiResult.ok(userResponse);
 	}
 
 	@PutMapping
-	public ResponseEntity<ApiResult<Void>> updateMemberBySelf(
+	public ResponseEntity<ApiResult<Void>> updateUserBySelf(
 		@AuthenticationPrincipal DefaultCurrentUser defaultCurrentUser,
 		@RequestBody @Valid UserRequest.UpdateDetails request
 	){
-		userService.updateMemberDetails(
+		userService.updateUserDetail(
 			defaultCurrentUser.getId(),
-			defaultCurrentUser.getRole(),
 			request
 		);
 		return ApiResult.ok(null);

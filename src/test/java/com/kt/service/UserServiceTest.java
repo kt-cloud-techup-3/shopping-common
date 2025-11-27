@@ -1,7 +1,6 @@
 package com.kt.service;
 
 import static org.assertj.core.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.*;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -15,7 +14,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -36,7 +34,6 @@ import com.kt.domain.entity.ReceiverVO;
 import com.kt.domain.entity.ReviewEntity;
 import com.kt.domain.entity.UserEntity;
 
-import com.kt.exception.CustomException;
 import com.kt.repository.CategoryRepository;
 import com.kt.repository.orderproduct.OrderProductRepository;
 import com.kt.repository.OrderRepository;
@@ -71,8 +68,6 @@ class UserServiceTest {
 	ProductEntity testProduct;
 	UUID userId;
 	UUID AdminId;
-	UserRole userRole;
-	UserRole adminRole;
 
 	@BeforeEach
 	void setUp() throws Exception {
@@ -116,9 +111,7 @@ class UserServiceTest {
 		UserEntity savedUser = userRepository.save(testUser2);
 		UserEntity savedAdmin = userRepository.save(testAdmin);
 		userId = savedUser.getId();
-		userRole = savedUser.getRole();
 		AdminId = savedAdmin.getId();
-		adminRole = savedAdmin.getRole();
 
 		ReceiverVO receiver = new ReceiverVO(
 			"수신자테스터1",
@@ -274,7 +267,7 @@ class UserServiceTest {
 
 	@Test
 	void 유저_상세_조회() {
-		UserResponse.Detail savedUser = userService.getMemberDetail(userId,userRole);
+		UserResponse.UserDetail savedUser = userService.getUserDetail(userId);
 
 		// then
 		assertThat(userId).isNotNull();
@@ -283,7 +276,7 @@ class UserServiceTest {
 
 	@Test
 	void 어드민_상세_조회() {
-		UserResponse.Detail savedUser = userService.getAdminDetail(AdminId, adminRole);
+		UserResponse.UserDetail savedUser = userService.getAdminDetail(AdminId);
 
 		// then
 		assertThat(AdminId).isNotNull();
@@ -406,25 +399,13 @@ class UserServiceTest {
 
 	@Test
 	void 내정보조회_성공(){
-		UserResponse.Detail foundedDetail = userService.getMemberDetail(
-			testUser.getId(),
-			testUser.getRole()
+		UserResponse.UserDetail foundedDetail = userService.getUserDetail(
+			testUser.getId()
 		);
 
 		Assertions.assertNotNull(foundedDetail);
 		Assertions.assertEquals(testUser.getName(),foundedDetail.name());
 		Assertions.assertEquals(testUser.getEmail(),foundedDetail.email());
-	}
-
-	@Test
-	void 내정보조회_실패__역할_어드민(){
-		assertThrowsExactly(
-			CustomException.class,
-			() -> userService.getMemberDetail(
-				testAdmin.getId(),
-				testAdmin.getRole()
-			)
-		);
 	}
 
 	@Test
@@ -436,32 +417,12 @@ class UserServiceTest {
 			Gender.FEMALE
 		);
 
-		userService.updateMemberDetails(
+		userService.updateUserDetail(
 			testUser.getId(),
-			testUser.getRole(),
 			updateDetails
 		);
 
 		Assertions.assertEquals(testUser.getName(), updateDetails.name());
 		Assertions.assertEquals(testUser.getMobile(), updateDetails.mobile());
-	}
-
-	@Test
-	void 내정보수정_실패__역할_어드민() {
-		UserRequest.UpdateDetails updateDetails = new UserRequest.UpdateDetails(
-			"변경된테스터",
-			"010-1234-5678",
-			LocalDate.of(1990, 1, 1),
-			Gender.FEMALE
-		);
-
-		assertThrowsExactly(
-			CustomException.class,
-			() -> userService.updateMemberDetails(
-				testAdmin.getId(),
-				testAdmin.getRole(),
-				updateDetails
-			)
-		);
 	}
 }

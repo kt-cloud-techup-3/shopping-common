@@ -19,9 +19,9 @@ public interface UserService {
 
 	Page<UserResponse.Search> getUsers(Pageable pageable, String keyword, UserRole role);
 
-	UserResponse.Detail getMemberDetail(UUID id, UserRole role);
+	UserResponse.UserDetail getUserDetail(UUID id);
 
-	UserResponse.Detail getAdminDetail(UUID id, UserRole role);
+	UserResponse.UserDetail getAdminDetail(UUID id);
 
 	void disableUser(UUID id);
 
@@ -37,5 +37,5 @@ public interface UserService {
 
 	void deleteAdmin(UUID adminId);
 
-	void updateMemberDetails(UUID userId, UserRole userRole, UserRequest.UpdateDetails details);
+	void updateUserDetail(UUID userId, UserRequest.UpdateDetails details);
 }

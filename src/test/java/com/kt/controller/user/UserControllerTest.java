@@ -15,7 +15,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
@@ -81,11 +80,11 @@ class UserControllerTest {
 
 		String json = response.getContentAsString();
 
-		ApiResult<UserResponse.Detail> accountResponse = objectMapper.readValue(
+		ApiResult<UserResponse.UserDetail> accountResponse = objectMapper.readValue(
 			json,
-			new TypeReference<ApiResult<UserResponse.Detail>>() {}
+			new TypeReference<ApiResult<UserResponse.UserDetail>>() {}
 		);
-		UserResponse.Detail responseUserSearch = accountResponse.getData();
+		UserResponse.UserDetail responseUserSearch = accountResponse.getData();
 
 		Assertions.assertEquals(responseUserSearch.id(), testMember.getId());
 		Assertions.assertEquals(responseUserSearch.email(), testMember.getEmail());

@@ -30,7 +30,7 @@ public class UserResponse {
 		}
 	}
 
-	public record Detail(
+	public record UserDetail(
 		UUID id,
 		String name,
 		String email,

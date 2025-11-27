@@ -52,11 +52,9 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public UserResponse.Detail getMemberDetail(UUID id, UserRole role) {
-		if (role != UserRole.MEMBER)
-			throw new CustomException(ErrorCode.USERROLE_DENIED);
+	public UserResponse.UserDetail getUserDetail(UUID id) {
 		UserEntity user = userRepository.findByIdOrThrow(id);
-		return new UserResponse.Detail(
+		return new UserResponse.UserDetail(
 			user.getId(),
 			user.getName(),
 			user.getEmail(),
@@ -68,11 +66,9 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public UserResponse.Detail getAdminDetail(UUID id, UserRole role) {
-		if (role != UserRole.ADMIN)
-			throw new CustomException(ErrorCode.USERROLE_DENIED);
+	public UserResponse.UserDetail getAdminDetail(UUID id) {
 		UserEntity user = userRepository.findByIdOrThrow(id);
-		return new UserResponse.Detail(
+		return new UserResponse.UserDetail(
 			user.getId(),
 			user.getName(),
 			user.getEmail(),
@@ -135,14 +131,10 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public void updateMemberDetails(
+	public void updateUserDetail(
 		UUID userId,
-		UserRole userRole,
 		UserRequest.UpdateDetails details
 	) {
-		if (userRole != UserRole.MEMBER)
-			throw new CustomException(ErrorCode.USERROLE_DENIED);
-
 		UserEntity user = userRepository.findByIdOrThrow(userId);
 		user.updateDetails(
 			details.name(),

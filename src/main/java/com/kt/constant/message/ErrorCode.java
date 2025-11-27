@@ -38,8 +38,7 @@ public enum ErrorCode {
 	INVALID_PASSWORD(HttpStatus.FORBIDDEN, "기존 비밀번호와 일치하지 않습니다."),
 	USER_NOT_FOUND(HttpStatus.NOT_FOUND, "유저가 존재하지 않습니다."),
 	ORDER_ALREADY_SHIPPED(HttpStatus.BAD_REQUEST, "배송이 시작되어 취소할 수 없습니다."),
-	ORDER_ALREADY_CONFIRMED(HttpStatus.BAD_REQUEST, "주문이 구매확정 상태이므로 취소할 수 없습니다."),
-	USERROLE_DENIED(HttpStatus.BAD_REQUEST, "부여된 역할이 수행할 수 없는 기능입니다.");
+	ORDER_ALREADY_CONFIRMED(HttpStatus.BAD_REQUEST, "주문이 구매확정 상태이므로 취소할 수 없습니다.");
 
 	private final HttpStatus status;
 	private final String message;
