@@ -1,4 +1,4 @@
-package com.kt.controller.account;
+package com.kt.controller.user;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;

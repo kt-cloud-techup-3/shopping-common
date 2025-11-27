@@ -1,4 +1,4 @@
-package com.kt.controller.account;
+package com.kt.controller.user;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
