@@ -6,6 +6,8 @@ import org.springframework.data.domain.Pageable;
 import com.kt.constant.CourierWorkStatus;
 import com.kt.constant.UserRole;
 
+import java.util.UUID;
+
 public interface AccountService {
 	Page<?> searchAccounts(
 		Pageable pageable,
@@ -13,4 +15,6 @@ public interface AccountService {
 		UserRole role,
 		CourierWorkStatus workStatus
 	);
+
+	void adminResetAccountPassword(UUID accountId);
 }

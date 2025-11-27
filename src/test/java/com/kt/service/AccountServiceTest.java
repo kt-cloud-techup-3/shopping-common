@@ -1,8 +1,11 @@
 package com.kt.service;
 
 import static org.assertj.core.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.time.LocalDate;
+
+import lombok.extern.slf4j.Slf4j;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -10,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,6 +25,7 @@ import com.kt.repository.AccountRepository;
 import com.kt.repository.courier.CourierRepository;
 import com.kt.repository.user.UserRepository;
 
+@Slf4j
 @Transactional
 @SpringBootTest
 @ActiveProfiles("test")
@@ -38,6 +43,9 @@ class AccountServiceTest {
 	@Autowired
 	CourierRepository courierRepository;
 
+	@Autowired
+	PasswordEncoder passwordEncoder;
+
 	UserEntity member1;
 	UserEntity admin1;
 	CourierEntity courier1;
@@ -51,7 +59,7 @@ class AccountServiceTest {
 
 		member1 = UserEntity.create(
 			"회원",
-			"aaa",
+			"bjwnstkdbj@naver.com",
 			"1234",
 			UserRole.MEMBER,
 			Gender.MALE,
@@ -135,6 +143,27 @@ class AccountServiceTest {
 		// then
 		assertThat(foundCouriers).isNotNull();
 		assertThat(foundCouriers.getContent()).hasSize(2);
+	}
+
+	@Test
+	void 관리자_다른_계정_비밀번호_초기화_성공() {
+		String originPassword = "1234";
+
+		accountService.adminResetAccountPassword(member1.getId());
+
+		log.info(
+			"isMatch :: {}", passwordEncoder.matches(
+				originPassword, member1.getPassword()
+			)
+		);
+
+		assertFalse(
+			passwordEncoder.matches(
+				originPassword,
+				member1.getPassword()
+			)
+		);
+
 	}
 
 }

@@ -20,5 +20,11 @@ public interface AccountRepository extends JpaRepository<AbstractAccountEntity, 
 		);
 	}
 
+	default AbstractAccountEntity findByIdOrThrow(UUID accountId) {
+		return findById(accountId).orElseThrow(
+			() -> new CustomException(ErrorCode.ACCOUNT_NOT_FOUND)
+		);
+	}
+
 	Optional<AbstractAccountEntity> findByEmail(String email);
 }
