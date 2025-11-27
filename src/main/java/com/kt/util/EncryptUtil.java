@@ -5,8 +5,6 @@ import lombok.NoArgsConstructor;
 
 import lombok.extern.slf4j.Slf4j;
 
-import org.springframework.core.env.Environment;
-
 import javax.crypto.Cipher;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.GCMParameterSpec;
@@ -22,8 +20,8 @@ public final class EncryptUtil {
 
 	private static final String ALGO = "AES";
 	private static final String TRANSFORMATION = "AES/GCM/NoPadding";
-	private static final int GCM_TAG_LENGTH = 128; // bits
-	private static final int IV_LENGTH = 12;       // 96 bits (GCM 표준)
+	private static final int GCM_TAG_LENGTH = 128;
+	private static final int IV_LENGTH = 12;
 
 	private static SecretKey secretKey;
 
