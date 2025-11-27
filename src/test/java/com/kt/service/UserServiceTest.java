@@ -49,7 +49,6 @@ import com.kt.repository.user.UserRepository;
 @ActiveProfiles("test")
 class UserServiceTest {
 
-	static final String TEST_PASSWORD = "1234567891011";
 	@Autowired
 	UserService userService;
 	@Autowired
@@ -64,8 +63,6 @@ class UserServiceTest {
 	ProductRepository productRepository;
 	@Autowired
 	CategoryRepository categoryRepository;
-	@Autowired
-	PasswordEncoder passwordEncoder;
 
 	UserEntity testUser;
 	UserEntity testUser2;
@@ -74,6 +71,8 @@ class UserServiceTest {
 	ProductEntity testProduct;
 	UUID userId;
 	UUID AdminId;
+	UserRole userRole;
+	UserRole adminRole;
 
 	@BeforeEach
 	void setUp() throws Exception {
@@ -117,7 +116,9 @@ class UserServiceTest {
 		UserEntity savedUser = userRepository.save(testUser2);
 		UserEntity savedAdmin = userRepository.save(testAdmin);
 		userId = savedUser.getId();
+		userRole = savedUser.getRole();
 		AdminId = savedAdmin.getId();
+		adminRole = savedAdmin.getRole();
 
 		ReceiverVO receiver = new ReceiverVO(
 			"수신자테스터1",
@@ -273,7 +274,7 @@ class UserServiceTest {
 
 	@Test
 	void 유저_상세_조회() {
-		UserResponse.UserDetail savedUser = userService.getUserDetail(userId);
+		UserResponse.Detail savedUser = userService.getMemberDetail(userId,userRole);
 
 		// then
 		assertThat(userId).isNotNull();
@@ -282,7 +283,7 @@ class UserServiceTest {
 
 	@Test
 	void 어드민_상세_조회() {
-		UserResponse.UserDetail savedUser = userService.getAdminDetail(AdminId);
+		UserResponse.Detail savedUser = userService.getAdminDetail(AdminId, adminRole);
 
 		// then
 		assertThat(AdminId).isNotNull();
@@ -366,99 +367,10 @@ class UserServiceTest {
 	}
 
 	@Test
-	void 비밀번호변경_성공() {
-		UserEntity user = UserEntity.create(
-			"주문자테스터2",
-			"wjd123@naver.com",
-			passwordEncoder.encode(TEST_PASSWORD),
-			UserRole.MEMBER,
-			Gender.MALE,
-			LocalDate.of(1990, 1, 1),
-			"010-1234-5678"
-		);
-		userRepository.save(user);
-
-		userService.updatePassword(
-			user.getId(),
-			TEST_PASSWORD,
-			"12345678910"
-		);
-
-		boolean validResult = passwordEncoder.matches(
-			"12345678910",
-			user.getPassword()
-		);
-
-		Assertions.assertTrue(validResult);
-	}
-
-	@Test
-	void 비밀번호변경_실패__현재_비밀번호_불일치() {
-		UserEntity user = UserEntity.create(
-			"주문자테스터1",
-			"wjd123@naver.com",
-			passwordEncoder.encode(TEST_PASSWORD),
-			UserRole.MEMBER,
-			Gender.MALE,
-			LocalDate.of(1990, 1, 1),
-			"010-1234-5678"
-		);
-		userRepository.save(user);
-
-		assertThrowsExactly(
-			CustomException.class,
-			() -> {
-				userService.updatePassword(
-					user.getId(),
-					"틀린비밀번호입니다.......",
-					"22222222222222"
-				);
-			}
-		);
-	}
-
-	@Test
-	void 비밀번호변경_실패__변경할_비밀번호_동일() {
-		UserEntity user = UserEntity.create(
-			"주문자테스터2",
-			"wjd123@naver.com",
-			passwordEncoder.encode(TEST_PASSWORD),
-			UserRole.MEMBER,
-			Gender.MALE,
-			LocalDate.of(1990, 1, 1),
-			"010-1234-5678"
-		);
-		userRepository.save(user);
-
-		assertThrowsExactly(
-			CustomException.class,
-			() -> userService.updatePassword(
-				user.getId(),
-				TEST_PASSWORD,
-				TEST_PASSWORD
-			)
-		);
-	}
-
-	@Test
 	void 어드민_삭제_성공() {
 		userService.deleteAdmin(testUser.getId());
 
 		Assertions.assertEquals(UserStatus.DELETED, testUser.getStatus());
-	}
-
-	@Test
-	void 내_정보_수정_성공() {
-		UserRequest.UpdateDetails updateDetails = new UserRequest.UpdateDetails(
-			"삼정수",
-			"010-7123-4569",
-			LocalDate.of(1992, 1, 1),
-			Gender.FEMALE
-		);
-		userService.updateUserDetails(testUser.getId(), updateDetails);
-
-		Assertions.assertEquals("삼정수", testUser.getName());
-		Assertions.assertEquals(Gender.FEMALE, testUser.getGender());
 	}
 
 	@Test
@@ -490,5 +402,66 @@ class UserServiceTest {
 		OrderEntity foundOrder = orderRepository.findById(savedOrder.getId()).orElse(null);
 		assertThat(foundOrder).isNotNull();
 
+	}
+
+	@Test
+	void 내정보조회_성공(){
+		UserResponse.Detail foundedDetail = userService.getMemberDetail(
+			testUser.getId(),
+			testUser.getRole()
+		);
+
+		Assertions.assertNotNull(foundedDetail);
+		Assertions.assertEquals(testUser.getName(),foundedDetail.name());
+		Assertions.assertEquals(testUser.getEmail(),foundedDetail.email());
+	}
+
+	@Test
+	void 내정보조회_실패__역할_어드민(){
+		assertThrowsExactly(
+			CustomException.class,
+			() -> userService.getMemberDetail(
+				testAdmin.getId(),
+				testAdmin.getRole()
+			)
+		);
+	}
+
+	@Test
+	void 내정보수정_성공(){
+		UserRequest.UpdateDetails updateDetails = new UserRequest.UpdateDetails(
+			"변경된테스터",
+			"010-5678-1234",
+			LocalDate.of(1955, 3, 5),
+			Gender.FEMALE
+		);
+
+		userService.updateMemberDetails(
+			testUser.getId(),
+			testUser.getRole(),
+			updateDetails
+		);
+
+		Assertions.assertEquals(testUser.getName(), updateDetails.name());
+		Assertions.assertEquals(testUser.getMobile(), updateDetails.mobile());
+	}
+
+	@Test
+	void 내정보수정_실패__역할_어드민() {
+		UserRequest.UpdateDetails updateDetails = new UserRequest.UpdateDetails(
+			"변경된테스터",
+			"010-1234-5678",
+			LocalDate.of(1990, 1, 1),
+			Gender.FEMALE
+		);
+
+		assertThrowsExactly(
+			CustomException.class,
+			() -> userService.updateMemberDetails(
+				testAdmin.getId(),
+				testAdmin.getRole(),
+				updateDetails
+			)
+		);
 	}
 }

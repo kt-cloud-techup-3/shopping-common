@@ -23,7 +23,6 @@ import com.kt.constant.Gender;
 import com.kt.constant.UserRole;
 import com.kt.constant.UserStatus;
 import com.kt.domain.dto.request.AccountRequest;
-import com.kt.domain.dto.response.AccountResponse;
 import com.kt.domain.entity.AbstractAccountEntity;
 import com.kt.domain.entity.CourierEntity;
 import com.kt.domain.entity.UserEntity;
