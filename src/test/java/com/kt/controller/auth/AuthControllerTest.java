@@ -1,14 +1,13 @@
 package com.kt.controller.auth;
 
 import static org.assertj.core.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 import java.time.LocalDate;
 
-import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -21,8 +20,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kt.constant.Gender;
 import com.kt.constant.redis.RedisKey;
 import com.kt.domain.dto.request.SignupRequest;
-import com.kt.infra.mail.EmailClient;
 import com.kt.infra.redis.RedisCache;
+import com.kt.repository.AccountRepository;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -31,15 +30,24 @@ import lombok.extern.slf4j.Slf4j;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureMockMvc
 class AuthControllerTest {
+
+	String TEST_EMAIL = "kimdohyun032@gmail.com";
+
 	@Autowired
 	ObjectMapper objectMapper;
-	String TEST_EMAIL = "kimdohyun032@gmail.com";
 	@Autowired
 	private RedisCache redisCache;
 	@Autowired
-	private EmailClient emailClient;
-	@Autowired
 	private MockMvc mockMvc;
+
+	@Autowired
+	private AccountRepository accountRepository;
+
+	@BeforeEach
+	void setUp() {
+		accountRepository.deleteAll();
+		redisCache.delete(RedisKey.SIGNUP_CODE.key(TEST_EMAIL));
+	}
 
 	@Test
 	void 인증코드_발송_성공() throws Exception {
