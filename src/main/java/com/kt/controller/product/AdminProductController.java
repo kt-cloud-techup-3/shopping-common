@@ -91,4 +91,20 @@ public class AdminProductController {
 		return ApiResult.ok(null);
 	}
 
+	@GetMapping("/{productId}/activate")
+	public ResponseEntity<?> activate(
+		@PathVariable UUID productId
+	) {
+		productService.activate(productId);
+		return ApiResult.ok(null);
+	}
+
+	@GetMapping("/{productId}/in-activate")
+	public ResponseEntity<?> inActivate(
+		@PathVariable UUID productId
+	) {
+		productService.inActivate(productId);
+		return ApiResult.ok(null);
+	}
+
 }
