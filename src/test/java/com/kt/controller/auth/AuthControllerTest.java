@@ -133,7 +133,6 @@ class AuthControllerTest {
 		// given
 		String redisAuthCode = "123456";
 		redisCache.set(RedisKey.SIGNUP_CODE, TEST_EMAIL, redisAuthCode);
-		redisCache.set(RedisKey.SIGNUP_VERIFIED, TEST_EMAIL, true);
 
 		var request = new SignupRequest.VerifySignupCode(TEST_EMAIL, redisAuthCode);
 
@@ -154,11 +153,6 @@ class AuthControllerTest {
 
 	@Test
 	void 멤버_회원가입_성공() throws Exception {
-
-		// given
-		String redisAuthCode = "123456";
-		redisCache.set(RedisKey.SIGNUP_CODE, TEST_EMAIL, redisAuthCode);
-		redisCache.set(RedisKey.SIGNUP_VERIFIED, TEST_EMAIL, true);
 
 		// then
 		SignupRequest.SignupMember verifiedEmailUser = new SignupRequest.SignupMember(
@@ -184,10 +178,6 @@ class AuthControllerTest {
 
 	@Test
 	void 배송기사_회원가입_성공() throws Exception {
-
-		// given
-		String redisAuthCode = "123456";
-		redisCache.set(RedisKey.SIGNUP_CODE, TEST_EMAIL, redisAuthCode);
 
 		// then
 		SignupRequest.SignupCourier verifiedEmailCourier = new SignupRequest.SignupCourier(
