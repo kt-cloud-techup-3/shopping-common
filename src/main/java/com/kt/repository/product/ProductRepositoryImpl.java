@@ -66,9 +66,8 @@ public class ProductRepositoryImpl implements ProductRepositoryCustom {
 	private BooleanExpression isActiveByRole(UserRole role) {
 		if (role == UserRole.ADMIN) {
 			return null;
-		} else {
-			return product.status.eq(ProductStatus.ACTIVATED);
 		}
+		return product.status.eq(ProductStatus.ACTIVATED);
 	}
 
 	private BooleanExpression containsKeyword(String keyword, ProductSearchType type) {
