@@ -1,5 +1,7 @@
 package com.kt.service;
 
+import java.util.UUID;
+
 import com.kt.constant.mail.MailTemplate;
 import com.kt.domain.entity.AbstractAccountEntity;
 
@@ -13,6 +15,8 @@ import org.springframework.stereotype.Service;
 
 import com.kt.constant.CourierWorkStatus;
 import com.kt.constant.UserRole;
+import com.kt.constant.message.ErrorCode;
+import com.kt.exception.CustomException;
 import com.kt.repository.courier.CourierRepository;
 import com.kt.repository.user.UserRepository;
 
@@ -21,7 +25,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Random;
-import java.util.UUID;
 
 @Service
 @Transactional
@@ -29,9 +32,9 @@ import java.util.UUID;
 public class AccountServiceImpl implements AccountService {
 	private final UserRepository userRepository;
 	private final CourierRepository courierRepository;
+	private final PasswordEncoder passwordEncoder;
 	private final AccountRepository accountRepository;
 	private final EmailClient emailClient;
-	private final PasswordEncoder passwordEncoder;
 
 	@Override
 	public Page<?> searchAccounts(
@@ -44,6 +47,30 @@ public class AccountServiceImpl implements AccountService {
 			return courierRepository.searchCouriers(pageable, keyword, workStatus);
 		}
 		return userRepository.searchUsers(pageable, keyword, role);
+	}
+
+	@Override
+	public void updatePassword(
+		UUID accountId,
+		String currentPassword,
+		String newPassword
+	) {
+		AbstractAccountEntity account = accountRepository.findByIdOrThrow(accountId);
+
+		if (!passwordEncoder.matches(currentPassword, account.getPassword()))
+			throw new CustomException(ErrorCode.INVALID_PASSWORD);
+
+		if (passwordEncoder.matches(newPassword, account.getPassword()))
+			throw new CustomException(ErrorCode.PASSWORD_UNCHANGED);
+
+		String hashedPassword = passwordEncoder.encode(newPassword);
+		account.updatePassword(hashedPassword);
+	}
+
+	@Override
+	public void deleteAccount(UUID accountId) {
+		AbstractAccountEntity account = accountRepository.findByIdOrThrow(accountId);
+		account.delete();
 	}
 
 	@Override

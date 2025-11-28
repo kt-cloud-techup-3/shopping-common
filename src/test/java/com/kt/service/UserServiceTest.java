@@ -1,13 +1,11 @@
 package com.kt.service;
 
 import static org.assertj.core.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.*;
 
 import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 
-import com.kt.exception.CustomException;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -16,7 +14,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -49,7 +46,6 @@ import com.kt.repository.user.UserRepository;
 @ActiveProfiles("test")
 class UserServiceTest {
 
-	static final String TEST_PASSWORD = "1234567891011";
 	@Autowired
 	UserService userService;
 	@Autowired
@@ -64,8 +60,6 @@ class UserServiceTest {
 	ProductRepository productRepository;
 	@Autowired
 	CategoryRepository categoryRepository;
-	@Autowired
-	PasswordEncoder passwordEncoder;
 
 	UserEntity testUser;
 	UserEntity testUser2;
@@ -366,99 +360,10 @@ class UserServiceTest {
 	}
 
 	@Test
-	void 비밀번호변경_성공() {
-		UserEntity user = UserEntity.create(
-			"주문자테스터2",
-			"wjd123@naver.com",
-			passwordEncoder.encode(TEST_PASSWORD),
-			UserRole.MEMBER,
-			Gender.MALE,
-			LocalDate.of(1990, 1, 1),
-			"010-1234-5678"
-		);
-		userRepository.save(user);
-
-		userService.updatePassword(
-			user.getId(),
-			TEST_PASSWORD,
-			"12345678910"
-		);
-
-		boolean validResult = passwordEncoder.matches(
-			"12345678910",
-			user.getPassword()
-		);
-
-		Assertions.assertTrue(validResult);
-	}
-
-	@Test
-	void 비밀번호변경_실패__현재_비밀번호_불일치() {
-		UserEntity user = UserEntity.create(
-			"주문자테스터1",
-			"wjd123@naver.com",
-			passwordEncoder.encode(TEST_PASSWORD),
-			UserRole.MEMBER,
-			Gender.MALE,
-			LocalDate.of(1990, 1, 1),
-			"010-1234-5678"
-		);
-		userRepository.save(user);
-
-		assertThrowsExactly(
-			CustomException.class,
-			() -> {
-				userService.updatePassword(
-					user.getId(),
-					"틀린비밀번호입니다.......",
-					"22222222222222"
-				);
-			}
-		);
-	}
-
-	@Test
-	void 비밀번호변경_실패__변경할_비밀번호_동일() {
-		UserEntity user = UserEntity.create(
-			"주문자테스터2",
-			"wjd123@naver.com",
-			passwordEncoder.encode(TEST_PASSWORD),
-			UserRole.MEMBER,
-			Gender.MALE,
-			LocalDate.of(1990, 1, 1),
-			"010-1234-5678"
-		);
-		userRepository.save(user);
-
-		assertThrowsExactly(
-			CustomException.class,
-			() -> userService.updatePassword(
-				user.getId(),
-				TEST_PASSWORD,
-				TEST_PASSWORD
-			)
-		);
-	}
-
-	@Test
 	void 어드민_삭제_성공() {
 		userService.deleteAdmin(testUser.getId());
 
 		Assertions.assertEquals(UserStatus.DELETED, testUser.getStatus());
-	}
-
-	@Test
-	void 내_정보_수정_성공() {
-		UserRequest.UpdateDetails updateDetails = new UserRequest.UpdateDetails(
-			"삼정수",
-			"010-7123-4569",
-			LocalDate.of(1992, 1, 1),
-			Gender.FEMALE
-		);
-		userService.updateUserDetails(testUser.getId(), updateDetails);
-
-		Assertions.assertEquals("삼정수", testUser.getName());
-		Assertions.assertEquals(Gender.FEMALE, testUser.getGender());
 	}
 
 	@Test
@@ -490,5 +395,34 @@ class UserServiceTest {
 		OrderEntity foundOrder = orderRepository.findById(savedOrder.getId()).orElse(null);
 		assertThat(foundOrder).isNotNull();
 
+	}
+
+	@Test
+	void 내정보조회_성공(){
+		UserResponse.UserDetail foundedDetail = userService.getUserDetail(
+			testUser.getId()
+		);
+
+		Assertions.assertNotNull(foundedDetail);
+		Assertions.assertEquals(testUser.getName(),foundedDetail.name());
+		Assertions.assertEquals(testUser.getEmail(),foundedDetail.email());
+	}
+
+	@Test
+	void 내정보수정_성공(){
+		UserRequest.UpdateDetails updateDetails = new UserRequest.UpdateDetails(
+			"변경된테스터",
+			"010-5678-1234",
+			LocalDate.of(1955, 3, 5),
+			Gender.FEMALE
+		);
+
+		userService.updateUserDetail(
+			testUser.getId(),
+			updateDetails
+		);
+
+		Assertions.assertEquals(testUser.getName(), updateDetails.name());
+		Assertions.assertEquals(testUser.getMobile(), updateDetails.mobile());
 	}
 }

@@ -8,14 +8,6 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 
 public class UserRequest {
-
-	public record UpdatePassword(
-		@NotBlank(message = "비밀번호는 필수항목입니다.")
-		String currentPassword,
-		@NotBlank(message = "비밀번호는 필수항목입니다.")
-		String newPassword
-	){}
-
 	public record UpdateDetails(
 		@NotBlank(message = "이름은 필수항목입니다.")
 		String name,

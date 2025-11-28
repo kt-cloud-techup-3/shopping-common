@@ -125,31 +125,16 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public void updatePassword(
-		UUID userId,
-		String currentPassword,
-		String newPassword
-	) {
-		UserEntity user = userRepository.findByIdOrThrow(userId);
-
-		if (!passwordEncoder.matches(currentPassword, user.getPassword()))
-			throw new CustomException(ErrorCode.INVALID_PASSWORD);
-
-		if (passwordEncoder.matches(newPassword, user.getPassword()))
-			throw new CustomException(ErrorCode.PASSWORD_UNCHANGED);
-
-		String hashedPassword = passwordEncoder.encode(newPassword);
-		user.updatePassword(hashedPassword);
-	}
-
-	@Override
 	public void deleteAdmin(UUID adminId) {
 		UserEntity user = userRepository.findByIdOrThrow(adminId);
 		user.delete();
 	}
 
 	@Override
-	public void updateUserDetails(UUID userId, UserRequest.UpdateDetails details) {
+	public void updateUserDetail(
+		UUID userId,
+		UserRequest.UpdateDetails details
+	) {
 		UserEntity user = userRepository.findByIdOrThrow(userId);
 		user.updateDetails(
 			details.name(),
