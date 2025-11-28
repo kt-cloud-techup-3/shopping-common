@@ -27,6 +27,8 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
+
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK)
 @AutoConfigureMockMvc
 class AdminAccountControllerTest {
@@ -108,7 +110,7 @@ class AdminAccountControllerTest {
 			UserRole.ADMIN
 		);
 
-		mockMvc.perform(get("/api/admin/users/" + testUser.getId())
+		mockMvc.perform(get("/api/admin/users/{userId}", testUser.getId())
 				.with(SecurityMockMvcRequestPostProcessors.user(admin))
 			)
 			.andDo(print())
@@ -132,9 +134,10 @@ class AdminAccountControllerTest {
 		);
 
 		// when
-		mockMvc.perform(post("/api/admin/users/" + testUser.getId() + "/enabled")
-				.with(SecurityMockMvcRequestPostProcessors.user(admin)))
-			.andDo(print())
+		//mockMvc.perform(put("/api/admin/users/" + testUser.getId() + "/enabled")
+			mockMvc.perform(put("/api/admin/users/{userId}/enabled", testUser.getId())
+				.with(user(admin)))
+				.andDo(print())
 			.andExpect(status().isOk());
 
 		// then
@@ -151,8 +154,8 @@ class AdminAccountControllerTest {
 		);
 
 		// when
-		mockMvc.perform(post("/api/admin/users/" + testUser.getId() + "/disabled")
-				.with(SecurityMockMvcRequestPostProcessors.user(admin)))
+		mockMvc.perform(put("/api/admin/users/{userId}/disabled", testUser.getId())
+				.with(user(admin)))
 			.andDo(print())
 			.andExpect(status().isOk());
 
@@ -170,8 +173,8 @@ class AdminAccountControllerTest {
 			UserRole.ADMIN
 		);
 
-		mockMvc.perform(delete("/api/admin/users/" + testUser.getId() + "/removed")
-				.with(SecurityMockMvcRequestPostProcessors.user(admin)))
+		mockMvc.perform(put("/api/admin/users/{userId}/removed", testUser.getId())
+				.with(user(admin)))
 			.andDo(print())
 			.andExpect(status().isOk());
 
