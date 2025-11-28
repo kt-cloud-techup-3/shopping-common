@@ -3,6 +3,7 @@ package com.kt.service;
 import java.util.UUID;
 
 import com.kt.constant.mail.MailTemplate;
+import com.kt.domain.dto.request.AccountSearchRequestVO;
 import com.kt.domain.entity.AbstractAccountEntity;
 
 import com.kt.infra.mail.EmailClient;
@@ -13,7 +14,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import com.kt.constant.CourierWorkStatus;
 import com.kt.constant.UserRole;
 import com.kt.constant.message.ErrorCode;
 import com.kt.exception.CustomException;
@@ -37,17 +37,22 @@ public class AccountServiceImpl implements AccountService {
 	private final EmailClient emailClient;
 
 	@Override
-	public Page<?> searchAccounts(
-		Pageable pageable,
-		String keyword,
-		UserRole role,
-		CourierWorkStatus workStatus
-	) {
-		if (role == UserRole.COURIER) {
-			return courierRepository.searchCouriers(pageable, keyword, workStatus);
+	public Page<?> searchAccounts(Pageable pageable, AccountSearchRequestVO accountSearchRequestVO) {
+		if (accountSearchRequestVO.role() == UserRole.COURIER) {
+			return courierRepository.searchCouriers(
+				pageable,
+				accountSearchRequestVO.keyword(),
+				accountSearchRequestVO.workStatus()
+			);
 		}
-		return userRepository.searchUsers(pageable, keyword, role);
+
+		return userRepository.searchUsers(
+			pageable,
+			accountSearchRequestVO.keyword(),
+			accountSearchRequestVO.role()
+		);
 	}
+
 
 	@Override
 	public void updatePassword(

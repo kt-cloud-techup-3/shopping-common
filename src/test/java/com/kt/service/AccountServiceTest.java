@@ -19,8 +19,10 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.kt.constant.CourierWorkStatus;
 import com.kt.constant.Gender;
 import com.kt.constant.UserRole;
+import com.kt.domain.dto.request.AccountSearchRequestVO;
 import com.kt.constant.UserStatus;
 import com.kt.domain.entity.AbstractAccountEntity;
 import com.kt.domain.entity.CourierEntity;
@@ -101,13 +103,17 @@ class AccountServiceTest {
 
 	@Test
 	void 회원_조회_성공() {
+		// given
+		AccountSearchRequestVO accountSearchRequestVO = new AccountSearchRequestVO(
+			"회원",
+			UserRole.MEMBER,
+			null
+		);
 
 		// when
 		Page<?> foundMembers = accountService.searchAccounts(
 			Pageable.ofSize(10),
-			"회원",
-			UserRole.MEMBER,
-			null
+			accountSearchRequestVO
 		);
 
 		// then
@@ -117,13 +123,17 @@ class AccountServiceTest {
 
 	@Test
 	void 관리자_조회_성공() {
+		// given
+		AccountSearchRequestVO accountSearchRequestVO = new AccountSearchRequestVO(
+			"관리자",
+			UserRole.ADMIN,
+			null
+		);
 
 		// when
 		Page<?> foundAdmins = accountService.searchAccounts(
 			Pageable.ofSize(10),
-			"관리자",
-			UserRole.ADMIN,
-			null
+			accountSearchRequestVO
 		);
 
 		// then
@@ -133,12 +143,17 @@ class AccountServiceTest {
 
 	@Test
 	void 배송기사_조회_성공() {
+		// given
+		AccountSearchRequestVO accountSearchRequestVO = new AccountSearchRequestVO(
+			"기사",
+			UserRole.COURIER,
+			CourierWorkStatus.RESTING
+		);
+
 		// when
 		Page<?> foundCouriers = accountService.searchAccounts(
 			Pageable.ofSize(10),
-			"기사",
-			UserRole.COURIER,
-			null
+			accountSearchRequestVO
 		);
 
 		// then

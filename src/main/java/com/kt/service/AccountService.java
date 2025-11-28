@@ -4,16 +4,12 @@ import java.util.UUID;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-
-import com.kt.constant.CourierWorkStatus;
-import com.kt.constant.UserRole;
+import com.kt.domain.dto.request.AccountSearchRequestVO;
 
 public interface AccountService {
 	Page<?> searchAccounts(
 		Pageable pageable,
-		String keyword,
-		UserRole role,
-		CourierWorkStatus workStatus
+		AccountSearchRequestVO accountSearchRequestVO
 	);
 
 	void adminResetAccountPassword(UUID accountId);
