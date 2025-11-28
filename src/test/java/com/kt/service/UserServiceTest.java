@@ -3,7 +3,6 @@ package com.kt.service;
 import static org.assertj.core.api.Assertions.*;
 
 import java.time.LocalDate;
-import java.util.List;
 import java.util.UUID;
 
 import com.kt.constant.OrderStatus;
@@ -12,8 +11,6 @@ import com.kt.domain.dto.response.ReviewResponse;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.EnumSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Page;
@@ -46,6 +43,9 @@ import com.kt.repository.product.ProductRepository;
 import com.kt.repository.review.ReviewRepository;
 import com.kt.repository.user.UserRepository;
 
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+
 @Transactional
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("test")
@@ -66,6 +66,9 @@ class UserServiceTest {
 	@Autowired
 	CategoryRepository categoryRepository;
 
+	@PersistenceContext
+	EntityManager em;
+
 	UserEntity testUser;
 	UserEntity testUser2;
 	UserEntity testAdmin;
@@ -82,6 +85,7 @@ class UserServiceTest {
 		orderProductRepository.deleteAll();
 		reviewRepository.deleteAll();
 		productRepository.deleteAll();
+		em.clear();
 
 		testUser = UserEntity.create(
 			"주문자테스터1",
@@ -155,6 +159,7 @@ class UserServiceTest {
 		orderProductRepository.save(testOrderProduct);
 	}
 
+
 	@Test
 	void 내_주문_조회() {
 		UserEntity user = UserEntity.create(
@@ -216,11 +221,10 @@ class UserServiceTest {
 	@Test
 	void 리뷰_가능한_주문상품_없음__작성한_리뷰_존재() {
 		testOrder.changeStatus(OrderStatus.PURCHASE_CONFIRMED);
-		orderRepository.save(testOrder);
 
 		ReviewEntity review = ReviewEntity.create("테스트리뷰내용");
 		review.mapToOrderProduct(testOrderProduct);
-		reviewRepository.save(review);
+		reviewRepository.saveAndFlush(review);
 
 		PageRequest pageRequest = PageRequest.of(0, 10);
 		Page<OrderProductResponse.SearchReviewable> savedOrderProductResponses = userService
@@ -399,7 +403,7 @@ class UserServiceTest {
 	void 내리뷰조회_성공(){
 		ReviewEntity review = ReviewEntity.create("테스트리뷰내용");
 		review.mapToOrderProduct(testOrderProduct);
-		reviewRepository.save(review);
+		reviewRepository.saveAndFlush(review);
 
 		PageRequest pageRequest = PageRequest.of(0, 10);
 		Page<ReviewResponse.Search> savedPage = userService.getReviewsByUserId(pageRequest, testUser.getId());

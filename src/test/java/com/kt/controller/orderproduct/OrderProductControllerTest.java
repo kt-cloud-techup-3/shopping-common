@@ -21,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kt.constant.Gender;
 import com.kt.constant.OrderProductStatus;
+import com.kt.constant.OrderStatus;
 import com.kt.constant.UserRole;
 import com.kt.domain.dto.request.ReviewRequest;
 import com.kt.domain.entity.CategoryEntity;
@@ -121,6 +122,7 @@ class OrderProductControllerTest {
 
 	@Test
 	void 상품리뷰작성_성공() throws Exception {
+		testOrderProduct.getOrder().changeStatus(OrderStatus.PURCHASE_CONFIRMED);
 		ReviewRequest.Create reviewCreate = new ReviewRequest.Create(
 			"생성한테스트리뷰내용"
 		);
