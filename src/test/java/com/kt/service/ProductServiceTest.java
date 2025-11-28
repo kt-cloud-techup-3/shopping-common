@@ -14,6 +14,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.test.context.ActiveProfiles;
 
 import com.kt.constant.ProductStatus;
+import com.kt.constant.UserRole;
 import com.kt.constant.searchtype.ProductSearchType;
 import com.kt.domain.dto.request.ProductRequest;
 import com.kt.domain.dto.response.ProductResponse;
@@ -155,7 +156,7 @@ class ProductServiceTest {
 
 		// when
 		PageRequest pageRequest = PageRequest.of(1, 10);
-		Page<ProductResponse.Search> search = productService.search(pageRequest, null, null);
+		Page<ProductResponse.Search> search = productService.search(UserRole.ADMIN, pageRequest, null, null);
 
 		// then
 		assertThat(search.getTotalElements()).isEqualTo(20);
@@ -195,7 +196,8 @@ class ProductServiceTest {
 
 		// when
 		PageRequest pageRequest = PageRequest.of(0, 5);
-		Page<ProductResponse.Search> search = productService.search(pageRequest, "운동", ProductSearchType.CATEGORY);
+		Page<ProductResponse.Search> search = productService.search(UserRole.ADMIN, pageRequest, "운동",
+			ProductSearchType.CATEGORY);
 
 		// then
 		assertThat(search.getTotalElements()).isEqualTo(5);
@@ -221,7 +223,8 @@ class ProductServiceTest {
 
 		// when
 		PageRequest pageRequest = PageRequest.of(0, 5);
-		Page<ProductResponse.Search> search = productService.search(pageRequest, "5", ProductSearchType.NAME);
+		Page<ProductResponse.Search> search = productService.search(UserRole.ADMIN, pageRequest, "5",
+			ProductSearchType.NAME);
 		// then
 		assertThat(search.getTotalElements()).isEqualTo(1);
 		assertThat(search.getTotalPages()).isEqualTo(1);
@@ -237,7 +240,7 @@ class ProductServiceTest {
 		productRepository.save(product);
 
 		// when
-		ProductResponse.Detail detail = productService.detail(product.getId());
+		ProductResponse.Detail detail = productService.detail(UserRole.ADMIN, product.getId());
 
 		// then
 		assertThat(detail.name()).isEqualTo("상품");

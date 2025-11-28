@@ -5,6 +5,7 @@ import java.util.UUID;
 
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -17,6 +18,7 @@ import com.kt.common.api.ApiResult;
 import com.kt.constant.searchtype.ProductSearchType;
 import com.kt.domain.dto.response.ProductResponse;
 import com.kt.domain.dto.response.ReviewResponse;
+import com.kt.security.CurrentUser;
 import com.kt.service.ProductService;
 import com.kt.service.ReviewService;
 
@@ -32,19 +34,26 @@ public class ProductController {
 
 	@GetMapping
 	public ResponseEntity<?> search(
+		@AuthenticationPrincipal CurrentUser user,
 		@ModelAttribute Paging paging,
 		@RequestParam(required = false) String keyword,
 		@RequestParam(required = false) ProductSearchType type
 	) {
-		Page<ProductResponse.Search> search = productService.search(paging.toPageable(), keyword, type);
+		Page<ProductResponse.Search> search = productService.search(
+			user.getRole(),
+			paging.toPageable(),
+			keyword,
+			type
+		);
 		return ApiResult.ok(search);
 	}
 
 	@GetMapping("/{productId}")
 	public ResponseEntity<?> detail(
+		@AuthenticationPrincipal CurrentUser user,
 		@PathVariable UUID productId
 	) {
-		ProductResponse.Detail detail = productService.detail(productId);
+		ProductResponse.Detail detail = productService.detail(user.getRole(), productId);
 		return ApiResult.ok(detail);
 	}
 

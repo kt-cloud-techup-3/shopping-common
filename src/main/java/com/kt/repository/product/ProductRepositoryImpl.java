@@ -6,6 +6,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 
+import com.kt.constant.ProductStatus;
+import com.kt.constant.UserRole;
 import com.kt.constant.searchtype.ProductSearchType;
 import com.kt.domain.dto.response.ProductResponse;
 import com.kt.domain.dto.response.QProductResponse_Search;
@@ -25,9 +27,15 @@ public class ProductRepositoryImpl implements ProductRepositoryCustom {
 	private final QCategoryEntity category = QCategoryEntity.categoryEntity;
 
 	@Override
-	public Page<ProductResponse.Search> search(Pageable pageable, String keyword, ProductSearchType type) {
+	public Page<ProductResponse.Search> search(
+		UserRole role,
+		Pageable pageable,
+		String keyword,
+		ProductSearchType type
+	) {
 
 		BooleanBuilder booleanBuilder = new BooleanBuilder();
+		booleanBuilder.and(isActiveByRole(role));
 		booleanBuilder.and(containsKeyword(keyword, type));
 		// jpaQueryFactory
 		List<ProductResponse.Search> content = jpaQueryFactory
@@ -53,6 +61,13 @@ public class ProductRepositoryImpl implements ProductRepositoryCustom {
 			.fetch().size();
 
 		return new PageImpl<>(content, pageable, total);
+	}
+
+	private BooleanExpression isActiveByRole(UserRole role) {
+		if (role == UserRole.ADMIN) {
+			return null;
+		}
+		return product.status.eq(ProductStatus.ACTIVATED);
 	}
 
 	private BooleanExpression containsKeyword(String keyword, ProductSearchType type) {

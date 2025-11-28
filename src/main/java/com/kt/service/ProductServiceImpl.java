@@ -3,19 +3,19 @@ package com.kt.service;
 import java.util.List;
 import java.util.UUID;
 
-import com.kt.exception.CustomException;
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.kt.constant.ProductStatus;
+import com.kt.constant.UserRole;
 import com.kt.constant.message.ErrorCode;
 import com.kt.constant.searchtype.ProductSearchType;
 import com.kt.domain.dto.response.ProductResponse;
 import com.kt.domain.entity.CategoryEntity;
 import com.kt.domain.entity.ProductEntity;
-
+import com.kt.exception.CustomException;
 import com.kt.repository.CategoryRepository;
 import com.kt.repository.product.ProductRepository;
 
@@ -88,13 +88,18 @@ public class ProductServiceImpl implements ProductService {
 	}
 
 	@Override
-	public Page<ProductResponse.Search> search(Pageable pageable, String keyword, ProductSearchType type) {
-		return productRepository.search(pageable, keyword, type);
+	public Page<ProductResponse.Search> search(UserRole role, Pageable pageable, String keyword, ProductSearchType type) {
+		return productRepository.search(role, pageable, keyword, type);
 	}
 
 	@Override
-	public ProductResponse.Detail detail(UUID productId) {
+	public ProductResponse.Detail detail(UserRole role, UUID productId) {
 		ProductEntity product = productRepository.findByIdOrThrow(productId);
+
+		if (role == UserRole.MEMBER && product.getStatus() != ProductStatus.ACTIVATED) {
+			throw new CustomException(ErrorCode.PRODUCT_NOT_FOUND);
+		}
+
 		return ProductResponse.Detail.from(product);
 	}
 

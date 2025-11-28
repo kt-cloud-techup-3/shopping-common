@@ -6,6 +6,7 @@ import java.util.UUID;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import com.kt.constant.UserRole;
 import com.kt.constant.searchtype.ProductSearchType;
 import com.kt.domain.dto.response.ProductResponse;
 
@@ -25,7 +26,7 @@ public interface ProductService {
 
 	void toggleActive(UUID productId);
 
-	Page<ProductResponse.Search> search(Pageable pageable, String keyword, ProductSearchType type);
+	Page<ProductResponse.Search> search(UserRole role, Pageable pageable, String keyword, ProductSearchType type);
 
-	ProductResponse.Detail detail(UUID productId);
+	ProductResponse.Detail detail(UserRole role, UUID productId);
 }
