@@ -19,6 +19,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.LocalDate;
@@ -31,6 +32,7 @@ import static org.springframework.security.test.web.servlet.request.SecurityMock
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK)
 @AutoConfigureMockMvc
+@ActiveProfiles("test")
 class AdminAccountControllerTest {
 
 	@Autowired
@@ -92,6 +94,7 @@ class AdminAccountControllerTest {
 				.param("page", "1")
 				.param("size", "10")
 				.param("keyword", "")
+				.param("role", "MEMBER")
 				.with(SecurityMockMvcRequestPostProcessors.user(admin))
 			)
 			.andDo(print())
