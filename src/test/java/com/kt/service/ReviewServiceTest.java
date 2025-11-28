@@ -2,11 +2,14 @@ package com.kt.service;
 
 import java.time.LocalDate;
 
+import com.kt.constant.OrderStatus;
 import com.kt.exception.CustomException;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Page;
@@ -115,6 +118,7 @@ class ReviewServiceTest {
 
 	@Test
 	void 리뷰생성_성공() {
+		testOrderProduct.getOrder().changeStatus(OrderStatus.PURCHASE_CONFIRMED);
 		reviewService.create(testOrderProduct.getId(), "테스트리뷰내용");
 
 		ReviewEntity savedReview = reviewRepository
@@ -124,6 +128,21 @@ class ReviewServiceTest {
 			.orElseThrow(() -> new CustomException(ErrorCode.REVIEW_NOT_FOUND));
 
 		Assertions.assertEquals(testOrderProduct.getId(), savedReview.getOrderProduct().getId());
+	}
+
+	@ParameterizedTest
+	@EnumSource(
+		value = OrderStatus.class,
+		names = { "PURCHASE_CONFIRMED" },
+		mode = EnumSource.Mode.EXCLUDE
+	)
+	void 리뷰생성_실패__주문_구매확정_아님(OrderStatus orderStatus) {
+		testOrderProduct.getOrder().changeStatus(orderStatus);
+
+		Assertions.assertThrowsExactly(
+			CustomException.class,
+			() -> reviewService.create(testOrderProduct.getId(), "테스트리뷰내용")
+		);
 	}
 
 	@Test

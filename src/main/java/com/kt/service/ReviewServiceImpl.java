@@ -8,10 +8,14 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.kt.constant.OrderStatus;
+import com.kt.constant.message.ErrorCode;
 import com.kt.constant.searchtype.ProductSearchType;
 import com.kt.domain.dto.response.ReviewResponse;
+import com.kt.domain.entity.OrderEntity;
 import com.kt.domain.entity.OrderProductEntity;
 import com.kt.domain.entity.ReviewEntity;
+import com.kt.exception.CustomException;
 import com.kt.repository.orderproduct.OrderProductRepository;
 import com.kt.repository.review.ReviewRepository;
 
@@ -27,8 +31,11 @@ public class ReviewServiceImpl implements ReviewService {
 
 	@Override
 	public void create(UUID orderProductId, String content) {
-		ReviewEntity review = ReviewEntity.create(content);
 		OrderProductEntity orderProduct = orderProductRepository.findByIdOrThrow(orderProductId);
+		if (orderProduct.getOrder().getStatus() != OrderStatus.PURCHASE_CONFIRMED)
+			throw new CustomException(ErrorCode.ORDER_NOT_CONFIRMED);
+
+		ReviewEntity review = ReviewEntity.create(content);
 		review.mapToOrderProduct(orderProduct);
 		reviewRepository.save(review);
 	}
