@@ -11,6 +11,9 @@ import lombok.extern.slf4j.Slf4j;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.NullAndEmptySource;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.time.LocalDate;
@@ -65,50 +68,16 @@ public class PasswordRequestEntityTest {
 		log.info("getEncryptedPassword :: {}", passwordRequest.getEncryptedPassword());
 	}
 
-	@Test
-	void 객체_생성_실패_변경요청시_패스워드_null() {
+	@ParameterizedTest
+	@NullAndEmptySource
+	@ValueSource(strings = { " " })
+	void 객체_생성_실패_변경요청시_패스워드_null_공백_빈문자열(String requestedPassword) {
 
 		FieldValidationException exception = assertThrowsExactly(
 			FieldValidationException.class,
 			() -> PasswordRequestEntity.create(
 				user,
-				null,
-				PasswordRequestType.UPDATE
-			)
-		);
-
-		log.info("exception getMessage :: {}", exception.getMessage());
-		log.info("exception get errorMessage :: {}", exception.getErrorMessage());
-		assertEquals("INVALID_DOMAIN_FIELD", exception.getMessage());
-
-	}
-
-	@Test
-	void 객체_생성_실패_변경요청시_패스워드_공백() {
-
-		FieldValidationException exception = assertThrowsExactly(
-			FieldValidationException.class,
-			() -> PasswordRequestEntity.create(
-				user,
-				" ",
-				PasswordRequestType.UPDATE
-			)
-		);
-
-		log.info("exception getMessage :: {}", exception.getMessage());
-		log.info("exception get errorMessage :: {}", exception.getErrorMessage());
-		assertEquals("INVALID_DOMAIN_FIELD", exception.getMessage());
-
-	}
-
-	@Test
-	void 객체_생성_실패_변경요청시_패스워드_빈문자열() {
-
-		FieldValidationException exception = assertThrowsExactly(
-			FieldValidationException.class,
-			() -> PasswordRequestEntity.create(
-				user,
-				"",
+				requestedPassword,
 				PasswordRequestType.UPDATE
 			)
 		);
