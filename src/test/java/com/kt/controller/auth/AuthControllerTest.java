@@ -153,7 +153,7 @@ class AuthControllerTest {
 
 	@Test
 	void 멤버_회원가입_성공() throws Exception {
-
+		redisCache.set(RedisKey.SIGNUP_VERIFIED, TEST_EMAIL, true);
 		// then
 		SignupRequest.SignupMember verifiedEmailUser = new SignupRequest.SignupMember(
 			"테스트",
@@ -178,7 +178,7 @@ class AuthControllerTest {
 
 	@Test
 	void 배송기사_회원가입_성공() throws Exception {
-
+		redisCache.set(RedisKey.SIGNUP_VERIFIED, TEST_EMAIL, true);
 		// then
 		SignupRequest.SignupCourier verifiedEmailCourier = new SignupRequest.SignupCourier(
 			"테스트",
