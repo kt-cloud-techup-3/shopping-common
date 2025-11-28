@@ -6,12 +6,14 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 
+import com.kt.constant.OrderStatus;
 import com.kt.domain.dto.response.ReviewResponse;
-import com.kt.exception.CustomException;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Page;
@@ -185,7 +187,6 @@ class UserServiceTest {
 			ReceiverVO.create("이름", "번호", "도시", "시군구", "동", "상세"),
 			savedUser
 		);
-
 		orderRepository.save(order);
 		// when
 		UserResponse.Orders foundOrder = userService.getOrdersByUserId(userId);
@@ -198,16 +199,10 @@ class UserServiceTest {
 
 	@Test
 	void 리뷰_가능한_주문상품_존재() {
-		OrderProductEntity orderProduct = new OrderProductEntity(
-			5L,
-			5000L,
-			OrderProductStatus.PURCHASE_CONFIRMED,
-			testOrder,
-			testProduct
-		);
-		orderProductRepository.save(orderProduct);
-		PageRequest pageRequest = PageRequest.of(0, 10);
+		testOrder.changeStatus(OrderStatus.PURCHASE_CONFIRMED);
+		orderRepository.save(testOrder);
 
+		PageRequest pageRequest = PageRequest.of(0, 10);
 		OrderProductResponse.SearchReviewable savedOrderProductResponse = userService
 			.getReviewableOrderProducts(pageRequest, testUser.getId())
 			.stream()
@@ -215,26 +210,19 @@ class UserServiceTest {
 			.orElse(null);
 
 		Assertions.assertNotNull(savedOrderProductResponse);
-		Assertions.assertEquals(orderProduct.getId(), savedOrderProductResponse.orderProductId());
+		Assertions.assertEquals(testOrderProduct.getId(), savedOrderProductResponse.orderProductId());
 	}
 
 	@Test
 	void 리뷰_가능한_주문상품_없음__작성한_리뷰_존재() {
-		OrderProductEntity orderProduct = new OrderProductEntity(
-			5L,
-			5000L,
-			OrderProductStatus.PURCHASE_CONFIRMED,
-			testOrder,
-			testProduct
-		);
-		orderProductRepository.save(orderProduct);
-		ReviewEntity review = ReviewEntity.create(
-			"테스트리뷰내용"
-		);
-		review.mapToOrderProduct(orderProduct);
-		reviewRepository.save(review);
-		PageRequest pageRequest = PageRequest.of(0, 10);
+		testOrder.changeStatus(OrderStatus.PURCHASE_CONFIRMED);
+		orderRepository.save(testOrder);
 
+		ReviewEntity review = ReviewEntity.create("테스트리뷰내용");
+		review.mapToOrderProduct(testOrderProduct);
+		reviewRepository.save(review);
+
+		PageRequest pageRequest = PageRequest.of(0, 10);
 		Page<OrderProductResponse.SearchReviewable> savedOrderProductResponses = userService
 			.getReviewableOrderProducts(pageRequest, testUser.getId());
 
@@ -242,17 +230,11 @@ class UserServiceTest {
 	}
 
 	@Test
-	void 리뷰_가능한_주문상품_없음__주문상품_상태_구매확정_아님() {
-		OrderProductEntity orderProduct = new OrderProductEntity(
-			5L,
-			5000L,
-			OrderProductStatus.CREATED,
-			testOrder,
-			testProduct
-		);
-		orderProductRepository.save(orderProduct);
-		PageRequest pageRequest = PageRequest.of(0, 10);
+	void 리뷰_가능한_주문상품_없음__주문_리뷰가능_상태_아님() {
+		testOrder.changeStatus(OrderStatus.CANCELED);
+		orderRepository.save(testOrder);
 
+		PageRequest pageRequest = PageRequest.of(0, 10);
 		Page<OrderProductResponse.SearchReviewable> savedOrderProductResponses = userService
 			.getReviewableOrderProducts(pageRequest, testUser.getId());
 
