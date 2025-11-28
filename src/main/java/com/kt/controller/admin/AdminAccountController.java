@@ -5,6 +5,7 @@ import java.util.UUID;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -47,19 +48,19 @@ public class AdminAccountController {
 		);
 	}
 
-	@PutMapping("/users/{userId}/enabled")
+	@PatchMapping("/users/{userId}/enabled")
 	public ResponseEntity<?> enableAccount(@PathVariable UUID userId) {
 		userService.enableUser(userId);
 		return ResponseEntity.ok().build();
 	}
 
-	@PutMapping("/users/{userId}/disabled")
+	@PatchMapping("/users/{userId}/disabled")
 	public ResponseEntity<?> disableAccount(@PathVariable UUID userId) {
 		userService.disableUser(userId);
 		return ResponseEntity.ok().build();
 	}
 
-	@PutMapping("/users/{userId}/removed")
+	@PatchMapping("/users/{userId}/removed")
 	public ResponseEntity<?> deleteAccount(@PathVariable UUID userId) {
 		userService.deleteUser(userId);
 		return ResponseEntity.ok().build();

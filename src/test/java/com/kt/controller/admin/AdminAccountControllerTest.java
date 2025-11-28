@@ -134,8 +134,7 @@ class AdminAccountControllerTest {
 		);
 
 		// when
-		//mockMvc.perform(put("/api/admin/users/" + testUser.getId() + "/enabled")
-			mockMvc.perform(put("/api/admin/users/{userId}/enabled", testUser.getId())
+			mockMvc.perform(patch("/api/admin/users/{userId}/enabled", testUser.getId())
 				.with(user(admin)))
 				.andDo(print())
 			.andExpect(status().isOk());
@@ -154,7 +153,7 @@ class AdminAccountControllerTest {
 		);
 
 		// when
-		mockMvc.perform(put("/api/admin/users/{userId}/disabled", testUser.getId())
+		mockMvc.perform(patch("/api/admin/users/{userId}/disabled", testUser.getId())
 				.with(user(admin)))
 			.andDo(print())
 			.andExpect(status().isOk());
@@ -173,7 +172,7 @@ class AdminAccountControllerTest {
 			UserRole.ADMIN
 		);
 
-		mockMvc.perform(put("/api/admin/users/{userId}/removed", testUser.getId())
+		mockMvc.perform(patch("/api/admin/users/{userId}/removed", testUser.getId())
 				.with(user(admin)))
 			.andDo(print())
 			.andExpect(status().isOk());
