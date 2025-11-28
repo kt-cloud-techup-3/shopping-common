@@ -9,5 +9,5 @@ import org.springframework.data.domain.Pageable;
 import com.kt.domain.dto.response.OrderProductResponse;
 
 public interface OrderProductRepositoryCustom {
-	Page<OrderProductResponse.SearchReviewable> getReviewableOrderProductsByUserId(Pageable pageable,UUID userId);
+	Page<OrderProductResponse.SearchReviewable> getReviewableOrderProductsByUserId(Pageable pageable, UUID userId);
 }

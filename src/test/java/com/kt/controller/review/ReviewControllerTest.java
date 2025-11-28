@@ -133,7 +133,7 @@ class ReviewControllerTest {
 		MockHttpServletResponse response = mockMvc.perform(get("/api/reviews")
 				.with(user("wjd123@naver.com"))
 			.param("productId", testOrderProduct.getProduct().getId().toString())
-		)	.andExpect(status().isOk())
+		).andExpect(status().isOk())
 			.andReturn()
 			.getResponse();
 
