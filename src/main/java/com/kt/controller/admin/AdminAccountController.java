@@ -3,18 +3,15 @@ package com.kt.controller.admin;
 import java.util.UUID;
 
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.kt.common.Paging;
-import com.kt.constant.CourierWorkStatus;
-import com.kt.constant.UserRole;
+import com.kt.domain.dto.request.AccountSearchRequestVO;
 import com.kt.service.AccountService;
 import com.kt.service.UserService;
 
@@ -30,17 +27,15 @@ public class AdminAccountController {
 	@GetMapping("/accounts")
 	public ResponseEntity<?> searchAccounts(
 		@ModelAttribute Paging paging,
-		@RequestParam(required = false) String keyword,
-		@RequestParam(required = false) UserRole role,
-		@RequestParam(required = false)CourierWorkStatus workStatus
+		@ModelAttribute AccountSearchRequestVO accountSearchRequestVO
 
 	) {
 		return ResponseEntity.ok(
 			accountService.searchAccounts(
 				paging.toPageable(),
-				keyword,
-				role,
-				workStatus
+				accountSearchRequestVO.keyword(),
+				accountSearchRequestVO.role(),
+				accountSearchRequestVO.workStatus()
 			)
 		);
 	}
@@ -52,19 +47,19 @@ public class AdminAccountController {
 		);
 	}
 
-	@PostMapping("/users/{userId}/enabled")
+	@PutMapping("/users/{userId}/enabled")
 	public ResponseEntity<?> enableAccount(@PathVariable UUID userId) {
 		userService.enableUser(userId);
 		return ResponseEntity.ok().build();
 	}
 
-	@PostMapping("/users/{userId}/disabled")
+	@PutMapping("/users/{userId}/disabled")
 	public ResponseEntity<?> disableAccount(@PathVariable UUID userId) {
 		userService.disableUser(userId);
 		return ResponseEntity.ok().build();
 	}
 
-	@DeleteMapping("/users/{userId}/removed")
+	@PutMapping("/users/{userId}/removed")
 	public ResponseEntity<?> deleteAccount(@PathVariable UUID userId) {
 		userService.deleteUser(userId);
 		return ResponseEntity.ok().build();
