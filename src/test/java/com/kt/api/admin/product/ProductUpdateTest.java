@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors;
 import org.springframework.test.web.servlet.ResultActions;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.kt.constant.UserRole;
 import com.kt.domain.dto.request.AdminProductRequest;
@@ -25,6 +26,7 @@ import com.kt.repository.product.ProductRepository;
 import com.kt.security.DefaultCurrentUser;
 
 @SpringBootTest
+@Transactional
 @DisplayName("상품 수정 (어드민) - PUT /api/admin/products/{productId}")
 public class ProductUpdateTest extends MockMvcTest {
 
