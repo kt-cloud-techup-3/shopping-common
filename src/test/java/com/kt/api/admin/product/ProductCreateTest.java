@@ -1,6 +1,6 @@
-package com.kt.controller.product;
+package com.kt.api.admin.product;
 
-import static com.kt.controller.product.CategoryEntityCreator.*;
+import static com.kt.common.CategoryEntityCreator.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -32,7 +32,7 @@ import com.kt.security.DefaultCurrentUser;
 @AutoConfigureMockMvc
 @Transactional
 @DisplayName("상품 생성 - POST /api/admin/product")
-class AdminProductControllerTest {
+class ProductCreateTest {
 
 	@Autowired
 	MockMvc mockMvc;
