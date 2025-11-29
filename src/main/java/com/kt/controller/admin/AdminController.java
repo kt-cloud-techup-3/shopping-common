@@ -55,4 +55,27 @@ public class AdminController {
 		);
 	}
 
+	@PostMapping("/admins")
+	public ResponseEntity<ApiResult<Void>> createAdmin(
+		@RequestBody @Valid SignupRequest.SignupMember request
+	) {
+		userService.createAdmin(request);
+		return empty();
+	}
+
+	@PutMapping("/admins/{adminId}")
+	public ResponseEntity<ApiResult<Void>> updateAdmin(
+		@RequestBody @Valid UserRequest.UpdateDetails request,
+		@PathVariable UUID adminId
+	) {
+		userService.updateUserDetail(adminId, request);
+		return empty();
+	}
+
+	@PatchMapping("/{adminId}")
+	public ResponseEntity<ApiResult<Void>> deleteAdmin(@PathVariable UUID adminId) {
+		userService.deleteUser(adminId);
+		return empty();
+	}
+
 }
