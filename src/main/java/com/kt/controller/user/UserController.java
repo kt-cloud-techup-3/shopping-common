@@ -17,6 +17,8 @@ import com.kt.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
+import static com.kt.common.api.ApiResult.*;
+
 @RestController
 @RequestMapping("/api/users")
 @RequiredArgsConstructor
@@ -24,13 +26,12 @@ public class UserController {
 	private final UserService userService;
 
 	@GetMapping
-	public ResponseEntity<ApiResult<UserResponse.UserDetail>> getUserBySelf(
+	public ResponseEntity<ApiResult<UserResponse.UserDetail>> me(
 		@AuthenticationPrincipal DefaultCurrentUser defaultCurrentUser
 	){
-		UserResponse.UserDetail userResponse = userService.getUserDetail(
-			defaultCurrentUser.getId()
+		return wrap(
+			userService.getUserDetail(defaultCurrentUser.getId())
 		);
-		return ApiResult.ok(userResponse);
 	}
 
 	@PutMapping
@@ -42,6 +43,6 @@ public class UserController {
 			defaultCurrentUser.getId(),
 			request
 		);
-		return ApiResult.ok(null);
+		return empty();
 	}
 }

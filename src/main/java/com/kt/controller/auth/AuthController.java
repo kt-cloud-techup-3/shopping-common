@@ -19,6 +19,8 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import static com.kt.common.api.ApiResult.*;
+
 @Slf4j
 @RestController
 @RequestMapping("/api/auth")
@@ -32,7 +34,7 @@ public class AuthController {
 		@RequestBody @Valid SignupRequest.SignupEmail request
 	) {
 		authService.sendAuthCode(request);
-		return ApiResult.ok();
+		return empty();
 	}
 
 	@PostMapping("/email/verify")
@@ -40,7 +42,7 @@ public class AuthController {
 		@RequestBody @Valid SignupRequest.VerifySignupCode request
 	) {
 		authService.verifySignupCode(request);
-		return ApiResult.ok();
+		return empty();
 	}
 
 	@PostMapping("/signup/member")
@@ -48,7 +50,7 @@ public class AuthController {
 		@RequestBody @Valid SignupRequest.SignupMember request
 	) {
 		authService.signupMember(request);
-		return ApiResult.ok();
+		return empty();
 	}
 
 	@PostMapping("/signup/courier")
@@ -56,7 +58,7 @@ public class AuthController {
 		@RequestBody @Valid SignupRequest.SignupCourier request
 	) {
 		authService.signupCourier(request);
-		return ApiResult.ok();
+		return empty();
 	}
 
 	@PostMapping("/login")
@@ -64,8 +66,11 @@ public class AuthController {
 		@RequestBody @Valid LoginRequest request
 	) {
 		Pair<String, String> tokens = authService.login(request);
-		return ApiResult.ok(
-			new TokenResponse(tokens.getFirst(), tokens.getSecond())
+		return wrap(
+			new TokenResponse(
+				tokens.getFirst(),
+				tokens.getSecond()
+			)
 		);
 	}
 
@@ -74,6 +79,6 @@ public class AuthController {
 		@RequestBody @Valid ResetPasswordRequest request
 	) {
 		authService.resetPassword(request);
-		return ApiResult.ok();
+		return empty();
 	}
 }

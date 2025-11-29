@@ -19,6 +19,9 @@ import com.kt.service.AccountService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
+import static com.kt.common.api.ApiResult.wrap;
+import static com.kt.common.api.ApiResult.empty;
+
 @RestController
 @RequestMapping("/api/accounts")
 @RequiredArgsConstructor
@@ -36,7 +39,7 @@ public class AccountController {
 			request.currentPassword(),
 			request.newPassword()
 		);
-		return ApiResult.ok(null);
+		return empty();
 	}
 
 	@DeleteMapping("/retire")
@@ -45,6 +48,6 @@ public class AccountController {
 	){
 		UUID accountId = defaultCurrentUser.getId();
 		accountService.deleteAccount(accountId);
-		return ApiResult.ok(null);
+		return empty();
 	}
 }

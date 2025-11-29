@@ -156,7 +156,7 @@ class ProductServiceTest {
 
 		// when
 		PageRequest pageRequest = PageRequest.of(1, 10);
-		Page<ProductResponse.Search> search = productService.search(UserRole.ADMIN, pageRequest, null, null);
+		Page<ProductResponse.Search> search = productService.search(UserRole.ADMIN, null, null, pageRequest);
 
 		// then
 		assertThat(search.getTotalElements()).isEqualTo(20);
@@ -196,8 +196,12 @@ class ProductServiceTest {
 
 		// when
 		PageRequest pageRequest = PageRequest.of(0, 5);
-		Page<ProductResponse.Search> search = productService.search(UserRole.ADMIN, pageRequest, "운동",
-			ProductSearchType.CATEGORY);
+		Page<ProductResponse.Search> search = productService.search(
+			UserRole.ADMIN,
+			"운동",
+			ProductSearchType.CATEGORY,
+			pageRequest
+		);
 
 		// then
 		assertThat(search.getTotalElements()).isEqualTo(5);
@@ -223,8 +227,13 @@ class ProductServiceTest {
 
 		// when
 		PageRequest pageRequest = PageRequest.of(0, 5);
-		Page<ProductResponse.Search> search = productService.search(UserRole.ADMIN, pageRequest, "5",
-			ProductSearchType.NAME);
+		Page<ProductResponse.Search> search = productService.search(
+			UserRole.ADMIN,
+			"5",
+			ProductSearchType.NAME,
+			pageRequest
+		);
+
 		// then
 		assertThat(search.getTotalElements()).isEqualTo(1);
 		assertThat(search.getTotalPages()).isEqualTo(1);
