@@ -1,39 +1,37 @@
 package com.kt.controller.product;
 
-import static org.assertj.core.api.Assertions.*;
+import static com.kt.controller.product.CategoryEntityCreator.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-import java.time.LocalDate;
-import java.util.Optional;
+import java.util.UUID;
 
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.MediaType;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.NullAndEmptySource;
+import org.junit.jupiter.params.provider.NullSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.http.MediaType;
 import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.ResultActions;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.kt.constant.Gender;
 import com.kt.constant.UserRole;
 import com.kt.domain.dto.request.AdminProductRequest;
-import com.kt.domain.dto.request.LoginRequest;
 import com.kt.domain.entity.CategoryEntity;
-import com.kt.domain.entity.ProductEntity;
-import com.kt.domain.entity.UserEntity;
 import com.kt.repository.CategoryRepository;
-import com.kt.repository.product.ProductRepository;
-import com.kt.repository.user.UserRepository;
 import com.kt.security.DefaultCurrentUser;
 
-@AutoConfigureMockMvc
 @SpringBootTest
-	// @Transactional
+@AutoConfigureMockMvc
+@Transactional
+@DisplayName("상품 생성 - POST /api/admin/product")
 class AdminProductControllerTest {
 
 	@Autowired
@@ -45,100 +43,115 @@ class AdminProductControllerTest {
 	@Autowired
 	CategoryRepository categoryRepository;
 
-	@Autowired
-	ProductRepository productRepository;
+	CategoryEntity testCategory;
 
-	@Autowired
-	UserRepository userRepository;
+	DefaultCurrentUser userDetails = new DefaultCurrentUser(
+		UUID.randomUUID(),
+		"test@test.com",
+		UserRole.ADMIN
+	);
 
-	@Autowired
-	private PasswordEncoder passwordEncoder;
+	@BeforeEach
+	void setUp() {
+		testCategory = createCategory();
+		categoryRepository.save(testCategory);
+	}
 
-	@Test
-	void 로그인_성공() throws Exception {
-		//given
-
-		// when
-		LoginRequest request = new LoginRequest("test@test.com", "1234");
-		ResultActions actions = mockMvc.perform(
-			post("/api/auth/login")
-				.contentType(MediaType.APPLICATION_JSON.toString())
-				.content(objectMapper.writeValueAsString(request))
+	@ParameterizedTest
+	@NullAndEmptySource
+	void 상품_생성_실패__상품명이_공백이거나_null일_경우_400_BadRequest(
+		String invalidName
+	) throws Exception {
+		AdminProductRequest.Create request = new AdminProductRequest.Create(
+			invalidName,
+			1000L,
+			100000L,
+			testCategory.getId()
 		);
 
-		// then
-		actions.andExpect(status().isOk())
-			.andDo(print());
+		mockMvc.perform(post("/api/admin/products")
+				.with(SecurityMockMvcRequestPostProcessors.user(userDetails))
+				.contentType(MediaType.APPLICATION_JSON)
+				.content(objectMapper.writeValueAsString(request)))
+			.andDo(print())
+			.andExpect(status().isBadRequest());
+	}
+
+	@ParameterizedTest
+	@NullSource
+	void 상품_생성_실패__가격이_null일_경우_400_BadRequest(
+		Long price
+	) throws Exception {
+		AdminProductRequest.Create request = new AdminProductRequest.Create(
+			"상품명",
+			price,
+			100000L,
+			testCategory.getId()
+		);
+
+		mockMvc.perform(post("/api/admin/products")
+				.with(SecurityMockMvcRequestPostProcessors.user(userDetails))
+				.contentType(MediaType.APPLICATION_JSON)
+				.content(objectMapper.writeValueAsString(request)))
+			.andDo(print())
+			.andExpect(status().isBadRequest());
+	}
+
+	@ParameterizedTest
+	@NullSource
+	void 상품_생성_실패__재고가_null일_경우_400_BadRequest(
+		Long stock
+	) throws Exception {
+		AdminProductRequest.Create request = new AdminProductRequest.Create(
+			"상품명",
+			1000L,
+			stock,
+			testCategory.getId()
+		);
+
+		mockMvc.perform(post("/api/admin/products")
+				.with(SecurityMockMvcRequestPostProcessors.user(userDetails))
+				.contentType(MediaType.APPLICATION_JSON)
+				.content(objectMapper.writeValueAsString(request)))
+			.andDo(print())
+			.andExpect(status().isBadRequest());
+	}
+
+	@ParameterizedTest
+	@NullSource
+	void 상품_생성_실패__카테고리_id가_null일_경우_400_BadRequest(
+		UUID categoryId
+	) throws Exception {
+		AdminProductRequest.Create request = new AdminProductRequest.Create(
+			"상품명",
+			1000L,
+			1000L,
+			categoryId
+		);
+
+		mockMvc.perform(post("/api/admin/products")
+				.with(SecurityMockMvcRequestPostProcessors.user(userDetails))
+				.contentType(MediaType.APPLICATION_JSON)
+				.content(objectMapper.writeValueAsString(request)))
+			.andDo(print())
+			.andExpect(status().isBadRequest());
 	}
 
 	@Test
-	void 상품_생성_성공() throws Exception {
-		// given
-		CategoryEntity category = CategoryEntity.create("카테고리", null);
-		categoryRepository.save(category);
-		// ProductEntity product = ProductEntity.create("상품명", 1000L, 100000L, category);
-		// productRepository.save(product);
-		// when
+	void 상품_생성_성공__200_OK() throws Exception {
 		AdminProductRequest.Create request = new AdminProductRequest.Create(
 			"상품명",
 			1000L,
 			100000L,
-			category.getId()
-		);
-		ResultActions actions = mockMvc.perform(
-			post("/api/admin/products")
-				.contentType(MediaType.APPLICATION_JSON.toString())
-				.content(objectMapper.writeValueAsString(request))
+			testCategory.getId()
 		);
 
-		// then
-		actions.andExpect(status().isOk())
-			.andDo(print());
-
-		Optional<ProductEntity> found = productRepository.findAll()
-			.stream()
-			.filter(product -> product.getName().equals("상품명"))
-			.findFirst();
-
-		assertThat(found.isPresent()).isTrue();
-	}
-
-	@Test
-	void 상품_생성_성공_2() throws Exception {
-		String TEST_PASSWORD = "testpassword";
-		UserEntity testMember = UserEntity.create(
-			"멤버테스터",
-			"wjd123@naver.com",
-			passwordEncoder.encode(TEST_PASSWORD),
-			UserRole.MEMBER,
-			Gender.MALE,
-			LocalDate.of(1990, 1, 1),
-			"010-1234-5678"
-		);
-		userRepository.save(testMember);
-		DefaultCurrentUser userDetails = new DefaultCurrentUser(
-			testMember.getId(),
-			testMember.getEmail(),
-			testMember.getRole()
-		);
-
-		CategoryEntity category = CategoryEntity.create("카테고리", null);
-		categoryRepository.save(category);
-
-		AdminProductRequest.Create request = new AdminProductRequest.Create(
-			"상품명",
-			1000L,
-			100000L,
-			category.getId()
-		);
-
-		mockMvc
-			.perform(post("/api/admin/products")
-				.contentType(MediaType.APPLICATION_JSON.toString())
-				.content(objectMapper.writeValueAsString(request))
-				.with(SecurityMockMvcRequestPostProcessors.user(userDetails)))
-			.andExpect(status().isOk())
-			.andDo(print());
+		mockMvc.perform(post("/api/admin/products")
+				.with(SecurityMockMvcRequestPostProcessors.user(userDetails))
+				.contentType(MediaType.APPLICATION_JSON)
+				.content(objectMapper.writeValueAsString(request)))
+			.andDo(print())
+			.andExpect(status().isOk());
 	}
 
 }
