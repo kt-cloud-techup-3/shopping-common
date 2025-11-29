@@ -82,7 +82,7 @@ public class AdminProductController {
 		return ApiResult.ok(detail);
 	}
 
-	@GetMapping("/{productId}/toggle-sold-out")
+	@PutMapping("/{productId}/toggle-sold-out")
 	public ResponseEntity<?> toggleActive(
 		@PathVariable UUID productId
 	) {
