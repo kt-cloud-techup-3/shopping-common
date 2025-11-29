@@ -31,7 +31,7 @@ import com.kt.security.DefaultCurrentUser;
 @SpringBootTest
 @AutoConfigureMockMvc
 @Transactional
-@DisplayName("상품 생성 - POST /api/admin/product")
+@DisplayName("상품 생성 (어드민) - POST /api/admin/product")
 class ProductCreateTest {
 
 	@Autowired

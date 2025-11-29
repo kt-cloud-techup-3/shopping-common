@@ -3,25 +3,22 @@ package com.kt.api.admin.product;
 import static com.kt.common.CategoryEntityCreator.*;
 import static com.kt.common.ProductEntityCreator.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 import java.util.ArrayList;
 import java.util.UUID;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.MediaType;
 import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.kt.constant.ProductStatus;
 import com.kt.constant.UserRole;
-import com.kt.domain.dto.request.AdminProductRequest;
 import com.kt.domain.entity.CategoryEntity;
 import com.kt.domain.entity.ProductEntity;
 import com.kt.repository.CategoryRepository;
@@ -30,9 +27,8 @@ import com.kt.security.DefaultCurrentUser;
 
 @SpringBootTest
 @Transactional
-@DisplayName("상품 다중 품절 처리 (어드민) - POST /api/admin/products/sold-out")
-public class ProductSoldOutTest extends MockMvcTest {
-
+@DisplayName("상품 조회 (어드민) - GET /api/admin/products")
+public class ProductSearchTest extends MockMvcTest {
 	@Autowired
 	CategoryRepository categoryRepository;
 
@@ -58,39 +54,28 @@ public class ProductSoldOutTest extends MockMvcTest {
 		for (int i = 0; i < 5; i++) {
 			products.add(createProduct(testCategory));
 		}
+
+		for (int i = 0; i < 5; i++) {
+			ProductEntity product = createProduct(testCategory);
+			product.inActivate();
+			products.add(product);
+		}
+
 		productRepository.saveAll(products);
 	}
 
 	@Test
-	void 상품_품절_처리_실패__상품_리스트가_null일_경우_400_BadRequest() throws Exception {
-		AdminProductRequest.SoldOut request = new AdminProductRequest.SoldOut(
-			null
-		);
-
+	void 상품_조회_성공__200_OK() throws Exception {
 		ResultActions actions = mockMvc.perform(
-			post("/api/admin/products/sold-out")
+			get("/api/admin/products")
 				.with(SecurityMockMvcRequestPostProcessors.user(userDetails))
-				.contentType(MediaType.APPLICATION_JSON)
-				.content(objectMapper.writeValueAsString(request))
+				.param("page", "1")
+				.param("size", "10")
 		);
 
-		actions.andExpect(status().isBadRequest());
-	}
-
-	@Test
-	void 상품_품절_처리_성공__200_OK() throws Exception {
-		AdminProductRequest.SoldOut request = new AdminProductRequest.SoldOut(
-			products.stream().map(ProductEntity::getId).toList()
-		);
-
-		ResultActions actions = mockMvc.perform(
-			post("/api/admin/products/sold-out")
-				.with(SecurityMockMvcRequestPostProcessors.user(userDetails))
-				.contentType(MediaType.APPLICATION_JSON)
-				.content(objectMapper.writeValueAsString(request))
-		);
-
-		actions.andExpect(status().isOk());
-		products.forEach(product -> Assertions.assertEquals(ProductStatus.IN_ACTIVATED, product.getStatus()));
+		actions
+			.andExpect(status().isOk())
+			.andExpect(jsonPath("$.data.content.length()").value(10))
+			.andDo(print());
 	}
 }
