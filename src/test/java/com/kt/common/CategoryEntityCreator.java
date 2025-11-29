@@ -1,4 +1,4 @@
-package com.kt.controller.product;
+package com.kt.common;
 
 import java.util.UUID;
 
