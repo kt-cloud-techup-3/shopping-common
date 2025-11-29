@@ -10,10 +10,11 @@ import com.kt.constant.UserRole;
 import com.kt.domain.dto.request.UserRequest;
 import com.kt.domain.dto.request.SignupRequest;
 import com.kt.domain.dto.response.OrderProductResponse;
+import com.kt.domain.dto.response.ReviewResponse;
 import com.kt.domain.dto.response.UserResponse;
 
 public interface UserService {
-	List<OrderProductResponse.SearchReviewable> getReviewableOrderProducts(UUID userId);
+	Page<OrderProductResponse.SearchReviewable> getReviewableOrderProducts(Pageable pageable, UUID userId);
 
 	UserResponse.Orders getOrdersByUserId(UUID id);
 
@@ -36,6 +37,8 @@ public interface UserService {
 	void createAdmin(SignupRequest.SignupMember request);
 
 	void deleteAdmin(UUID adminId);
+
+	Page<ReviewResponse.Search> getReviewsByUserId(Pageable pageable, UUID userId);
 
 	void updateUserDetail(UUID userId, UserRequest.UpdateDetails details);
 }

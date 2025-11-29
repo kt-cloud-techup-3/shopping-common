@@ -3,6 +3,7 @@ package com.kt.service;
 import java.util.List;
 import java.util.UUID;
 
+import com.kt.domain.dto.response.ReviewResponse;
 import com.kt.exception.CustomException;
 
 import org.springframework.data.domain.Page;
@@ -21,6 +22,7 @@ import com.kt.domain.entity.OrderEntity;
 import com.kt.domain.entity.UserEntity;
 import com.kt.repository.orderproduct.OrderProductRepository;
 import com.kt.repository.OrderRepository;
+import com.kt.repository.review.ReviewRepository;
 import com.kt.repository.user.UserRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -34,6 +36,7 @@ public class UserServiceImpl implements UserService {
 	private final OrderRepository orderRepository;
 	private final UserRepository userRepository;
 	private final PasswordEncoder passwordEncoder;
+	private final ReviewRepository reviewRepository;
 
 	@Override
 	public UserResponse.Orders getOrdersByUserId(UUID id) {
@@ -42,8 +45,8 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public List<OrderProductResponse.SearchReviewable> getReviewableOrderProducts(UUID userId) {
-		return orderProductRepository.getReviewableOrderProductsByUserId(userId);
+	public Page<OrderProductResponse.SearchReviewable> getReviewableOrderProducts(Pageable pageable, UUID userId) {
+		return orderProductRepository.getReviewableOrderProductsByUserId(pageable, userId);
 	}
 
 	@Override
@@ -142,5 +145,10 @@ public class UserServiceImpl implements UserService {
 			details.birth(),
 			details.gender()
 		);
+	}
+
+	@Override
+	public Page<ReviewResponse.Search> getReviewsByUserId(Pageable pageable, UUID userId) {
+		return reviewRepository.searchReviewsByUserId(pageable, userId);
 	}
 }

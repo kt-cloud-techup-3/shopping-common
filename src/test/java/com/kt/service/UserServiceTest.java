@@ -3,9 +3,10 @@ package com.kt.service;
 import static org.assertj.core.api.Assertions.*;
 
 import java.time.LocalDate;
-import java.util.List;
 import java.util.UUID;
 
+import com.kt.constant.OrderStatus;
+import com.kt.domain.dto.response.ReviewResponse;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -13,6 +14,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Propagation;
@@ -41,6 +43,9 @@ import com.kt.repository.product.ProductRepository;
 import com.kt.repository.review.ReviewRepository;
 import com.kt.repository.user.UserRepository;
 
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+
 @Transactional
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("test")
@@ -61,11 +66,15 @@ class UserServiceTest {
 	@Autowired
 	CategoryRepository categoryRepository;
 
+	@PersistenceContext
+	EntityManager em;
+
 	UserEntity testUser;
 	UserEntity testUser2;
 	UserEntity testAdmin;
 	OrderEntity testOrder;
 	ProductEntity testProduct;
+	OrderProductEntity testOrderProduct;
 	UUID userId;
 	UUID AdminId;
 
@@ -76,6 +85,7 @@ class UserServiceTest {
 		orderProductRepository.deleteAll();
 		reviewRepository.deleteAll();
 		productRepository.deleteAll();
+		em.clear();
 
 		testUser = UserEntity.create(
 			"주문자테스터1",
@@ -138,7 +148,17 @@ class UserServiceTest {
 			category
 		);
 		productRepository.save(testProduct);
+
+		testOrderProduct = new OrderProductEntity(
+			5L,
+			5000L,
+			OrderProductStatus.CREATED,
+			testOrder,
+			testProduct
+		);
+		orderProductRepository.save(testOrderProduct);
 	}
+
 
 	@Test
 	void 내_주문_조회() {
@@ -172,7 +192,6 @@ class UserServiceTest {
 			ReceiverVO.create("이름", "번호", "도시", "시군구", "동", "상세"),
 			savedUser
 		);
-
 		orderRepository.save(order);
 		// when
 		UserResponse.Orders foundOrder = userService.getOrdersByUserId(userId);
@@ -185,62 +204,45 @@ class UserServiceTest {
 
 	@Test
 	void 리뷰_가능한_주문상품_존재() {
-		OrderProductEntity orderProduct = new OrderProductEntity(
-			5L,
-			5000L,
-			OrderProductStatus.PURCHASE_CONFIRMED,
-			testOrder,
-			testProduct
-		);
-		orderProductRepository.save(orderProduct);
+		testOrder.changeStatus(OrderStatus.PURCHASE_CONFIRMED);
+		orderRepository.save(testOrder);
 
-		OrderProductResponse.SearchReviewable foundedOrderProductResponse = userService
-			.getReviewableOrderProducts(testUser.getId())
+		PageRequest pageRequest = PageRequest.of(0, 10);
+		OrderProductResponse.SearchReviewable savedOrderProductResponse = userService
+			.getReviewableOrderProducts(pageRequest, testUser.getId())
 			.stream()
 			.findFirst()
 			.orElse(null);
 
-		Assertions.assertNotNull(foundedOrderProductResponse);
-		Assertions.assertEquals(orderProduct.getId(), foundedOrderProductResponse.orderProductId());
+		Assertions.assertNotNull(savedOrderProductResponse);
+		Assertions.assertEquals(testOrderProduct.getId(), savedOrderProductResponse.orderProductId());
 	}
 
 	@Test
 	void 리뷰_가능한_주문상품_없음__작성한_리뷰_존재() {
-		OrderProductEntity orderProduct = new OrderProductEntity(
-			5L,
-			5000L,
-			OrderProductStatus.PURCHASE_CONFIRMED,
-			testOrder,
-			testProduct
-		);
-		orderProductRepository.save(orderProduct);
-		ReviewEntity review = ReviewEntity.create(
-			"테스트리뷰내용"
-		);
-		review.mapToOrderProduct(orderProduct);
-		reviewRepository.save(review);
+		testOrder.changeStatus(OrderStatus.PURCHASE_CONFIRMED);
 
-		List<OrderProductResponse.SearchReviewable> foundedOrderProductResponses = userService
-			.getReviewableOrderProducts(testUser.getId());
+		ReviewEntity review = ReviewEntity.create("테스트리뷰내용");
+		review.mapToOrderProduct(testOrderProduct);
+		reviewRepository.saveAndFlush(review);
 
-		Assertions.assertEquals(0, foundedOrderProductResponses.size());
+		PageRequest pageRequest = PageRequest.of(0, 10);
+		Page<OrderProductResponse.SearchReviewable> savedOrderProductResponses = userService
+			.getReviewableOrderProducts(pageRequest, testUser.getId());
+
+		Assertions.assertEquals(0, savedOrderProductResponses.getContent().size());
 	}
 
 	@Test
-	void 리뷰_가능한_주문상품_없음__주문상품_상태_구매확정_아님() {
-		OrderProductEntity orderProduct = new OrderProductEntity(
-			5L,
-			5000L,
-			OrderProductStatus.CREATED,
-			testOrder,
-			testProduct
-		);
-		orderProductRepository.save(orderProduct);
+	void 리뷰_가능한_주문상품_없음__주문_리뷰가능_상태_아님() {
+		testOrder.changeStatus(OrderStatus.CANCELED);
+		orderRepository.save(testOrder);
 
-		List<OrderProductResponse.SearchReviewable> foundedOrderProductResponses = userService
-			.getReviewableOrderProducts(testUser.getId());
+		PageRequest pageRequest = PageRequest.of(0, 10);
+		Page<OrderProductResponse.SearchReviewable> savedOrderProductResponses = userService
+			.getReviewableOrderProducts(pageRequest, testUser.getId());
 
-		Assertions.assertEquals(0, foundedOrderProductResponses.size());
+		Assertions.assertEquals(0, savedOrderProductResponses.getContent().size());
 	}
 
 	@Test
@@ -395,6 +397,25 @@ class UserServiceTest {
 		OrderEntity foundOrder = orderRepository.findById(savedOrder.getId()).orElse(null);
 		assertThat(foundOrder).isNotNull();
 
+	}
+
+	@Test
+	void 내리뷰조회_성공(){
+		ReviewEntity review = ReviewEntity.create("테스트리뷰내용");
+		review.mapToOrderProduct(testOrderProduct);
+		reviewRepository.saveAndFlush(review);
+
+		PageRequest pageRequest = PageRequest.of(0, 10);
+		Page<ReviewResponse.Search> savedPage = userService.getReviewsByUserId(pageRequest, testUser.getId());
+
+		ReviewResponse.Search savedReviewResponse = savedPage
+			.stream()
+			.findFirst()
+			.orElse(null);
+
+		Assertions.assertNotNull(savedReviewResponse);
+		Assertions.assertEquals(review.getId(), savedReviewResponse.reviewId());
+		Assertions.assertEquals(review.getContent(), savedReviewResponse.content());
 	}
 
 	@Test
