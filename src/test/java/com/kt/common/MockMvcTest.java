@@ -1,4 +1,4 @@
-package com.kt.api.admin.product;
+package com.kt.common;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -10,8 +10,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 public abstract class MockMvcTest {
 
 	@Autowired
-	MockMvc mockMvc;
+	public MockMvc mockMvc;
 
 	@Autowired
-	ObjectMapper objectMapper;
+	public ObjectMapper objectMapper;
 }

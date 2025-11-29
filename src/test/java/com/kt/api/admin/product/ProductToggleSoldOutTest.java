@@ -17,6 +17,7 @@ import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequ
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.kt.common.MockMvcTest;
 import com.kt.constant.ProductStatus;
 import com.kt.constant.UserRole;
 import com.kt.domain.entity.CategoryEntity;
