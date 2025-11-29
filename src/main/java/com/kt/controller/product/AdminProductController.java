@@ -90,7 +90,7 @@ public class AdminProductController {
 		return ApiResult.ok(null);
 	}
 
-	@GetMapping("/{productId}/activate")
+	@PutMapping("/{productId}/activate")
 	public ResponseEntity<?> activate(
 		@PathVariable UUID productId
 	) {
