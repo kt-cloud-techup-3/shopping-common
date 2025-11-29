@@ -64,7 +64,7 @@ public class ProductSearchTest extends TestWithMockMvc {
 	}
 
 	@Test
-	void 상품_조회_성공__200_OK() throws Exception {
+	void 어드민은_상품상태_관계없이_모두_모두_조회__200_OK() throws Exception {
 		ResultActions actions = mockMvc.perform(
 			get("/api/admin/products")
 				.with(SecurityMockMvcRequestPostProcessors.user(userDetails))
