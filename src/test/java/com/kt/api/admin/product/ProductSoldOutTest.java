@@ -13,13 +13,12 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors;
 import org.springframework.test.web.servlet.ResultActions;
-import org.springframework.transaction.annotation.Transactional;
 
 import com.kt.common.MockMvcTest;
+import com.kt.common.TestWithMockMvc;
 import com.kt.constant.ProductStatus;
 import com.kt.constant.UserRole;
 import com.kt.domain.dto.request.AdminProductRequest;
@@ -29,10 +28,9 @@ import com.kt.repository.CategoryRepository;
 import com.kt.repository.product.ProductRepository;
 import com.kt.security.DefaultCurrentUser;
 
-@SpringBootTest
-@Transactional
+@MockMvcTest
 @DisplayName("상품 다중 품절 처리 (어드민) - POST /api/admin/products/sold-out")
-public class ProductSoldOutTest extends MockMvcTest {
+public class ProductSoldOutTest extends TestWithMockMvc {
 
 	@Autowired
 	CategoryRepository categoryRepository;

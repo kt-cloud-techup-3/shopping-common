@@ -14,23 +14,19 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.junit.jupiter.params.provider.NullSource;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.transaction.annotation.Transactional;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.kt.common.MockMvcTest;
 import com.kt.constant.UserRole;
 import com.kt.domain.dto.request.AdminProductRequest;
 import com.kt.domain.entity.CategoryEntity;
 import com.kt.repository.CategoryRepository;
 import com.kt.security.DefaultCurrentUser;
 
-@SpringBootTest
-@AutoConfigureMockMvc
-@Transactional
+@MockMvcTest
 @DisplayName("상품 생성 (어드민) - POST /api/admin/product")
 class ProductCreateTest {
 

@@ -12,12 +12,11 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors;
 import org.springframework.test.web.servlet.ResultActions;
-import org.springframework.transaction.annotation.Transactional;
 
 import com.kt.common.MockMvcTest;
+import com.kt.common.TestWithMockMvc;
 import com.kt.constant.ProductStatus;
 import com.kt.constant.UserRole;
 import com.kt.domain.entity.CategoryEntity;
@@ -26,10 +25,9 @@ import com.kt.repository.CategoryRepository;
 import com.kt.repository.product.ProductRepository;
 import com.kt.security.DefaultCurrentUser;
 
-@SpringBootTest
-@Transactional
+@MockMvcTest
 @DisplayName("상품 품절 토글 (어드민) - PUT /api/admin/products/{productId}/toggle-sold-out")
-public class ProductToggleSoldOutTest extends MockMvcTest {
+public class ProductToggleSoldOutTest extends TestWithMockMvc {
 
 	@Autowired
 	CategoryRepository categoryRepository;
