@@ -1,5 +1,7 @@
 package com.kt.controller.account;
 
+import static com.kt.common.api.ApiResult.*;
+
 import java.util.UUID;
 
 import org.springframework.http.ResponseEntity;
@@ -19,21 +21,18 @@ import com.kt.service.AccountService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
-import static com.kt.common.api.ApiResult.wrap;
-import static com.kt.common.api.ApiResult.empty;
-
 @RestController
 @RequestMapping("/api/accounts")
 @RequiredArgsConstructor
 public class AccountController {
-
+	// 테스트
 	private final AccountService accountService;
 
 	@PatchMapping("/{accountId}/password")
 	public ResponseEntity<ApiResult<Void>> updatePassword(
 		@PathVariable UUID accountId,
 		@RequestBody @Valid AccountRequest.UpdatePassword request
-	){
+	) {
 		accountService.updatePassword(
 			accountId,
 			request.currentPassword(),
@@ -45,7 +44,7 @@ public class AccountController {
 	@DeleteMapping("/retire")
 	public ResponseEntity<ApiResult<Void>> delete(
 		@AuthenticationPrincipal DefaultCurrentUser defaultCurrentUser
-	){
+	) {
 		UUID accountId = defaultCurrentUser.getId();
 		accountService.deleteAccount(accountId);
 		return empty();
