@@ -14,10 +14,11 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.transaction.annotation.Transactional;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kt.constant.Gender;
 import com.kt.constant.OrderProductStatus;
+import com.kt.constant.ReviewStatus;
 import com.kt.constant.UserRole;
 import com.kt.domain.entity.CategoryEntity;
 import com.kt.domain.entity.OrderEntity;
@@ -37,6 +38,7 @@ import com.kt.security.DefaultCurrentUser;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
+@Transactional
 class AdminReviewControllerTest {
 
 	@Autowired
@@ -105,6 +107,7 @@ class AdminReviewControllerTest {
 			LocalDate.of(1999, 1, 1),
 			"010"
 		);
+
 		admin = new DefaultCurrentUser(
 			testAdmin.getId(),
 			testAdmin.getEmail(),
@@ -131,7 +134,7 @@ class AdminReviewControllerTest {
 
 
 	@Test
-	void 상품조회_성공() throws Exception {
+	void 상품리뷰조회_성공() throws Exception {
 		ReviewEntity review = ReviewEntity.create("테스트리뷰내용");
 		review.mapToOrderProduct(testOrderProduct);
 		reviewRepository.save(review);
@@ -146,5 +149,19 @@ class AdminReviewControllerTest {
 		).andExpect(status().isOk())
 			.andExpect(jsonPath("$.data.content[0].reviewId").value(review.getId().toString()))
 			.andExpect(jsonPath("$.data.content[0].content").value(review.getContent()));
+	}
+
+	@Test
+	void 상품리뷰삭제_성공() throws Exception {
+		ReviewEntity review = ReviewEntity.create("테스트리뷰내용");
+		review.mapToOrderProduct(testOrderProduct);
+		reviewRepository.save(review);
+
+		mockMvc.perform(
+			delete("/api/admin/reviews/{reviewId}", review.getId())
+				.with(user(admin))
+		).andExpect(status().isOk());
+
+		assertEquals(ReviewStatus.REMOVED, review.getStatus());
 	}
 }
