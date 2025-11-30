@@ -10,4 +10,8 @@ public class ReviewRequest {
 		@NotBlank(message = "리뷰내용은 필수 항목입니다.")
 		String content
 	){}
+	public record Update(
+		@NotBlank(message = "리뷰내용은 필수 항목입니다.")
+		String content
+	){}
 }
