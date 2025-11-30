@@ -1,27 +1,24 @@
-package com.kt.controller.orderproduct;
+package com.kt.api.review;
 
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-import java.time.LocalDate;
-
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.test.web.servlet.ResultActions;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.kt.constant.Gender;
-import com.kt.constant.OrderProductStatus;
+import com.kt.common.CategoryEntityCreator;
+import com.kt.common.MockMvcTest;
+import com.kt.common.OrderProductCreator;
+import com.kt.common.ProductCreator;
+import com.kt.common.ReceiverCreator;
+import com.kt.common.UserEntityCreator;
 import com.kt.constant.OrderStatus;
-import com.kt.constant.UserRole;
 import com.kt.domain.dto.request.ReviewRequest;
 import com.kt.domain.entity.CategoryEntity;
 import com.kt.domain.entity.OrderEntity;
@@ -37,11 +34,8 @@ import com.kt.repository.product.ProductRepository;
 import com.kt.repository.review.ReviewRepository;
 import com.kt.repository.user.UserRepository;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@AutoConfigureMockMvc
-@ActiveProfiles("test")
-@Transactional
-class OrderProductControllerTest {
+@DisplayName("상품 리뷰 작성 - POST /api/orderproducts/{orderProductId}/reviews")
+public class ReviewCreateTest extends MockMvcTest {
 
 	@Autowired
 	ReviewRepository reviewRepository;
@@ -55,87 +49,50 @@ class OrderProductControllerTest {
 	OrderRepository orderRepository;
 	@Autowired
 	CategoryRepository categoryRepository;
-	@Autowired
-	MockMvc mockMvc;
-	@Autowired
-	ObjectMapper objectMapper;
 
 	OrderProductEntity testOrderProduct;
 	ProductEntity testProduct;
 
 	@BeforeEach
 	void setUp() throws Exception {
-		orderProductRepository.deleteAll();
-		userRepository.deleteAll();
-		productRepository.deleteAll();
-		orderRepository.deleteAll();
-		reviewRepository.deleteAll();
-		categoryRepository.deleteAll();
-
-		UserEntity user = UserEntity.create(
-			"주문자테스터1",
-			"wjd123@naver.com",
-			"1234",
-			UserRole.MEMBER,
-			Gender.MALE,
-			LocalDate.now(),
-			"010-1234-5678"
-		);
+		UserEntity user = UserEntityCreator.createMember();
 		userRepository.save(user);
 
-		ReceiverVO receiver = new ReceiverVO(
-			"수신자테스터1",
-			"010-1234-5678",
-			"강원도",
-			"원주시",
-			"행구로",
-			"주소설명"
-		);
+		ReceiverVO receiver = ReceiverCreator.createReceiver();
 
-		OrderEntity order = OrderEntity.create(
-			receiver,
-			user
-		);
+		OrderEntity order = OrderEntity.create(receiver, user);
 		orderRepository.save(order);
 
-		CategoryEntity category = CategoryEntity.create("카테고리", null);
+		CategoryEntity category = CategoryEntityCreator.createCategory();
 		categoryRepository.save(category);
 
-		testProduct = ProductEntity.create(
-			"테스트상품명",
-			1000L,
-			5L,
-			category
-		);
+		testProduct = ProductCreator.createProduct(category);
 		productRepository.save(testProduct);
 
-		testOrderProduct = new OrderProductEntity(
-			5L,
-			5000L,
-			OrderProductStatus.CREATED,
-			order,
-			testProduct
-		);
+		testOrderProduct = OrderProductCreator.createOrderProduct(order, testProduct);
 		orderProductRepository.save(testOrderProduct);
 	}
 
 	@Test
-	void 상품리뷰작성_성공() throws Exception {
+	void 상품리뷰작성_성공__200_OK() throws Exception {
+		// given
 		testOrderProduct.getOrder().updateStatus(OrderStatus.PURCHASE_CONFIRMED);
 		ReviewRequest.Create reviewCreate = new ReviewRequest.Create(
 			"생성한테스트리뷰내용"
 		);
 		String json = objectMapper.writeValueAsString(reviewCreate);
 
-		mockMvc.perform(post("/api/orderproducts/{orderProductId}/reviews", testOrderProduct.getId())
+		// when
+		ResultActions actions = mockMvc.perform(post("/api/orderproducts/{orderProductId}/reviews", testOrderProduct.getId())
 			.with(user("wjd123@naver.com"))
 			.contentType(MediaType.APPLICATION_JSON)
 			.content(json)
-		).andExpect(status().isOk());
+		);
 
+		// then
+		actions.andExpect(status().isOk());
 		ReviewEntity savedReview = reviewRepository.findByOrderProductIdOrThrow(testOrderProduct.getId());
-
 		Assertions.assertNotNull(savedReview);
-		Assertions.assertEquals(savedReview.getContent(), reviewCreate.content());
+		Assertions.assertEquals(savedReview.getContent(),reviewCreate.content());
 	}
 }
