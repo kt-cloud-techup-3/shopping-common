@@ -24,7 +24,7 @@ import com.kt.domain.entity.CategoryEntity;
 import com.kt.repository.CategoryRepository;
 import com.kt.security.DefaultCurrentUser;
 
-@DisplayName("상품 생성 (어드민) - POST /api/admin/product")
+@DisplayName("상품 생성 (어드민) - POST /api/admin/products")
 class ProductCreateTest extends MockMvcTest {
 
 	@Autowired
