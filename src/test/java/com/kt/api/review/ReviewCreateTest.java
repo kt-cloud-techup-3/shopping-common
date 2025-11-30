@@ -10,9 +10,9 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
-import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.ResultActions;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.kt.common.CategoryEntityCreator;
 import com.kt.common.MockMvcTest;
 import com.kt.common.OrderProductCreator;
 import com.kt.common.ProductCreator;
@@ -49,10 +49,6 @@ public class ReviewCreateTest extends MockMvcTest {
 	OrderRepository orderRepository;
 	@Autowired
 	CategoryRepository categoryRepository;
-	@Autowired
-	MockMvc mockMvc;
-	@Autowired
-	ObjectMapper objectMapper;
 
 	OrderProductEntity testOrderProduct;
 	ProductEntity testProduct;
@@ -67,7 +63,7 @@ public class ReviewCreateTest extends MockMvcTest {
 		OrderEntity order = OrderEntity.create(receiver, user);
 		orderRepository.save(order);
 
-		CategoryEntity category = CategoryEntity.create("카테고리", null);
+		CategoryEntity category = CategoryEntityCreator.createCategory();
 		categoryRepository.save(category);
 
 		testProduct = ProductCreator.createProduct(category);
@@ -79,20 +75,23 @@ public class ReviewCreateTest extends MockMvcTest {
 
 	@Test
 	void 상품리뷰작성_성공__200_OK() throws Exception {
+		// given
 		testOrderProduct.getOrder().updateStatus(OrderStatus.PURCHASE_CONFIRMED);
 		ReviewRequest.Create reviewCreate = new ReviewRequest.Create(
 			"생성한테스트리뷰내용"
 		);
 		String json = objectMapper.writeValueAsString(reviewCreate);
 
-		mockMvc.perform(post("/api/orderproducts/{orderProductId}/reviews", testOrderProduct.getId())
+		// when
+		ResultActions actions = mockMvc.perform(post("/api/orderproducts/{orderProductId}/reviews", testOrderProduct.getId())
 			.with(user("wjd123@naver.com"))
 			.contentType(MediaType.APPLICATION_JSON)
 			.content(json)
-		).andExpect(status().isOk());
+		);
 
+		// then
+		actions.andExpect(status().isOk());
 		ReviewEntity savedReview = reviewRepository.findByOrderProductIdOrThrow(testOrderProduct.getId());
-
 		Assertions.assertNotNull(savedReview);
 		Assertions.assertEquals(savedReview.getContent(),reviewCreate.content());
 	}

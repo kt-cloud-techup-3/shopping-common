@@ -10,8 +10,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors;
-import org.springframework.test.web.servlet.MockMvc;
-
+import org.springframework.test.web.servlet.ResultActions;
 
 import com.kt.common.CourierEntityCreator;
 import com.kt.common.MockMvcTest;
@@ -28,8 +27,6 @@ public class AccountDeleteTest extends MockMvcTest {
 	AccountRepository accountRepository;
 	@Autowired
 	CourierRepository courierRepository;
-	@Autowired
-	MockMvc mockMvc;
 
 	CourierEntity testCourier;
 	DefaultCurrentUser courierDetails;
@@ -48,11 +45,16 @@ public class AccountDeleteTest extends MockMvcTest {
 
 	@Test
 	void 배송기사계정탈퇴_성공__200_OK() throws Exception {
-		mockMvc.perform(delete("/api/accounts/retire")
-			.with(SecurityMockMvcRequestPostProcessors.user(courierDetails))
-		).andExpect(status().isOk());
-
+		// given
 		AbstractAccountEntity savedAccount = accountRepository.findByIdOrThrow(testCourier.getId());
+
+		// when
+		ResultActions actions = mockMvc.perform(delete("/api/accounts/retire")
+			.with(SecurityMockMvcRequestPostProcessors.user(courierDetails))
+		);
+
+		// then
+		actions.andExpect(status().isOk());
 		Assertions.assertEquals(UserStatus.DELETED,savedAccount.getStatus());
 	}
 }

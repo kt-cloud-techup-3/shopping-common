@@ -12,10 +12,8 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.ResultActions;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kt.common.MockMvcTest;
 import com.kt.common.UserEntityCreator;
 import com.kt.constant.Gender;
@@ -28,10 +26,6 @@ import com.kt.security.DefaultCurrentUser;
 public class UserDetailUpdateTest extends MockMvcTest {
 	@Autowired
 	UserRepository userRepository;
-	@Autowired
-	MockMvc mockMvc;
-	@Autowired
-	ObjectMapper objectMapper;
 
 	UserEntity testUser;
 	DefaultCurrentUser userDetails;
@@ -50,6 +44,7 @@ public class UserDetailUpdateTest extends MockMvcTest {
 
 	@Test
 	void 내정보수정_성공__200_OK() throws Exception {
+		// given
 		UserRequest.UpdateDetails updateDetails = new UserRequest.UpdateDetails(
 			"변경된테스터",
 			"010-5678-1234",
@@ -58,12 +53,14 @@ public class UserDetailUpdateTest extends MockMvcTest {
 		);
 		String json = objectMapper.writeValueAsString(updateDetails);
 
-		mockMvc.perform(put("/api/users")
+		// when
+		ResultActions actions = mockMvc.perform(put("/api/users")
 				.with(user(userDetails))
 				.contentType(MediaType.APPLICATION_JSON)
-				.content(json))
-			.andExpect(status().isOk());
+				.content(json));
 
+		// then
+		actions.andExpect(status().isOk());
 		Assertions.assertEquals(updateDetails.name(), testUser.getName());
 		Assertions.assertEquals(updateDetails.birth(), testUser.getBirth());
 	}

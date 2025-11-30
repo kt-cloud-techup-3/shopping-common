@@ -14,4 +14,11 @@ public class CurrentUserCreator {
 			UserRole.ADMIN
 		);
 	}
+	public static DefaultCurrentUser getMemberUserDetails() {
+		return new DefaultCurrentUser(
+			UUID.randomUUID(),
+			"admin@naver.com",
+			UserRole.MEMBER
+		);
+	}
 }

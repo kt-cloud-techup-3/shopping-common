@@ -10,9 +10,9 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
-import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.ResultActions;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.kt.common.CategoryEntityCreator;
 import com.kt.common.MockMvcTest;
 import com.kt.common.OrderProductCreator;
 import com.kt.common.ProductCreator;
@@ -48,10 +48,7 @@ public class ReviewUpdateTest extends MockMvcTest {
 	OrderRepository orderRepository;
 	@Autowired
 	CategoryRepository categoryRepository;
-	@Autowired
-	MockMvc mockMvc;
-	@Autowired
-	ObjectMapper objectMapper;
+
 
 	OrderProductEntity testOrderProduct;
 	ProductEntity testProduct;
@@ -66,7 +63,7 @@ public class ReviewUpdateTest extends MockMvcTest {
 		OrderEntity order = OrderEntity.create(receiver, user);
 		orderRepository.save(order);
 
-		CategoryEntity category = CategoryEntity.create("카테고리", null);
+		CategoryEntity category = CategoryEntityCreator.createCategory();
 		categoryRepository.save(category);
 
 		testProduct = ProductCreator.createProduct(category);
@@ -78,6 +75,7 @@ public class ReviewUpdateTest extends MockMvcTest {
 
 	@Test
 	void 상품리뷰수정_성공__200_OK() throws Exception {
+		// given
 		ReviewEntity review = ReviewEntity.create("테스트리뷰내용");
 		review.mapToOrderProduct(testOrderProduct);
 		reviewRepository.save(review);
@@ -87,13 +85,18 @@ public class ReviewUpdateTest extends MockMvcTest {
 		);
 		String updateJson = objectMapper.writeValueAsString(update);
 
-		mockMvc.perform(
+
+		// when
+		ResultActions actions = mockMvc.perform(
 			patch("/api/reviews/{reviewId}", review.getId())
 				.with(user("테스트용임다"))
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(updateJson)
-		).andExpect(status().isOk());
+		);
 
+
+		// then
+		actions.andExpect(status().isOk());
 		assertEquals(review.getContent(), update.content());
 	}
 }

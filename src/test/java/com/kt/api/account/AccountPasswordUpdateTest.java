@@ -13,9 +13,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors;
-import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.ResultActions;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kt.common.MockMvcTest;
 import com.kt.constant.Gender;
 import com.kt.constant.UserRole;
@@ -34,10 +33,6 @@ public class AccountPasswordUpdateTest extends MockMvcTest {
 	UserRepository userRepository;
 	@Autowired
 	PasswordEncoder passwordEncoder;
-	@Autowired
-	MockMvc mockMvc;
-	@Autowired
-	ObjectMapper objectMapper;
 
 	UserEntity testUser;
 	DefaultCurrentUser userDetails;
@@ -65,20 +60,23 @@ public class AccountPasswordUpdateTest extends MockMvcTest {
 
 	@Test
 	void 비밀번호변경_성공__200_OK() throws Exception {
+		// given
+		AbstractAccountEntity savedAccount = accountRepository.findByIdOrThrow(testUser.getId());
 		AccountRequest.UpdatePassword accountRequest = new AccountRequest.UpdatePassword(
 			TEST_PASSWORD,
 			"123456789101112"
 		);
 		String json = objectMapper.writeValueAsString(accountRequest);
 
-		mockMvc.perform(patch("/api/accounts/{accountId}/password",testUser.getId())
+		// when
+		ResultActions actions = mockMvc.perform(patch("/api/accounts/{accountId}/password",testUser.getId())
 			.with(SecurityMockMvcRequestPostProcessors.user(userDetails))
 			.contentType(MediaType.APPLICATION_JSON)
 			.content(json)
-		).andExpect(status().isOk());
+		);
 
-		AbstractAccountEntity savedAccount = accountRepository.findByIdOrThrow(testUser.getId());
-
+		// then
+		actions.andExpect(status().isOk());
 		boolean result = passwordEncoder.matches("123456789101112", savedAccount.getPassword());
 		Assertions.assertTrue(result);
 	}

@@ -4,7 +4,6 @@ import static com.kt.common.api.ApiResult.*;
 
 import java.util.UUID;
 
-import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.kt.common.Paging;
 import com.kt.common.api.ApiResult;
+import com.kt.common.api.PageResponse;
 import com.kt.constant.searchtype.ProductSearchType;
 import com.kt.domain.dto.response.ReviewResponse;
 import com.kt.service.ReviewService;
@@ -29,12 +29,12 @@ public class AdminReviewController {
 	private final ReviewService reviewService;
 
 	@GetMapping
-	public ResponseEntity<ApiResult<Page<ReviewResponse.Search>>> search(
+	public ResponseEntity<ApiResult<PageResponse<ReviewResponse.Search>>> search(
 		@ModelAttribute Paging paging,
 		@RequestParam(required = false) String keyword,
 		@RequestParam(required = false) ProductSearchType type
 	){
-		return wrap(
+		return page(
 			reviewService.getReviewsByAdmin(
 				paging.toPageable(),
 				keyword,

@@ -9,8 +9,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.ResultActions;
 
+import com.kt.common.CategoryEntityCreator;
 import com.kt.common.MockMvcTest;
 import com.kt.common.OrderProductCreator;
 import com.kt.common.ProductCreator;
@@ -45,8 +46,6 @@ public class ReviewSearchTest extends MockMvcTest {
 	OrderRepository orderRepository;
 	@Autowired
 	CategoryRepository categoryRepository;
-	@Autowired
-	MockMvc mockMvc;
 
 	OrderProductEntity testOrderProduct;
 	ProductEntity testProduct;
@@ -61,7 +60,7 @@ public class ReviewSearchTest extends MockMvcTest {
 		OrderEntity order = OrderEntity.create(receiver, user);
 		orderRepository.save(order);
 
-		CategoryEntity category = CategoryEntity.create("카테고리", null);
+		CategoryEntity category = CategoryEntityCreator.createCategory();
 		categoryRepository.save(category);
 
 		testProduct = ProductCreator.createProduct(category);
@@ -74,17 +73,22 @@ public class ReviewSearchTest extends MockMvcTest {
 
 	@Test
 	void 상품리뷰조회_성공__200_OK() throws Exception {
+		// given
 		ReviewEntity review = ReviewEntity.create("테스트리뷰내용");
 		review.mapToOrderProduct(testOrderProduct);
 		reviewRepository.save(review);
 
-		mockMvc.perform(get("/api/reviews")
+		// when
+		ResultActions actions = mockMvc.perform(get("/api/reviews")
 				.with(user("테스트용임다"))
 				.param("productId", testOrderProduct.getProduct().getId().toString())
 				.param("page", "1")
 				.param("size", "10")
-			).andExpect(status().isOk())
-			.andExpect(jsonPath("$.data.content[0].reviewId").value(review.getId().toString()))
-			.andExpect(jsonPath("$.data.content[0].content").value(review.getContent()));
+		);
+
+		// then
+		actions.andExpect(status().isOk())
+		.andExpect(jsonPath("$.data.list[0].reviewId").value(review.getId().toString()))
+		.andExpect(jsonPath("$.data.list[0].content").value(review.getContent()));
 	}
 }
