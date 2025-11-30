@@ -19,4 +19,16 @@ public class UserEntityCreator {
 			"010-1234-5678"
 		);
 	}
+
+	public static UserEntity createAdmin() {
+		return UserEntity.create(
+			"관리자1",
+			"admin@test.com",
+			"1234",
+			UserRole.ADMIN,
+			Gender.MALE,
+			LocalDate.now(),
+			"010-1234-5678"
+		);
+	}
 }

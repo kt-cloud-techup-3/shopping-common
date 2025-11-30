@@ -1,27 +1,23 @@
-package com.kt.controller.review;
+package com.kt.api.review;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-import java.time.LocalDate;
-
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.transaction.annotation.Transactional;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.kt.constant.Gender;
-import com.kt.constant.OrderProductStatus;
-import com.kt.constant.ReviewStatus;
-import com.kt.constant.UserRole;
+import com.kt.common.OrderProductCreator;
+import com.kt.common.ProductCreator;
+import com.kt.common.ReceiverCreator;
+import com.kt.common.TestWithMockMvc;
+import com.kt.common.UserEntityCreator;
 import com.kt.domain.dto.request.ReviewRequest;
 import com.kt.domain.entity.CategoryEntity;
 import com.kt.domain.entity.OrderEntity;
@@ -37,13 +33,8 @@ import com.kt.repository.product.ProductRepository;
 import com.kt.repository.review.ReviewRepository;
 import com.kt.repository.user.UserRepository;
 
-
-
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@AutoConfigureMockMvc
-@ActiveProfiles("test")
-@Transactional
-class ReviewControllerTest {
+@DisplayName("상품 리뷰 수정 - PATCH /api/reviews/{reviewId}")
+public class ReviewUpdateTest extends TestWithMockMvc {
 
 	@Autowired
 	ReviewRepository reviewRepository;
@@ -67,78 +58,26 @@ class ReviewControllerTest {
 
 	@BeforeEach
 	void setUp() throws Exception {
-		orderProductRepository.deleteAll();
-		userRepository.deleteAll();
-		productRepository.deleteAll();
-		orderRepository.deleteAll();
-		reviewRepository.deleteAll();
-		categoryRepository.deleteAll();
-
-		UserEntity user = UserEntity.create(
-			"주문자테스터1",
-			"wjd123@naver.com",
-			"1234",
-			UserRole.MEMBER,
-			Gender.MALE,
-			LocalDate.now(),
-			"010-1234-5678"
-		);
+		UserEntity user = UserEntityCreator.createMember();
 		userRepository.save(user);
 
-		ReceiverVO receiver = new ReceiverVO(
-			"수신자테스터1",
-			"010-1234-5678",
-			"강원도",
-			"원주시",
-			"행구로",
-			"주소설명"
-		);
+		ReceiverVO receiver = ReceiverCreator.createReceiver();
 
-		OrderEntity order = OrderEntity.create(
-			receiver,
-			user
-		);
+		OrderEntity order = OrderEntity.create(receiver, user);
 		orderRepository.save(order);
 
 		CategoryEntity category = CategoryEntity.create("카테고리", null);
 		categoryRepository.save(category);
 
-		testProduct = ProductEntity.create(
-			"테스트상품명",
-			1000L,
-			5L,
-			category
-		);
+		testProduct = ProductCreator.createProduct(category);
 		productRepository.save(testProduct);
 
-		testOrderProduct = new OrderProductEntity(
-			5L,
-			5000L,
-			OrderProductStatus.CREATED,
-			order,
-			testProduct
-		);
+		testOrderProduct = OrderProductCreator.createOrderProduct(order, testProduct);
 		orderProductRepository.save(testOrderProduct);
 	}
 
 	@Test
-	void 상품리뷰조회_성공() throws Exception {
-		ReviewEntity review = ReviewEntity.create("테스트리뷰내용");
-		review.mapToOrderProduct(testOrderProduct);
-		reviewRepository.save(review);
-
-		mockMvc.perform(get("/api/reviews")
-			.with(user("테스트용임다"))
-			.param("productId", testOrderProduct.getProduct().getId().toString())
-			.param("page", "1")
-			.param("size", "10")
-		).andExpect(status().isOk())
-			.andExpect(jsonPath("$.data.content[0].reviewId").value(review.getId().toString()))
-			.andExpect(jsonPath("$.data.content[0].content").value(review.getContent()));
-	}
-
-	@Test
-	void 상품리뷰변경_성공() throws Exception {
+	void 상품리뷰수정_성공__200_OK() throws Exception {
 		ReviewEntity review = ReviewEntity.create("테스트리뷰내용");
 		review.mapToOrderProduct(testOrderProduct);
 		reviewRepository.save(review);
@@ -156,18 +95,5 @@ class ReviewControllerTest {
 		).andExpect(status().isOk());
 
 		assertEquals(review.getContent(), update.content());
-	}
-
-	@Test
-	void 상품리뷰삭제_성공() throws Exception {
-		ReviewEntity review = ReviewEntity.create("테스트리뷰내용");
-		review.mapToOrderProduct(testOrderProduct);
-		reviewRepository.save(review);
-		mockMvc.perform(
-			delete("/api/reviews/{reviewId}", review.getId())
-				.with(user("테스트용임다"))
-		).andExpect(status().isOk());
-
-		assertEquals(review.getStatus(), ReviewStatus.REMOVED);
 	}
 }

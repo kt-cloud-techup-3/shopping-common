@@ -1,7 +1,5 @@
-package com.kt.controller.account;
+package com.kt.api.account;
 
-import static org.assertj.core.api.AssertionsForClassTypes.*;
-import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -9,41 +7,31 @@ import java.time.LocalDate;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors;
-import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.transaction.annotation.Transactional;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.kt.common.TestWithMockMvc;
 import com.kt.constant.Gender;
 import com.kt.constant.UserRole;
-import com.kt.constant.UserStatus;
 import com.kt.domain.dto.request.AccountRequest;
 import com.kt.domain.entity.AbstractAccountEntity;
-import com.kt.domain.entity.CourierEntity;
 import com.kt.domain.entity.UserEntity;
 import com.kt.repository.AccountRepository;
-import com.kt.repository.courier.CourierRepository;
 import com.kt.repository.user.UserRepository;
 import com.kt.security.DefaultCurrentUser;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@AutoConfigureMockMvc
-@ActiveProfiles("test")
-@Transactional
-class AccountControllerTest {
+@DisplayName("계정 비밀번호 변경 - PATCH /api/accounts/{accountId}/password")
+public class AccountPasswordUpdateTest extends TestWithMockMvc {
 	@Autowired
 	AccountRepository accountRepository;
 	@Autowired
 	UserRepository userRepository;
-	@Autowired
-	CourierRepository courierRepository;
 	@Autowired
 	PasswordEncoder passwordEncoder;
 	@Autowired
@@ -51,49 +39,32 @@ class AccountControllerTest {
 	@Autowired
 	ObjectMapper objectMapper;
 
-	static final String TEST_PASSWORD = "1234567891011";
 	UserEntity testUser;
-	CourierEntity testCourier;
-
 	DefaultCurrentUser userDetails;
-	DefaultCurrentUser courierDetails;
+	static final String TEST_PASSWORD = "1234567891011";
 
 	@BeforeEach
 	void setUp() throws Exception {
 		testUser = UserEntity.create(
-			"회원테스터",
-			"member@naver.com",
+			"회원1",
+			"member@test.com",
 			passwordEncoder.encode(TEST_PASSWORD),
-			UserRole.ADMIN,
+			UserRole.MEMBER,
 			Gender.MALE,
-			LocalDate.of(1990, 1, 1),
+			LocalDate.now(),
 			"010-1234-5678"
-		);
+		);;
 		userRepository.save(testUser);
-
-		testCourier = CourierEntity.create(
-			"배송기사테스터",
-			"courier@naver.com",
-			passwordEncoder.encode(TEST_PASSWORD),
-			Gender.MALE
-		);
-		courierRepository.save(testCourier);
 
 		userDetails = new DefaultCurrentUser(
 			testUser.getId(),
 			testUser.getEmail(),
 			testUser.getRole()
 		);
-
-		courierDetails = new DefaultCurrentUser(
-			testCourier.getId(),
-			testCourier.getEmail(),
-			testCourier.getRole()
-		);
 	}
 
 	@Test
-	void 비밀번호변경_테스트_성공() throws Exception {
+	void 비밀번호변경_성공__200_OK() throws Exception {
 		AccountRequest.UpdatePassword accountRequest = new AccountRequest.UpdatePassword(
 			TEST_PASSWORD,
 			"123456789101112"
@@ -110,15 +81,5 @@ class AccountControllerTest {
 
 		boolean result = passwordEncoder.matches("123456789101112", savedAccount.getPassword());
 		Assertions.assertTrue(result);
-	}
-
-	@Test
-	void 배송기사탈퇴_테스트_성공() throws Exception {
-		mockMvc.perform(delete("/api/accounts/retire")
-			.with(SecurityMockMvcRequestPostProcessors.user(courierDetails))
-		).andExpect(status().isOk());
-
-		AbstractAccountEntity savedAccount = accountRepository.findByIdOrThrow(testCourier.getId());
-		Assertions.assertEquals(UserStatus.DELETED,savedAccount.getStatus());
 	}
 }
