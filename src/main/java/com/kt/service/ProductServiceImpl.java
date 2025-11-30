@@ -88,7 +88,7 @@ public class ProductServiceImpl implements ProductService {
 	}
 
 	@Override
-	public Page<ProductResponse.Search> search(UserRole role, Pageable pageable, String keyword, ProductSearchType type) {
+	public Page<ProductResponse.Search> search(UserRole role, String keyword, ProductSearchType type, Pageable pageable) {
 		return productRepository.search(role, pageable, keyword, type);
 	}
 

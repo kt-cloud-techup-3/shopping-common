@@ -26,7 +26,7 @@ public interface ProductService {
 
 	void toggleActive(UUID productId);
 
-	Page<ProductResponse.Search> search(UserRole role, Pageable pageable, String keyword, ProductSearchType type);
+	Page<ProductResponse.Search> search(UserRole role, String keyword, ProductSearchType type, Pageable pageable);
 
 	ProductResponse.Detail detail(UserRole role, UUID productId);
 }
