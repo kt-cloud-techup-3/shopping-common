@@ -12,6 +12,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,6 +21,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kt.constant.Gender;
 import com.kt.constant.OrderProductStatus;
 import com.kt.constant.UserRole;
+import com.kt.domain.dto.request.ReviewRequest;
 import com.kt.domain.entity.CategoryEntity;
 import com.kt.domain.entity.OrderEntity;
 import com.kt.domain.entity.OrderProductEntity;
@@ -125,12 +127,33 @@ class ReviewControllerTest {
 		reviewRepository.save(review);
 
 		mockMvc.perform(get("/api/reviews")
-			.with(user("wjd123@naver.com"))
+			.with(user("테스트용임다"))
 			.param("productId", testOrderProduct.getProduct().getId().toString())
 			.param("page", "1")
 			.param("size", "10")
 		).andExpect(status().isOk())
 			.andExpect(jsonPath("$.data.content[0].reviewId").value(review.getId().toString()))
 			.andExpect(jsonPath("$.data.content[0].content").value(review.getContent()));
+	}
+
+	@Test
+	void 상품리뷰변경_성공() throws Exception {
+		ReviewEntity review = ReviewEntity.create("테스트리뷰내용");
+		review.mapToOrderProduct(testOrderProduct);
+		reviewRepository.save(review);
+
+		ReviewRequest.Update update = new ReviewRequest.Update(
+			"변경된 리뷰 내용"
+		);
+		String updateJson = objectMapper.writeValueAsString(update);
+
+		mockMvc.perform(
+			patch("/api/reviews/{reviewId}", review.getId())
+				.with(user("테스트용임다"))
+				.contentType(MediaType.APPLICATION_JSON)
+				.content(updateJson)
+		).andExpect(status().isOk());
+
+		assertEquals(review.getContent(), update.content());
 	}
 }
