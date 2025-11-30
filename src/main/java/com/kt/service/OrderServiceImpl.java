@@ -3,8 +3,8 @@ package com.kt.service;
 import java.util.List;
 import java.util.UUID;
 
-import com.kt.exception.CustomException;
-
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -13,6 +13,7 @@ import com.kt.constant.OrderStatus;
 import com.kt.constant.ShippingType;
 import com.kt.constant.message.ErrorCode;
 import com.kt.domain.dto.request.OrderRequest;
+import com.kt.domain.dto.response.AdminOrderResponse;
 import com.kt.domain.dto.response.OrderResponse;
 import com.kt.domain.entity.OrderEntity;
 import com.kt.domain.entity.OrderProductEntity;
@@ -20,11 +21,11 @@ import com.kt.domain.entity.ProductEntity;
 import com.kt.domain.entity.ReceiverVO;
 import com.kt.domain.entity.ShippingDetailEntity;
 import com.kt.domain.entity.UserEntity;
-
-import com.kt.repository.orderproduct.OrderProductRepository;
+import com.kt.exception.CustomException;
 import com.kt.repository.OrderRepository;
-import com.kt.repository.product.ProductRepository;
 import com.kt.repository.ShippingDetailRepository;
+import com.kt.repository.orderproduct.OrderProductRepository;
+import com.kt.repository.product.ProductRepository;
 import com.kt.repository.user.UserRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -49,8 +50,7 @@ public class OrderServiceImpl implements OrderService {
 	@Override
 	public void createOrder(String email, List<OrderRequest.Item> items) {
 
-		UserEntity user = userRepository.findByEmail(email)
-			.orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+		UserEntity user = userRepository.findByEmailOrThrow(email);
 
 		// TODO: 컨트롤러 구현
 		ReceiverVO receiverVO = ReceiverVO.create(
@@ -90,15 +90,19 @@ public class OrderServiceImpl implements OrderService {
 		}
 	}
 
+	private boolean isCancelable(OrderStatus status) {
+		return status == OrderStatus.WAITING_PAYMENT ||
+			status == OrderStatus.SHIPPING_COMPLETED;
+	}
+
 	@Override
 	public void cancelOrder(UUID orderId) {
 		OrderEntity order = orderRepository.findById(orderId)
 			.orElseThrow(() -> new CustomException(ErrorCode.ORDER_NOT_FOUND));
 
-		if (order.getStatus() == OrderStatus.PURCHASE_CONFIRMED) {
+		if (!isCancelable(order.getStatus())) {
 			throw new CustomException(ErrorCode.ORDER_ALREADY_CONFIRMED);
 		}
-
 
 		List<OrderProductEntity> orderProducts = orderProductRepository.findAllByOrderId(orderId);
 
@@ -145,5 +149,39 @@ public class OrderServiceImpl implements OrderService {
 		orderRepository.save(order);
 	}
 
+	@Override
+	public Page<AdminOrderResponse.Search> searchOrder(Pageable pageable) {
+		return orderRepository.findAll(pageable)
+			.map(AdminOrderResponse.Search::from);
+	}
+
+	@Override
+	public AdminOrderResponse.Detail getOrderDetail(UUID orderId) {
+
+		OrderEntity order = orderRepository.findById(orderId)
+			.orElseThrow(() -> new CustomException(ErrorCode.ORDER_NOT_FOUND));
+
+		List<OrderProductEntity> orderProducts =
+			orderProductRepository.findAllByOrderId(orderId);
+
+		return AdminOrderResponse.Detail.from(order, orderProducts);
+	}
+
+	@Override
+	public void updateOrderStatus(UUID orderId, OrderStatus newStatus) {
+		OrderEntity order = orderRepository.findByIdOrThrow(orderId);
+
+		OrderStatus current = order.getStatus();
+
+		if (current == OrderStatus.PURCHASE_CONFIRMED) {
+			throw new CustomException(ErrorCode.ORDER_ALREADY_CONFIRMED);
+		}
+
+		if (current == OrderStatus.SHIPPING) {
+			throw new CustomException(ErrorCode.ORDER_ALREADY_SHIPPED);
+		}
+
+		order.updateStatus(newStatus);
+	}
 
 }
