@@ -11,11 +11,10 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.web.servlet.MockMvc;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.kt.common.MockMvcTest;
 import com.kt.common.OrderProductCreator;
 import com.kt.common.ProductCreator;
 import com.kt.common.ReceiverCreator;
-import com.kt.common.TestWithMockMvc;
 import com.kt.common.UserEntityCreator;
 import com.kt.constant.ReviewStatus;
 import com.kt.domain.entity.CategoryEntity;
@@ -33,7 +32,7 @@ import com.kt.repository.review.ReviewRepository;
 import com.kt.repository.user.UserRepository;
 
 @DisplayName("상품 리뷰 삭제 - DELETE /api/reviews/{reviewId}")
-public class ReviewDeleteTest extends TestWithMockMvc {
+public class ReviewDeleteTest extends MockMvcTest {
 
 	@Autowired
 	ReviewRepository reviewRepository;

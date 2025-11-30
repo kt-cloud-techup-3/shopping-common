@@ -3,20 +3,18 @@ package com.kt.api.account;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-import java.time.LocalDate;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors;
 import org.springframework.test.web.servlet.MockMvc;
 
 
 import com.kt.common.CourierEntityCreator;
-import com.kt.common.TestWithMockMvc;
+import com.kt.common.MockMvcTest;
 import com.kt.constant.UserStatus;
 import com.kt.domain.entity.AbstractAccountEntity;
 import com.kt.domain.entity.CourierEntity;
@@ -25,7 +23,7 @@ import com.kt.repository.courier.CourierRepository;
 import com.kt.security.DefaultCurrentUser;
 
 @DisplayName("계정 탈퇴 - DELETE /api/accounts/retire")
-public class AccountDeleteTest extends TestWithMockMvc {
+public class AccountDeleteTest extends MockMvcTest {
 	@Autowired
 	AccountRepository accountRepository;
 	@Autowired

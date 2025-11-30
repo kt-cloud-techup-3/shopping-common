@@ -16,7 +16,7 @@ import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequ
 import org.springframework.test.web.servlet.MockMvc;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.kt.common.TestWithMockMvc;
+import com.kt.common.MockMvcTest;
 import com.kt.constant.Gender;
 import com.kt.constant.UserRole;
 import com.kt.domain.dto.request.AccountRequest;
@@ -27,7 +27,7 @@ import com.kt.repository.user.UserRepository;
 import com.kt.security.DefaultCurrentUser;
 
 @DisplayName("계정 비밀번호 변경 - PATCH /api/accounts/{accountId}/password")
-public class AccountPasswordUpdateTest extends TestWithMockMvc {
+public class AccountPasswordUpdateTest extends MockMvcTest {
 	@Autowired
 	AccountRepository accountRepository;
 	@Autowired

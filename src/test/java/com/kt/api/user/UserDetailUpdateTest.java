@@ -16,7 +16,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.web.servlet.MockMvc;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.kt.common.TestWithMockMvc;
+import com.kt.common.MockMvcTest;
 import com.kt.common.UserEntityCreator;
 import com.kt.constant.Gender;
 import com.kt.domain.dto.request.UserRequest;
@@ -25,7 +25,7 @@ import com.kt.repository.user.UserRepository;
 import com.kt.security.DefaultCurrentUser;
 
 @DisplayName("내 정보 수정(회원) - PUT /api/users")
-public class UserDetailUpdateTest extends TestWithMockMvc {
+public class UserDetailUpdateTest extends MockMvcTest {
 	@Autowired
 	UserRepository userRepository;
 	@Autowired

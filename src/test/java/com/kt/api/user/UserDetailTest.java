@@ -15,7 +15,7 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.kt.common.TestWithMockMvc;
+import com.kt.common.MockMvcTest;
 import com.kt.common.UserEntityCreator;
 import com.kt.common.api.ApiResult;
 import com.kt.domain.dto.response.UserResponse;
@@ -24,7 +24,7 @@ import com.kt.repository.user.UserRepository;
 import com.kt.security.DefaultCurrentUser;
 
 @DisplayName("내 정보 조회(회원) - GET /api/users")
-public class UserDetailTest extends TestWithMockMvc {
+public class UserDetailTest extends MockMvcTest {
 	@Autowired
 	UserRepository userRepository;
 	@Autowired

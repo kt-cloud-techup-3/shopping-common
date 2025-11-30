@@ -13,10 +13,10 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.kt.common.MockMvcTest;
 import com.kt.common.OrderProductCreator;
 import com.kt.common.ProductCreator;
 import com.kt.common.ReceiverCreator;
-import com.kt.common.TestWithMockMvc;
 import com.kt.common.UserEntityCreator;
 import com.kt.constant.OrderStatus;
 import com.kt.domain.dto.request.ReviewRequest;
@@ -35,7 +35,7 @@ import com.kt.repository.review.ReviewRepository;
 import com.kt.repository.user.UserRepository;
 
 @DisplayName("상품 리뷰 작성 - POST /api/orderproducts/{orderProductId}/reviews")
-public class ReviewCreateTest extends TestWithMockMvc {
+public class ReviewCreateTest extends MockMvcTest {
 
 	@Autowired
 	ReviewRepository reviewRepository;
@@ -79,7 +79,7 @@ public class ReviewCreateTest extends TestWithMockMvc {
 
 	@Test
 	void 상품리뷰작성_성공__200_OK() throws Exception {
-		testOrderProduct.getOrder().changeStatus(OrderStatus.PURCHASE_CONFIRMED);
+		testOrderProduct.getOrder().updateStatus(OrderStatus.PURCHASE_CONFIRMED);
 		ReviewRequest.Create reviewCreate = new ReviewRequest.Create(
 			"생성한테스트리뷰내용"
 		);
