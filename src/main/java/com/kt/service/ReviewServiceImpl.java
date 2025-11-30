@@ -75,6 +75,11 @@ public class ReviewServiceImpl implements ReviewService {
 	}
 
 	@Override
+	public Page<ReviewResponse.Search> getReviewByProductId(UUID productId, Pageable pageable){
+		return reviewRepository.searchReviewsByProductId(pageable, productId);
+	}
+
+	@Override
 	public Page<ReviewResponse.Search> getReviewsByAdmin(Pageable pageable, String keyword, ProductSearchType type){
 		return reviewRepository.searchReviews(pageable,keyword,type);
 	}

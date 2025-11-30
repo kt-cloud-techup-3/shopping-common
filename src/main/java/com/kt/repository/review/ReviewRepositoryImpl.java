@@ -99,4 +99,34 @@ public class ReviewRepositoryImpl implements ReviewRepositoryCustom {
 
 		return new PageImpl<>(contents, pageable, total);
 	}
+
+	@Override
+	public Page<ReviewResponse.Search> searchReviewsByProductId(Pageable pageable, UUID productId) {
+		List<ReviewResponse.Search> contents = jpaQueryFactory
+			.select(new QReviewResponse_Search(
+				review.id,
+				review.content
+			))
+			.from(user)
+			.join(order).on(user.id.eq(order.orderBy.id))
+			.join(orderProduct).on(order.id.eq(orderProduct.order.id))
+			.join(product).on(product.id.eq(orderProduct.product.id))
+			.join(review).on(orderProduct.id.eq(review.orderProduct.id))
+			.where(orderProduct.product.id.eq(product.id))
+			.offset(pageable.getOffset())
+			.limit(pageable.getPageSize())
+			.fetch();
+
+		int total = jpaQueryFactory
+			.select(user.id)
+			.from(user)
+			.join(order).on(user.id.eq(order.orderBy.id))
+			.join(orderProduct).on(order.id.eq(orderProduct.order.id))
+			.join(product).on(product.id.eq(orderProduct.product.id))
+			.join(review).on(orderProduct.id.eq(review.orderProduct.id))
+			.where(orderProduct.product.id.eq(product.id))
+			.fetch().size();
+
+		return new PageImpl<>(contents, pageable, total);
+	}
 }

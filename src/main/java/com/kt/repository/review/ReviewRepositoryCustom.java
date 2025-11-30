@@ -12,4 +12,6 @@ public interface ReviewRepositoryCustom {
 	Page<ReviewResponse.Search> searchReviews(Pageable pageable, String keyword, ProductSearchType type);
 
 	Page<ReviewResponse.Search> searchReviewsByUserId(Pageable pageable, UUID userId);
+
+	Page<ReviewResponse.Search> searchReviewsByProductId(Pageable pageable, UUID productId);
 }

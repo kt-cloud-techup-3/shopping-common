@@ -7,24 +7,19 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import java.time.LocalDate;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.kt.common.api.ApiResult;
 import com.kt.constant.Gender;
 import com.kt.constant.OrderProductStatus;
 import com.kt.constant.UserRole;
-import com.kt.domain.dto.response.ReviewResponse;
 import com.kt.domain.entity.CategoryEntity;
 import com.kt.domain.entity.OrderEntity;
 import com.kt.domain.entity.OrderProductEntity;
@@ -39,7 +34,6 @@ import com.kt.repository.product.ProductRepository;
 import com.kt.repository.review.ReviewRepository;
 import com.kt.repository.user.UserRepository;
 
-import java.util.List;
 
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -130,23 +124,13 @@ class ReviewControllerTest {
 		review.mapToOrderProduct(testOrderProduct);
 		reviewRepository.save(review);
 
-		MockHttpServletResponse response = mockMvc.perform(get("/api/reviews")
-				.with(user("wjd123@naver.com"))
+		mockMvc.perform(get("/api/reviews")
+			.with(user("wjd123@naver.com"))
 			.param("productId", testOrderProduct.getProduct().getId().toString())
+			.param("page", "1")
+			.param("size", "10")
 		).andExpect(status().isOk())
-			.andReturn()
-			.getResponse();
-
-		String json = response.getContentAsString();
-
-		ApiResult<List<ReviewResponse.Search>> responsedResult = objectMapper
-			.readValue(
-			json,
-			new TypeReference<ApiResult<List<ReviewResponse.Search>>>(){}
-		);
-		ReviewResponse.Search savedReview = responsedResult.getData().getFirst();
-
-		Assertions.assertNotNull(savedReview);
-		Assertions.assertEquals(savedReview.content(),review.getContent());
+			.andExpect(jsonPath("$.data.content[0].reviewId").value(review.getId().toString()))
+			.andExpect(jsonPath("$.data.content[0].content").value(review.getContent()));
 	}
 }

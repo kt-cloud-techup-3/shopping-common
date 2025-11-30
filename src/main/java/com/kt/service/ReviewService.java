@@ -20,5 +20,7 @@ public interface ReviewService {
 
 	List<ReviewResponse.Search> getReviewByProductId(UUID productId);
 
+	Page<ReviewResponse.Search> getReviewByProductId(UUID productId, Pageable pageable);
+
 	Page<ReviewResponse.Search> getReviewsByAdmin(Pageable pageable, String keyword, ProductSearchType type);
 }
