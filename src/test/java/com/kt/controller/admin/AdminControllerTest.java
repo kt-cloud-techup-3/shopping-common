@@ -1,5 +1,24 @@
 package com.kt.controller.admin;
 
+import static org.assertj.core.api.Assertions.*;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+
+import java.time.LocalDate;
+
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.MediaType;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.web.servlet.MockMvc;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kt.constant.Gender;
 import com.kt.constant.UserRole;
@@ -10,27 +29,7 @@ import com.kt.domain.entity.UserEntity;
 import com.kt.repository.user.UserRepository;
 import com.kt.security.DefaultCurrentUser;
 
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
-
-import org.springframework.http.MediaType;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.web.servlet.MockMvc;
-
-import java.time.LocalDate;
-
-import static org.assertj.core.api.Assertions.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
-
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK)
+@SpringBootTest
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
 class AdminControllerTest {
@@ -48,7 +47,6 @@ class AdminControllerTest {
 
 	@BeforeEach
 	void setUp() {
-		userRepository.deleteAll();
 		testAdmin = UserEntity.create(
 			"테스트관리자1",
 			"test@example.com",
@@ -59,6 +57,11 @@ class AdminControllerTest {
 			"010-1231-1212"
 		);
 		userRepository.save(testAdmin);
+	}
+
+	@AfterEach
+	void cleanUp() {
+		userRepository.deleteAll();
 	}
 
 	private DefaultCurrentUser adminPrincipal() {
@@ -110,11 +113,9 @@ class AdminControllerTest {
 			"010-1111-1111"
 		);
 
-		String json = objectMapper.writeValueAsString(request);
-
 		mockMvc.perform(post("/api/admin/admins")
 				.contentType(MediaType.APPLICATION_JSON)
-				.content(json)
+				.content(objectMapper.writeValueAsString(request))
 				.with(user(adminPrincipal()))
 			)
 			.andDo(print())
@@ -135,11 +136,9 @@ class AdminControllerTest {
 			Gender.FEMALE
 		);
 
-		String json = objectMapper.writeValueAsString(requset);
-
 		mockMvc.perform(put("/api/admin/admins/{adminId}", testAdmin.getId())
 				.contentType(MediaType.APPLICATION_JSON)
-				.content(json)
+				.content(objectMapper.writeValueAsString(requset))
 				.with(user(adminPrincipal()))
 			)
 			.andDo(print())
@@ -154,7 +153,7 @@ class AdminControllerTest {
 	@Test
 	void 관리자_삭제_성공() throws Exception {
 
-		mockMvc.perform(patch("/api/admin/{adminId}", testAdmin.getId())
+		mockMvc.perform(delete("/api/admin/{adminId}", testAdmin.getId())
 				.with(user(adminPrincipal()))
 			)
 			.andDo(print())
