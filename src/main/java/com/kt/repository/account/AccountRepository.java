@@ -1,4 +1,4 @@
-package com.kt.repository;
+package com.kt.repository.account;
 
 import com.kt.constant.message.ErrorCode;
 import com.kt.domain.entity.AbstractAccountEntity;

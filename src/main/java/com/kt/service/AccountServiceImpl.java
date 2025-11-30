@@ -7,7 +7,7 @@ import com.kt.domain.dto.request.AccountSearchRequestVO;
 import com.kt.domain.entity.AbstractAccountEntity;
 
 import com.kt.infra.mail.EmailClient;
-import com.kt.repository.AccountRepository;
+import com.kt.repository.account.AccountRepository;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
