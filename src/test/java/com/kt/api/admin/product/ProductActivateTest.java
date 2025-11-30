@@ -59,7 +59,7 @@ public class ProductActivateTest extends TestWithMockMvc {
 	void 상품_활성화_성공__200_OK() throws Exception {
 		//  when
 		ResultActions actions = mockMvc.perform(
-			put("/api/admin/products/{productId}/activate", testProduct.getId())
+			patch("/api/admin/products/{productId}/activate", testProduct.getId())
 				.with(SecurityMockMvcRequestPostProcessors.user(userDetails))
 		);
 

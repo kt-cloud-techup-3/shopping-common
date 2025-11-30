@@ -78,9 +78,9 @@ public class ProductSearchTest extends TestWithMockMvc {
 		// then
 		actions.andDo(print());
 		actions.andExpect(status().isOk());
-		actions.andExpect(jsonPath("$.data.content.length()").value(5));
+		actions.andExpect(jsonPath("$.data.list.length()").value(5));
 		actions.andExpect(
-			jsonPath("$.data.content[*].status",
+			jsonPath("$.data.list[*].status",
 				everyItem(is(ProductStatus.ACTIVATED.name()))
 			)
 		);

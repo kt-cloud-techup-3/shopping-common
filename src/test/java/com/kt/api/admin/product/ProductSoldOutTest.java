@@ -67,7 +67,7 @@ public class ProductSoldOutTest extends TestWithMockMvc {
 		);
 
 		ResultActions actions = mockMvc.perform(
-			post("/api/admin/products/sold-out")
+			patch("/api/admin/products/sold-out")
 				.with(SecurityMockMvcRequestPostProcessors.user(userDetails))
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(objectMapper.writeValueAsString(request))
@@ -83,7 +83,7 @@ public class ProductSoldOutTest extends TestWithMockMvc {
 		);
 
 		ResultActions actions = mockMvc.perform(
-			post("/api/admin/products/sold-out")
+			patch("/api/admin/products/sold-out")
 				.with(SecurityMockMvcRequestPostProcessors.user(userDetails))
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(objectMapper.writeValueAsString(request))

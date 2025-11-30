@@ -17,12 +17,14 @@ import org.springframework.test.web.servlet.ResultActions;
 
 import com.kt.common.MockMvcTest;
 import com.kt.common.TestWithMockMvc;
+import com.kt.constant.OrderStatus;
 import com.kt.domain.dto.request.OrderRequest;
 import com.kt.domain.entity.CategoryEntity;
 import com.kt.domain.entity.OrderProductEntity;
 import com.kt.domain.entity.ProductEntity;
 import com.kt.domain.entity.UserEntity;
 import com.kt.repository.CategoryRepository;
+import com.kt.repository.OrderRepository;
 import com.kt.repository.orderproduct.OrderProductRepository;
 import com.kt.repository.product.ProductRepository;
 import com.kt.repository.user.UserRepository;
@@ -57,6 +59,9 @@ public class ProductReviewTest extends TestWithMockMvc {
 	@Autowired
 	OrderProductRepository orderProductRepository;
 
+	@Autowired
+	OrderRepository orderRepository;
+
 	@BeforeEach
 	void setUp() {
 		// 회원 생성
@@ -79,8 +84,11 @@ public class ProductReviewTest extends TestWithMockMvc {
 			orderService.createOrder(testMember.getEmail(), items);
 		}
 
-		List<OrderProductEntity> list = orderProductRepository.findAll().stream().toList();
+		// 주문 확정
+		orderRepository.findAll().forEach(order -> order.updateStatus(OrderStatus.PURCHASE_CONFIRMED));
+
 		// 리뷰 작성
+		List<OrderProductEntity> list = orderProductRepository.findAll().stream().toList();
 		for (int i = 0; i < 3; i++) {
 			OrderProductEntity orderProduct = list.get(i);
 			reviewService.create(orderProduct.getId(), "리뷰 내용: 리뷰" + i);

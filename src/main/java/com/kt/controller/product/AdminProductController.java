@@ -1,16 +1,14 @@
 package com.kt.controller.product;
 
+import static com.kt.common.api.ApiResult.*;
+
 import java.util.UUID;
 
-import com.kt.common.api.PageResponse;
-
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -21,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.kt.common.Paging;
 import com.kt.common.api.ApiResult;
+import com.kt.common.api.PageResponse;
 import com.kt.constant.searchtype.ProductSearchType;
 import com.kt.domain.dto.request.AdminProductRequest;
 import com.kt.domain.dto.response.ProductResponse;
@@ -29,8 +28,6 @@ import com.kt.service.ProductService;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-
-import static com.kt.common.api.ApiResult.*;
 
 @RestController
 @RequestMapping("/api/admin/products")
@@ -54,7 +51,7 @@ public class AdminProductController {
 		return empty();
 	}
 
-	@PostMapping("/sold-out")
+	@PatchMapping("/sold-out")
 	public ResponseEntity<ApiResult<Void>> soldOutProducts(
 		@RequestBody @Valid AdminProductRequest.SoldOut request
 	) {
@@ -67,14 +64,14 @@ public class AdminProductController {
 		@AuthenticationPrincipal CurrentUser user,
 		@RequestParam(required = false) String keyword,
 		@RequestParam(required = false) ProductSearchType type,
-		Pageable pageable
+		Paging paging
 	) {
 		return page(
 			productService.search(
 				user.getRole(),
 				keyword,
 				type,
-				pageable
+				paging.toPageable()
 			)
 		);
 	}
@@ -87,7 +84,7 @@ public class AdminProductController {
 		return wrap(productService.detail(user.getRole(), productId));
 	}
 
-	@GetMapping("/{productId}/toggle-sold-out")
+	@PatchMapping("/{productId}/toggle-sold-out")
 	public ResponseEntity<ApiResult<Void>> toggleActive(
 		@PathVariable UUID productId
 	) {
@@ -95,7 +92,7 @@ public class AdminProductController {
 		return empty();
 	}
 
-	@GetMapping("/{productId}/activate")
+	@PatchMapping("/{productId}/activate")
 	public ResponseEntity<ApiResult<Void>> activate(
 		@PathVariable UUID productId
 	) {
@@ -103,7 +100,7 @@ public class AdminProductController {
 		return empty();
 	}
 
-	@GetMapping("/{productId}/in-activate")
+	@PatchMapping("/{productId}/in-activate")
 	public ResponseEntity<ApiResult<Void>> inActivate(
 		@PathVariable UUID productId
 	) {

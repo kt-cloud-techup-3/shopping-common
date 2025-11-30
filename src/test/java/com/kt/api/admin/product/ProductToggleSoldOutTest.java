@@ -58,7 +58,7 @@ public class ProductToggleSoldOutTest extends TestWithMockMvc {
 	void 상품_품절_토글_성공__200_OK() throws Exception {
 		//  when
 		ResultActions actions = mockMvc.perform(
-			put("/api/admin/products/{productId}/toggle-sold-out", testProduct.getId())
+			patch("/api/admin/products/{productId}/toggle-sold-out", testProduct.getId())
 				.with(SecurityMockMvcRequestPostProcessors.user(userDetails))
 		);
 

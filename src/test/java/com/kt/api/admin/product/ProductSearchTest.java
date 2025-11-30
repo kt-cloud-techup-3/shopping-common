@@ -74,7 +74,7 @@ public class ProductSearchTest extends TestWithMockMvc {
 
 		actions
 			.andExpect(status().isOk())
-			.andExpect(jsonPath("$.data.content.length()").value(10))
+			.andExpect(jsonPath("$.data.list.length()").value(10))
 			.andDo(print());
 	}
 }
