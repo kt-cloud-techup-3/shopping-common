@@ -16,7 +16,6 @@ import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequ
 import org.springframework.test.web.servlet.ResultActions;
 
 import com.kt.common.MockMvcTest;
-import com.kt.common.TestWithMockMvc;
 import com.kt.constant.OrderStatus;
 import com.kt.domain.dto.request.OrderRequest;
 import com.kt.domain.entity.CategoryEntity;
@@ -31,9 +30,8 @@ import com.kt.repository.user.UserRepository;
 import com.kt.service.OrderService;
 import com.kt.service.ReviewService;
 
-@MockMvcTest
 @DisplayName("상품 리뷰 조회 - GET /api/products/{productId}/reviews")
-public class ProductReviewTest extends TestWithMockMvc {
+public class ProductReviewTest extends MockMvcTest {
 
 	@Autowired
 	UserRepository userRepository;

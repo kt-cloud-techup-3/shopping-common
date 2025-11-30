@@ -16,7 +16,6 @@ import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequ
 import org.springframework.test.web.servlet.ResultActions;
 
 import com.kt.common.MockMvcTest;
-import com.kt.common.TestWithMockMvc;
 import com.kt.constant.UserRole;
 import com.kt.domain.entity.CategoryEntity;
 import com.kt.domain.entity.ProductEntity;
@@ -24,9 +23,8 @@ import com.kt.repository.CategoryRepository;
 import com.kt.repository.product.ProductRepository;
 import com.kt.security.DefaultCurrentUser;
 
-@MockMvcTest
 @DisplayName("상품 상세 조회 - GET /api/products/{productId}")
-public class ProductDetailTest extends TestWithMockMvc {
+public class ProductDetailTest extends MockMvcTest {
 
 	@Autowired
 	CategoryRepository categoryRepository;

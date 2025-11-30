@@ -18,16 +18,14 @@ import org.springframework.http.MediaType;
 import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors;
 
 import com.kt.common.MockMvcTest;
-import com.kt.common.TestWithMockMvc;
 import com.kt.constant.UserRole;
 import com.kt.domain.dto.request.AdminProductRequest;
 import com.kt.domain.entity.CategoryEntity;
 import com.kt.repository.CategoryRepository;
 import com.kt.security.DefaultCurrentUser;
 
-@MockMvcTest
 @DisplayName("상품 생성 (어드민) - POST /api/admin/product")
-class ProductCreateTest extends TestWithMockMvc {
+class ProductCreateTest extends MockMvcTest {
 
 	@Autowired
 	CategoryRepository categoryRepository;
