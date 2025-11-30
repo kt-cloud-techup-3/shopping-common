@@ -16,6 +16,8 @@ import com.kt.service.ReviewService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
+import static com.kt.common.api.ApiResult.empty;
+
 @RestController
 @RequestMapping("/api/orderproducts")
 @RequiredArgsConstructor
@@ -28,6 +30,6 @@ public class OrderProductController {
 		@RequestBody @Valid ReviewRequest.Create request
 	){
 		reviewService.create(orderProductId, request.content());
-		return ApiResult.ok(null);
+		return empty();
 	}
 }
