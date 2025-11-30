@@ -79,9 +79,9 @@ public class ProductReviewTest extends TestWithMockMvc {
 			orderService.createOrder(testMember.getEmail(), items);
 		}
 
+		List<OrderProductEntity> list = orderProductRepository.findAll().stream().toList();
 		// 리뷰 작성
 		for (int i = 0; i < 3; i++) {
-			List<OrderProductEntity> list = orderProductRepository.findAll().stream().toList();
 			OrderProductEntity orderProduct = list.get(i);
 			reviewService.create(orderProduct.getId(), "리뷰 내용: 리뷰" + i);
 		}
