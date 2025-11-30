@@ -2,9 +2,6 @@ package com.kt.service;
 
 import java.time.LocalDate;
 
-import com.kt.constant.OrderStatus;
-import com.kt.exception.CustomException;
-
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -19,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.kt.constant.Gender;
 import com.kt.constant.OrderProductStatus;
+import com.kt.constant.OrderStatus;
 import com.kt.constant.ReviewStatus;
 import com.kt.constant.UserRole;
 import com.kt.constant.message.ErrorCode;
@@ -30,10 +28,10 @@ import com.kt.domain.entity.ProductEntity;
 import com.kt.domain.entity.ReceiverVO;
 import com.kt.domain.entity.ReviewEntity;
 import com.kt.domain.entity.UserEntity;
-
+import com.kt.exception.CustomException;
 import com.kt.repository.CategoryRepository;
-import com.kt.repository.orderproduct.OrderProductRepository;
 import com.kt.repository.OrderRepository;
+import com.kt.repository.orderproduct.OrderProductRepository;
 import com.kt.repository.product.ProductRepository;
 import com.kt.repository.review.ReviewRepository;
 import com.kt.repository.user.UserRepository;
@@ -118,7 +116,7 @@ class ReviewServiceTest {
 
 	@Test
 	void 리뷰생성_성공() {
-		testOrderProduct.getOrder().changeStatus(OrderStatus.PURCHASE_CONFIRMED);
+		testOrderProduct.getOrder().updateStatus(OrderStatus.PURCHASE_CONFIRMED);
 		reviewService.create(testOrderProduct.getId(), "테스트리뷰내용");
 
 		ReviewEntity savedReview = reviewRepository
@@ -133,11 +131,11 @@ class ReviewServiceTest {
 	@ParameterizedTest
 	@EnumSource(
 		value = OrderStatus.class,
-		names = { "PURCHASE_CONFIRMED" },
+		names = {"PURCHASE_CONFIRMED"},
 		mode = EnumSource.Mode.EXCLUDE
 	)
 	void 리뷰생성_실패__주문_구매확정_아님(OrderStatus orderStatus) {
-		testOrderProduct.getOrder().changeStatus(orderStatus);
+		testOrderProduct.getOrder().updateStatus(orderStatus);
 
 		Assertions.assertThrowsExactly(
 			CustomException.class,
@@ -189,7 +187,7 @@ class ReviewServiceTest {
 	}
 
 	@Test
-	void 어드민_상품리뷰조회_성공(){
+	void 어드민_상품리뷰조회_성공() {
 		ReviewEntity review = ReviewEntity.create("테스트리뷰내용");
 		review.mapToOrderProduct(testOrderProduct);
 		reviewRepository.save(review);

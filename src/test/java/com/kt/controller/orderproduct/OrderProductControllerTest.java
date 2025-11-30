@@ -1,6 +1,5 @@
 package com.kt.controller.orderproduct;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -122,7 +121,7 @@ class OrderProductControllerTest {
 
 	@Test
 	void 상품리뷰작성_성공() throws Exception {
-		testOrderProduct.getOrder().changeStatus(OrderStatus.PURCHASE_CONFIRMED);
+		testOrderProduct.getOrder().updateStatus(OrderStatus.PURCHASE_CONFIRMED);
 		ReviewRequest.Create reviewCreate = new ReviewRequest.Create(
 			"생성한테스트리뷰내용"
 		);
@@ -137,6 +136,6 @@ class OrderProductControllerTest {
 		ReviewEntity savedReview = reviewRepository.findByOrderProductIdOrThrow(testOrderProduct.getId());
 
 		Assertions.assertNotNull(savedReview);
-		Assertions.assertEquals(savedReview.getContent(),reviewCreate.content());
+		Assertions.assertEquals(savedReview.getContent(), reviewCreate.content());
 	}
 }

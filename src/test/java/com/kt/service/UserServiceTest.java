@@ -5,9 +5,6 @@ import static org.assertj.core.api.Assertions.*;
 import java.time.LocalDate;
 import java.util.UUID;
 
-import com.kt.constant.OrderStatus;
-import com.kt.domain.dto.response.ReviewResponse;
-
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -22,11 +19,13 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.kt.constant.Gender;
 import com.kt.constant.OrderProductStatus;
+import com.kt.constant.OrderStatus;
 import com.kt.constant.UserRole;
 import com.kt.constant.UserStatus;
 import com.kt.domain.dto.request.SignupRequest;
 import com.kt.domain.dto.request.UserRequest;
 import com.kt.domain.dto.response.OrderProductResponse;
+import com.kt.domain.dto.response.ReviewResponse;
 import com.kt.domain.dto.response.UserResponse;
 import com.kt.domain.entity.CategoryEntity;
 import com.kt.domain.entity.OrderEntity;
@@ -35,10 +34,9 @@ import com.kt.domain.entity.ProductEntity;
 import com.kt.domain.entity.ReceiverVO;
 import com.kt.domain.entity.ReviewEntity;
 import com.kt.domain.entity.UserEntity;
-
 import com.kt.repository.CategoryRepository;
-import com.kt.repository.orderproduct.OrderProductRepository;
 import com.kt.repository.OrderRepository;
+import com.kt.repository.orderproduct.OrderProductRepository;
 import com.kt.repository.product.ProductRepository;
 import com.kt.repository.review.ReviewRepository;
 import com.kt.repository.user.UserRepository;
@@ -159,7 +157,6 @@ class UserServiceTest {
 		orderProductRepository.save(testOrderProduct);
 	}
 
-
 	@Test
 	void 내_주문_조회() {
 		UserEntity user = UserEntity.create(
@@ -204,7 +201,7 @@ class UserServiceTest {
 
 	@Test
 	void 리뷰_가능한_주문상품_존재() {
-		testOrder.changeStatus(OrderStatus.PURCHASE_CONFIRMED);
+		testOrder.updateStatus(OrderStatus.PURCHASE_CONFIRMED);
 		orderRepository.save(testOrder);
 
 		PageRequest pageRequest = PageRequest.of(0, 10);
@@ -220,7 +217,7 @@ class UserServiceTest {
 
 	@Test
 	void 리뷰_가능한_주문상품_없음__작성한_리뷰_존재() {
-		testOrder.changeStatus(OrderStatus.PURCHASE_CONFIRMED);
+		testOrder.updateStatus(OrderStatus.PURCHASE_CONFIRMED);
 
 		ReviewEntity review = ReviewEntity.create("테스트리뷰내용");
 		review.mapToOrderProduct(testOrderProduct);
@@ -235,7 +232,7 @@ class UserServiceTest {
 
 	@Test
 	void 리뷰_가능한_주문상품_없음__주문_리뷰가능_상태_아님() {
-		testOrder.changeStatus(OrderStatus.CANCELED);
+		testOrder.updateStatus(OrderStatus.CANCELED);
 		orderRepository.save(testOrder);
 
 		PageRequest pageRequest = PageRequest.of(0, 10);
@@ -400,7 +397,7 @@ class UserServiceTest {
 	}
 
 	@Test
-	void 내리뷰조회_성공(){
+	void 내리뷰조회_성공() {
 		ReviewEntity review = ReviewEntity.create("테스트리뷰내용");
 		review.mapToOrderProduct(testOrderProduct);
 		reviewRepository.saveAndFlush(review);
@@ -419,18 +416,18 @@ class UserServiceTest {
 	}
 
 	@Test
-	void 내정보조회_성공(){
+	void 내정보조회_성공() {
 		UserResponse.UserDetail foundedDetail = userService.getUserDetail(
 			testUser.getId()
 		);
 
 		Assertions.assertNotNull(foundedDetail);
-		Assertions.assertEquals(testUser.getName(),foundedDetail.name());
-		Assertions.assertEquals(testUser.getEmail(),foundedDetail.email());
+		Assertions.assertEquals(testUser.getName(), foundedDetail.name());
+		Assertions.assertEquals(testUser.getEmail(), foundedDetail.email());
 	}
 
 	@Test
-	void 내정보수정_성공(){
+	void 내정보수정_성공() {
 		UserRequest.UpdateDetails updateDetails = new UserRequest.UpdateDetails(
 			"변경된테스터",
 			"010-5678-1234",
