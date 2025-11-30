@@ -20,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kt.constant.Gender;
 import com.kt.constant.OrderProductStatus;
+import com.kt.constant.ReviewStatus;
 import com.kt.constant.UserRole;
 import com.kt.domain.dto.request.ReviewRequest;
 import com.kt.domain.entity.CategoryEntity;
@@ -155,5 +156,18 @@ class ReviewControllerTest {
 		).andExpect(status().isOk());
 
 		assertEquals(review.getContent(), update.content());
+	}
+
+	@Test
+	void 상품리뷰삭제_성공() throws Exception {
+		ReviewEntity review = ReviewEntity.create("테스트리뷰내용");
+		review.mapToOrderProduct(testOrderProduct);
+		reviewRepository.save(review);
+		mockMvc.perform(
+			delete("/api/reviews/{reviewId}", review.getId())
+				.with(user("테스트용임다"))
+		).andExpect(status().isOk());
+
+		assertEquals(review.getStatus(), ReviewStatus.REMOVED);
 	}
 }
